@@ -1,0 +1,126 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link rel='stylesheet' href='/stylesheets/cart.css' />
+<div class="row">
+    <div class="col">
+        <div class="card mb-5 mt-5">
+            <div class="row">
+                <div class="col-md-8 cart">
+                    <div class="title">
+                        <div class="row">
+                            <div class="col">
+                                <h4><b>Shopping Cart</b></h4>
+                            </div>
+                            <div class="col align-self-center text-right text-muted">{{count}} items</div>
+                        </div>
+                    </div>
+
+                    {{#if data.items.length}}
+                    {{#each data.items}}
+                    <div class="row border-top border-bottom">
+                        <div class="row main align-items-center">
+                            <div class="col-2"><img class="img-fluid" src="../products-images/{{this.product.image}}">
+                            </div>
+                            <div class="col">
+                                <div class="row text-muted">{{this.product.category}}</div>
+                                <div class="row">{{this.product.name}}</div>
+                                <div class="row text-muted">{{this.size}}</div>
+                            </div>
+                            <div class="col">
+                                <a id="minus" href="/users/cart/quantityminus/{{this.product._id}}">-</a><a
+                                    id="quantityLink" href="" class="border">{{this.quantity}}</a><a id="add"
+                                    href="/users/cart/quantityadd/{{this.product._id}}">+</a>
+                            </div>
+                            <div class="col">Rs : {{this.product.price}} <span class="close"><a
+                                        href="/users/cart/delete/{{this.product._id}}">&#10005;</a></span></div>
+                        </div>
+                    </div>
+                    {{/each}}
+                    {{else}}
+                    <H3>Your cart is empty.</H3><a href="/users/home" class="btn btn-success">Add Product</a>
+                    {{/if}}
+                    <div class="back-to-shop"><a href="/users/home">&leftarrow;</a><span class="text-muted ">Back to
+                            shop</span>
+                    </div>
+                </div>
+                <div class="col-md-4 summary">
+                    <div>
+                        <h5><b>Summary</b></h5>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col" style="padding-left:0;">ITEMS {{count}}</div>
+                        <div id="totpriceLink" class="col text-right">Rs: {{data.totalPrice}}</div>
+                    </div>
+                    <form>
+                        <p>SHIPPING</p>
+                        <select>
+                            <option class="text-muted">Standard-Delivery-Rs:40</option>
+                            {{!-- <option class="text-muted">Speed-Delivery- Rs:50</option> --}}
+                        </select>
+
+                    </form>
+                    <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
+                        <div class="col">TOTAL PRICE</div>
+                        <div id="totlink" class="col text-right">Rs: {{total}}</div>
+                    </div>
+
+                    <a href="/users/checkout" class="btn">CHECKOUT</a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="row m-0">
+        {{> userfooter}}
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#minus').click(function (e) {
+            e.preventDefault();
+            var productId = $(this).attr('href').split('/').pop();
+
+            $.ajax({
+                type: 'GET',
+                url: '/users/cart/quantityminus/' + productId,
+                success: function (response) {
+                    console.log(response)
+                    $('#quantityLink').text(response.quantity);
+                    $('#totpriceLink').text('Rs: ' + response.totalPrice);
+                    $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#add').click(function (e) {
+            e.preventDefault();
+            var productId = $(this).attr('href').split('/').pop();
+
+            $.ajax({
+                type: 'GET',
+                url: '/users/cart/quantityadd/' + productId,
+                success: function (response) {
+                    console.log(response)
+                    $('#quantityLink').text(response.quantity + 2);
+                    $('#totpriceLink').text('Rs: ' + response.totalPrice);
+                    $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,43 @@
+{{> adminheader}}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light"></span>EDIT USERS</h4>
+        <div class="card">
+            <h5 class="card-header">Details of users</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Phoneno</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        {{#each data}}
+                        <tr>
+                            <td>
+                                <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                    <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top"
+                                        class="avatar avatar-xs pull-up" title="{{data.name}}">
+                                        <img src="../assets/img/avatars/5.png" alt="Avatar"
+                                            class="rounded-circle me-2" />{{this.username}}
+                                    </li>
+
+                                </ul>
+                            </td>
+
+                            <td>{{this.email}}</td>
+
+                            <td><span class="badge bg-label-primary me-1">{{this.phoneno}}</span></td>
+                            <td> <a href="/admin/edituser/{{this._id}}" class="btn btn-success">Edit</a></td>
+
+                        </tr>
+                        {{/each}}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{> adminfooter}}

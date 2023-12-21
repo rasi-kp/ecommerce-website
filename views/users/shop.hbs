@@ -1,0 +1,74 @@
+{{> userheader}}
+
+    <!-- fashion section start -->
+    <div class="fashion_section mt-3 "id="search-results">
+        <div id="main_slider" class="carousel slide" data-ride="carousel">
+            <div class="container-fluid"id="search-results">
+                <h1 class="fashion_taital " style="color: white;">ALL PRODUCTS</h1>
+                <div class="fashion_section_1 mt-3" id="search-results">
+                    <div class="row">
+{{!-- <div id="search-results"> --}}
+                        {{#each categorizedProducts}}
+                        <div class="col-lg-4 col-sm-6 " >
+                            <div class="box_main ">
+                                <h4 class="shirt_text">{{this.name}}</h4>
+                                <p class="price_text">Price <span style="color: #262626;">Rs {{this.price}}</span></p>
+                                <div class="tshirt_imgshop"><img src="products-images/{{this.image}}"></div>
+                                <div class="btn_main">
+                                    <div class="buy_bt"><a href="/users/cart/{{this._id}}">Add to Cart</a></div>
+                                    <div class="seemore_bt"><a href="/users/moredetails/{{this._id}}">See More</a></div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/each}}
+{{!-- </div> --}}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <nav class="woocommerce-pagination wd-pagination">
+    <ul class="pagination justify-content-center"> <!-- Adding Bootstrap pagination class and center alignment -->
+        <li class="page-item disabled">
+            <span aria-current="page" class="page-link">1</span>
+        </li>
+        <li class="page-item"><a class="page-link" href="/users/shop2">2</a></li>
+        <li class="page-item"><a class="page-link" href="/users/shop3">3</a></li>
+        <li class="page-item"><a class="page-link" href="/users/shop4">4</a></li>
+        <li class="page-item disabled">
+            <span class="page-link dots">…</span>
+        </li>
+        <li class="page-item"><a class="page-link" href="">7</a></li>
+        <li class="page-item"><a class="page-link" href="">8</a></li>
+        <li class="page-item">
+            <a class="page-link" href="/users/shop/2" aria-label="Next">
+                <span aria-hidden="true">→</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+</div>
+ {{> userfooter}}
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#search').on('input', function () {
+      const query = $(this).val().trim();
+
+      if (query.length > 0) {
+        $.get(`/users/products/search?query=${query}`, function (data) {
+          if (data.length > 0) {
+            $('#search-results').html(data);
+          } else {
+            $('#search-results').html('<p>No results found</p>');
+          }
+        });
+      } else {
+        // Handle empty query, e.g., reload the page
+        location.reload(); // This will reload the current page
+      }
+    });
+  });
+</script>

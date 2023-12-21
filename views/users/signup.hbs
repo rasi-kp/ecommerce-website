@@ -1,0 +1,104 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>Signup</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://kit.fontawesome.com/411bfb0f07.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <section class="vh-100" style="background-color: #f7c23ae2;">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-xl-10">
+                    <div class="card" style="border-radius: 1rem;">
+                        <div class="row g-0 d-flex justify-content-center align-items-center h-100">
+                            {{!-- <div class="col-md-6 col-lg-5 d-none d-md-block">
+                                <img src="/images/signup.jpg" alt="login form" class="img-fluid"
+                                    style="border-radius: 1rem 0 0 1rem;" />
+                            </div> --}}
+                            <div class="col-md-7 col-lg-8 d-flex align-items-center">
+                                <div class="card-body p-4 p-lg-5 text-black">
+
+                                    <form action='/users/user_registration' method="post">
+                                        <div class="d-flex align-items-center mb-3 pb-1">
+
+                                            <span class="h2 fw-bold mb-0"><img src="/images/lr.png" class="mt-0 mb-0"
+                                                    style="height: 55px; width: 55px; margin-right: 10px;">Ras
+                                                Shoping</span>
+                                        </div>
+
+                                        <h4 class="fw-normal mb-1 pb-3" style="letter-spacing: 1px;">Sign Up to start
+                                            new account</h5>
+
+                                            <div class=" mb-2">
+                                                <label>Username :</label>
+                                                <input type="name" name="username" placeholder="Username" required
+                                                    class="form-control form-control-lg" />
+                                            </div>
+                                            <div class=" mb-2">
+                                                <label>Email :</label>
+                                                <input type="email" name="email" id="typeEmailX" placeholder="Email"
+                                                    required class="form-control form-control-lg" />
+                                            </div>
+                                            <div class=" mb-2">
+                                                <label>Name :</label>
+                                                <input type="name" name="name" id="typeEmailX" placeholder="Name"
+                                                    required class="form-control form-control-lg" />
+                                            </div>
+                                            <div class=" mb-2">
+                                                <label>Phone no:</label>
+                                                <input type="number" name="number" id="typeEmailX" placeholder="9605942261"
+                                                    required class="form-control form-control-lg" />
+                                            </div>
+                                            <div class=" mb-2">
+                                                <label>Gender :</label>
+                                                <input type="radio" name="gender" value="male" required>
+                                                <label>Male</label>
+                                                <input type="radio" name="gender" value="female">
+                                                <label>Female</label>
+                                            </div>
+                                            <div class="form-outline form-white mb-1">
+                                                <label>Address :</label>
+                                                <input type="textfield" name="address" placeholder="Address" required
+                                                    class="form-control form-control-lg" />
+
+                                            </div>
+                                            <div class="form-outline form-white mb-3">
+                                                <label>Password :</label>
+                                                <input type="password" name="password" id="typePasswordX"
+                                                    placeholder="Password" required
+                                                    class="form-control form-control-lg" />
+
+                                            </div>
+                                            <h5 class=" mb-3" id="errorMessage" style="color: red;">
+                                                {{errorMessage}}
+                                            </h5>
+
+                                            <button class="btn btn-dark btn-lg btn-block mb-2" type="submit">Sign
+                                                Up</button>
+
+
+                                            <div>
+                                                <p class="mb-0">Already have an account? <a href="/users/login" class=" fw-bold">
+                                                        Login</a>
+                                                </p>
+                                    </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+</body>
+
+</html>

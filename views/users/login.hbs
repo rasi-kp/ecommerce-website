@@ -1,0 +1,89 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://kit.fontawesome.com/411bfb0f07.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <section class="vh-100" style="background-color: #f7c23ae2;">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center">
+                <div class="col col-xl-10">
+                    <div class="card" style="border-radius: 1.5rem;">
+                        <div class="row g-0">
+                            <div class="col-md-6 col-lg-5 d-none d-md-block">
+                                <img src="/images/login.jpg" alt="login form" class="img-fluid"
+                                    style="border-radius: 1rem 0 0 1rem;" />
+                            </div>
+                            <div class="col-md-6 col-lg-7 d-flex align-items-center">
+                                <div class="card-body p-4 pr-lg-5 text-black">
+
+                                    <form action="/users/user_signin" method="post">
+
+                                        <div class="d-flex align-items-center">
+
+                                            <span class="h2 fw-bold mb-0"><img src="/images/lr.png" class="mt-0 mb-2"
+                                                    style="height: 55px; width: 55px; margin-right: 10px;">Ras
+                                                Shoping</span>
+                                        </div>
+
+                                        <h4 class="fw-normal mb-3 pb-1" style="letter-spacing: 1px;">Sign into your
+                                            account</h5>
+
+                                            <div class="form-outline mb-4">
+                                                <label class="form-label" for="form2Example17">Username :</label>
+                                                <input type="name" id="form2Example17" placeholder="Username "
+                                                    name="username" class="form-control form-control-lg" required />
+
+                                            </div>
+
+                                            <div class="form-outline mb-3">
+                                                <label class="form-label" for="form2Example27">Password :</label>
+                                                <input type="password" id="form2Example27" placeholder="Password"
+                                                    name="password" class="form-control form-control-lg" required />
+
+                                            </div>
+
+                                            <div class="pt-1 mb-3">
+                                                <button class="btn btn-dark btn-lg btn-block"
+                                                    type="submit">Login</button>
+                                            </div>
+                                            <div class="pt-1 mb-3">
+                                                <a href="/auth/google" class="btn btn-lg btn-block border border-dark">
+                                                    <img src="../images/google.png" alt="Google Login"
+                                                        class="google-logo mr-2" style="height: 40px;"><span class="">Login with Google</span>
+
+                                                </a>
+                                            </div>
+
+                                            <h5 class=" mb-3" id="errorMessage" style="color: red;">
+                                                {{errorMessage}}
+                                            </h5>
+
+                                            <a class="small text-muted" href="#!">Forgot password?</a>
+                                            <p class="mb-5 pb-lg-2" style="color: #393f81;">Don't have an account? <a
+                                                    href="/users/user_registration" style="color: rgb(7, 204, 142);"
+                                                    class="strong bold">Register here</a></p>
+
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

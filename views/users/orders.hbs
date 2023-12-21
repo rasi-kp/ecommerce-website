@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel='stylesheet' href='/stylesheets/cart.css' />
+</head>
+
+<body>
+
+    <div class="card">
+        <div class="row">
+            <div class="col-md-12 cart">
+                <div class="title">
+                    <div class="row">
+                        <div class="col">
+                            <h4><b>Your Orders</b></h4>
+                        </div>
+                    </div>
+                </div>
+                {{#if data}}
+                {{#each data}}
+                <div class="col border-top border-bottom">
+                    <div class="col main align-items-center mb-3 mt-2">
+                        
+                        <div class="row mb-2 mt-1 bg-secondary text-white">
+                            <div class="col-7">ORDER ID: {{orderID}}</div>
+                            {{!-- <div class="col text-muted"></div>
+                            <div class="col text-muted"></div> --}}
+                            <div class="col text-muted"></div>
+                            {{!-- <div class="col text-muted"></div> --}}
+                            <div class="col-4">Order Status: {{status}}</div>
+                            {{!-- <div class="col"><button class="btn btn-primary">Cancel</button></div> --}}
+                        </div>
+                        {{#each items}}
+                        <div class="row">
+                            
+                            <div class="col"><img class="img-fluid" style="height: 50px;width:40px;" src="../products-images/{{this.product.image}}"></div>
+                            <div class="col">{{this.product.name}}</div>
+                            <div class="col text-muted">qty:{{this.quantity}} </div>
+                            <div class="col text-muted">Size: {{this.size}}</div>
+                            <div class="col text-muted"></div>
+                            <div class="col text-muted">Unit price:{{this.product.price}}
+                                <span class="close"><a href="">&#10005;</a></span>
+                            </div>
+                            
+                        </div>
+                       {{/each}}  
+                       <div class="row mb-2 mt-1 ">
+                            <div class="col-8 text-muted">{{orderdate}}</div>
+                           
+                            <div class="col-4">Total Price: {{totalamount}}</div>
+                            {{!-- <div class="col"><button class="btn btn-primary">Cancel</button></div> --}}
+                        </div>                    
+                    </div>
+                </div>
+                {{/each}}
+                {{else}}
+                <H3>No Orders.</H3><a href="/users/home" class="btn btn-success">Add Product</a>
+                {{/if}}
+                <div class="back-to-shop"><a href="/users/home">&leftarrow;</a><span class="text-muted ">Back to
+                        shop</span></div>
+            </div>
+            <div class="col-md-12 summary">
+                <a href="/users/home" class="btn btn-success">BACK TO SHOP</a>
+                {{!-- <hr> --}}
+            </div>
+        </div>
+
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

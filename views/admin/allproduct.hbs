@@ -1,0 +1,65 @@
+{{> adminheader}}
+
+<div class="content-wrapper">
+
+  <div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light"></span>ALL PRODUCTS</h4>
+
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+      <h5 class="card-header">Details of Products</h5>
+      <div class="table-responsive text-nowrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>name of Product</th>
+              <th>Description</th>
+              <th>Quality</th>
+              <th>Pricy</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            {{#each data}}
+            <tr>
+              <td>
+                <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                  <li>
+                    <img src="products-images/{{this.image}}" style="height:60px;,width:60px;" />
+                  </li>
+
+                </ul>
+              </td>
+              <td>
+                <span class="fw-medium">{{this.name}}</span>
+              </td>
+              <td>{{this.description}}</td>
+
+              <td><span class="badge bg-label-primary me-1">{{this.qty}}</span></td>
+              <td>{{this.price}}</td>
+              <td>{{this.category}}</td>
+              <td>
+                <div class="dropdown">
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                    <i class="bx bx-dots-vertical-rounded"></i>
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/admin/edit_product/{{this._id}}"><i
+                        class="bx bx-edit-alt me-1"></i>
+                      Edit</a>
+                    <a class="dropdown-item" href="/admin/products/deleteproduct/{{this._id}}"><i
+                        class="bx bx-trash me-1"></i>
+                      Delete</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {{/each}}
+
+          </tbody>
+        </table>
+      </div>
+      </div>
+    {{> adminfooter}}

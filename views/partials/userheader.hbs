@@ -1,0 +1,122 @@
+<div class="banner_bg_main">
+   <!-- header top section start -->
+   <div class="container">
+      <div class="header_section_top">
+         <div class="row">
+            <div class="col-sm-12">
+               <div class="custom_menu">
+                  <ul>
+                     <li><a href="#">Hi Rasi </li>
+                     <li><a href="#">Best Sellers</a></li>
+                     <li><a href="#">Gift Ideas</a></li>
+                     <li><a href="#">New Releases</a></li>
+                     <li><a href="#">Today's Deals</a></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- header top section start -->
+   <!-- logo section start -->
+
+   <div class="container d-flex justify-content-center">
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="logo">
+               <a href="/" class="d-flex align-items-center">
+                  <img src="images/lr.png" class="mt-0" style="height: 35px; width: 35px; margin-right: 10px;">
+                  <h3 class="mt-2">Ras Shopping</h3>
+               </a>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- logo section end -->
+   <!-- header section start -->
+   <div class="header_section">
+      <div class="container">
+         <div class="containt_main">
+            <div id="mySidenav" class="sidenav">
+               <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+               <a href="index.html">Home</a>
+               <a href="/users/category/fasion">Fashion</a>
+               <a href="/users/category/electronics">Electronic</a>
+               <a href="/users/category/jwellery">Jewellery</a>
+            </div>
+            <span class="toggle_icon" onclick="openNav()"><img src="images/toggle-icon.png"></span>
+            <div class="dropdown">
+               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Category
+               </button>
+               <div id="categoryDropdown" class="dropdown-menu cat" aria-labelledby="dropdownMenuButton">
+                  <option  class="dropdown-item cat" data-value="fasion">Fasion</option>
+                  <option  class="dropdown-item cat" data-value="electronics">Electronics</option>
+                  <option class="dropdown-item cat" data-value="jwellery">Jwellery items</option>
+                  <option class="dropdown-item cat" data-value="others">Others</option>
+               </div>
+            </div>
+            <div class="main">
+               <!-- Another variation with a button -->
+               <div class="input-group">
+                  <input type="text" id="search" class="form-control" placeholder="Search the items">
+                  <div class="input-group-append">
+                     <a href="/users/shop" class="btn btn-secondary" type="button"
+                        style="background-color: #f26522; border-color:#f26522 ">
+                        <i class="fa fa-search"></i>
+                     </a>
+                  </div>
+               </div>
+            </div>
+
+            <div class="header_box">
+               {{#if username}}
+               <div class="lang_box ">
+                  <a href="users/login.hbs" title="Language" class="nav-link" data-toggle="dropdown">
+                     <i class="fa fa-user mr-2" aria-hidden="true"></i> {{username}} <i class="fa fa-angle-down ml-2"
+                        aria-hidden="true"></i>
+                     <div class="dropdown-menu ">
+                        <a href="/users/profile" class="dropdown-item">
+                           <i class="fa-solid fa-user mr-2"></i>
+                           Profile
+                        </a>
+                        <a href="/users/orders" class="dropdown-item">
+                           <i class="fa-solid fa-truck mr-2"></i>
+                           Orders
+                        </a>
+                        <a href="/users/changepassword" class="dropdown-item">
+                           <i class="fa-solid fa-key mr-2"></i>
+                           change password
+                        </a>
+                     </div>
+               </div>
+               {{else}}
+               <div class="lang_box ">
+                  <a href="/users/login" class="nav-link">
+                     <i class="fa fa-user mr-2"></i> Login
+                     <div class="dropdown-menu ">
+
+                        <a></a>
+
+                     </div>
+               </div>
+               {{/if}}
+               <div class="login_menu">
+                  <ul>
+                     <li><a href="/users/cart">
+
+                           <i class="fa fa-shopping-cart"></i><span
+                              class="position-absolute badge rounded-circle bg-primary">{{count}}</span>
+                           <span class="padding_10 mr-4">Cart</span></a>
+                     </li>
+
+                     <li><a href="/users/logout"><i class="fa-solid fa-right-from-bracket "></i></a>
+
+
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>

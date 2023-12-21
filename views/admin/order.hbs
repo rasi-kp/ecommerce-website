@@ -1,0 +1,69 @@
+{{> adminheader}}
+<div class="content-wrapper">
+  <!-- Content -->
+
+  <div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light"></span>ALL ORDERS</h4>
+
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+      <h5 class="card-header">Details of Orders</h5>
+      <div class="table-responsive text-nowrap">
+        <table class="table">
+          <thead>
+            <tr>
+
+              <th>Username</th>
+              <th>Name</th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+              <th>City</th>
+              <th>Pincode</th>
+              <th>date</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            {{#each orders}}
+            <tr>
+              <td>
+                <span class="fw-medium">{{username}}</span>
+              </td>
+              <td>
+                <span class="fw-medium">{{name}}</span>
+              </td>
+              <td><a href="/admin/ordersproduct/{{_id}}">Product Details</a></td>
+
+              <td>{{total}}</td>
+              <td>{{totalamount}}</td>
+              <td>{{status}}</td>
+              <td>
+                <div class="dropdown">
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                    <i class="bx bx-dots-vertical-rounded"></i>
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/admin/orders/confirm/{{_id}}"><i class="bx bx-edit-alt me-1"></i>
+                      Order Confirmed</a>
+                    <a class="dropdown-item" href="/admin/orders/shipped/{{_id}}"><i class='fas fa-shipping-fast me-1'></i>
+                      Shipped</a>
+                    <a class="dropdown-item" href="/admin/orders/delivered/{{_id}}"><i class="fa-solid fa-truck me-1"></i>
+                      Delivered</a>
+                      <a class="dropdown-item" href="/admin/orders/delivered/{{_id}}"><i class="fa fa-trash me-1"></i>
+                      Cancelled</a>
+                  </div>
+                </div>
+              </td>
+              <td>{{city}}</td>
+              <td>{{pincode}}</td>
+              <td>{{orderdate}}</td>
+            </tr>
+            {{/each}}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {{> adminfooter}}

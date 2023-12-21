@@ -1,0 +1,103 @@
+{{> header}}
+<div class="container bootstrap snippets bootdey">
+    <h1 class="text-primary">Edit Profile</h1>
+      <hr>
+	<div class="row">
+      <!-- left column -->
+      <div class="col-md-3">
+        <div class="text-center">
+          <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="avatar img-circle img-thumbnail" alt="avatar">
+          <h6>Upload photo...</h6>
+          
+          <input type="file" class="form-control">
+        </div>
+      </div>
+      
+      <!-- edit form column -->
+      <div class="col-md-9 personal-info">
+        {{!-- <div class="alert alert-info alert-dismissable">
+          <a class="panel-close close" data-dismiss="alert">×</a> 
+           <strong>Fill</strong> the details correctly.
+        </div> --}}
+        <div class="alert alert-info alert-dismissable">
+          <a class="panel-close close" data-dismiss="alert"></a> 
+           <strong>{{message}}</strong>
+        </div>
+        <h3>Personal info</h3>
+        
+        <form action="/users/edit/{{data._id}}" method="post" class="form-horizontal" role="form">
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Username:</label>
+            <div class="col-lg-8">
+              <input class="form-control"name="username" type="text" value="{{data.username}}" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Email:</label>
+            <div class="col-lg-8">
+              <input class="form-control" name="email" type="email" value="{{data.email}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Name:</label>
+            <div class="col-lg-8">
+              <input class="form-control" name="name" type="text" value="{{data.name}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Phone no:</label>
+            <div class="col-lg-8">
+              <input class="form-control" name="phoneno" type="Number" value="{{data.phoneno}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Gender:</label>
+            <div class="col-lg-8">
+              <input type="radio" name="gender" value="male" {{#if flag}}checked{{/if}}>
+                    <label>Male</label>
+                    <input type="radio" name="gender" value="female" {{#unless flag}}checked{{/unless}} >
+                    <label>Female</label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="col-lg-3 control-label">Address:</label>
+            <div class="col-lg-8">
+               <input type="textfield" value="{{data.address}}" class="form-control mb-4" name="address"
+                        placeholder="Address" required>
+             
+            </div>
+            <div class="d-flex justify-content-center">
+                        <a href="/users/home" class="btn btn-secondary mr-4">Back</a>
+                        <button type="submit" class="btn btn-secondary">Edit profile</button>
+                    </div>
+          </div>
+          
+        </form>
+      </div>
+  </div>
+</div>
+<hr>
+
+
+<!-- footer section start -->
+<div class="footer_section layout_padding">
+   <div class="container">
+      
+      <div class="footer_logo"><a href="index.html"><img src="images/footer-logo.png"></a></div>
+      <div class="input_bt">
+         <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email">
+         <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
+      </div>
+      <div class="footer_menu">
+         <ul>
+            <li><a href="#">Best Sellers</a></li>
+            <li><a href="#">Gift Ideas</a></li>
+            <li><a href="#">New Releases</a></li>
+            <li><a href="#">Today's Deals</a></li>
+            <li><a href="#">Customer Service</a></li>
+         </ul>
+      </div>
+   </div>
+</div>
+{{> userfooter}}

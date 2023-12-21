@@ -1,0 +1,41 @@
+{{> adminheader}}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light"></span>EDIT PRODUCT</h4>
+        <div class="card">
+            <h5 class="card-header">Details of Products</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Image </th>
+                            <th>Name</th>
+                            <th>price</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        {{#each data}}
+                        <tr>
+                            <td>
+                                <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                    <li>
+                                        <img src="../products-images/{{this.image}}" style="height:60px;,width:60px;" />
+                                    </li>
+
+                                </ul>
+                            </td>
+
+                            <td>{{this.name}}</td>
+
+                            <td><span class="badge bg-label-primary me-1">{{this.price}}</span></td>
+                            <td> <a href="/admin/edit_product/{{this._id}}" class="btn btn-success">Edit</a></td>
+
+                        </tr>
+                        {{/each}}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{> adminfooter}}

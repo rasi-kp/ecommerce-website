@@ -1,0 +1,105 @@
+{{> adminheader}}
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"> Add User</h4>
+
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="card mb-4">
+          <h5 class="card-header">Add user image </h5>
+          <h2>{{errorMessage}}</h2>
+          <!-- Account -->
+          <div class="card-body">
+            <div class="d-flex align-items-start align-items-sm-center gap-4">
+              <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="user-avatar" class="d-block rounded"
+                height="100" width="100" id="uploadedAvatar" />
+              <div class="button-wrapper">
+                <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
+                  <span class="d-none d-sm-block">Upload new image</span>
+                  <i class="bx bx-upload d-block d-sm-none"></i>
+                  <input type="file" id="upload" class="account-file-input" hidden accept="image/png, image/jpeg" />
+                </label>
+                <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
+                  <i class="bx bx-reset d-block d-sm-none"></i>
+                  <span class="d-none d-sm-block">Reset</span>
+                </button>
+
+                <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
+              </div>
+            </div>
+          </div>
+          <hr class="my-0" />
+          <div class="card-body">
+            <form action="/admin/adduser" method="POST">
+              <div class="row">
+
+                <div class="mb-3 col-md-6">
+                  <label for="firstName" class="form-label">Username :</label>
+                  <input class="form-control" placeholder="Rasi#123" type="text" name="username" autofocus required />
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="lastName" class="form-label">Name :</label>
+                  <input class="form-control" type="text" name="name" placeholder="name" required />
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="lastName" class="form-label">Email :</label>
+                  <input class="form-control" type="email" name="email" placeholder="abcd@gmail.com" id="lastName"
+                    required />
+                </div>
+
+                <div class="mb-3 col-md-6">
+                  <label class="form-label" for="phoneNumber">Phone Number :</label>
+                  <div class="input-group input-group-merge">
+                    <span class="input-group-text">(+91 )</span>
+                    <input type="text" name="phoneno" class="form-control" maxlength="10" placeholder="9605942261"
+                      required />
+                  </div>
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="address" class="form-label">Address</label>
+                  <input type="text" class="form-control" name="address" placeholder="Address" required />
+                </div>
+
+                <div class="mb-3 col-md-6">
+                  <label class="form-label" for="country">Gender</label>
+                  <select name="gender" class="select2 form-select" required>
+                    <option value="">Select</option>
+                    <option name="gender" value="male">Male</option>
+                    <option name="gender" value="female">Female</option>
+
+                  </select>
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="state" class="form-label">Password</label>
+                  <input class="form-control" type="password" name="password" placeholder="********" required />
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="state" class="form-label">Confirm Paswword</label>
+                  <input class="form-control" type="password" name="confirmpassword" placeholder="********" required />
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label class="form-label">Role</label>
+                  <select class="select2 form-select" name="role">
+                    <option value="">Select</option>
+                    <option value="user" selected>User</option>
+                    <option value="admin">admin</option>
+                    <option value="seller">Seller</option>
+                    <option value="developer">Developer</option>
+
+                  </select>
+                </div>
+              </div>
+              <div class="mt-2">
+                <button type="submit" class="btn btn-primary me-2">Add User</button>
+                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+              </div>
+
+            </form>
+          </div>
+          <!-- /Account -->
+        </div>
+      </div>
+    </div>
+  </div>
+  {{> adminfooter}}
