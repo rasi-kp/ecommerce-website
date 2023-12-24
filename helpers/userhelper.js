@@ -3,6 +3,7 @@ const product = require('../helpers/producthelper')
 const deleteuser = require('../model/deleteuser')
 const cart = require('../model/cartschema')
 const order = require('../model/orderschema')
+const subscription = require('../model/subscribeschema')
 const Razorpay = require('razorpay')
 const wishlist=require('../model/wishlistschema')
 
@@ -43,7 +44,7 @@ module.exports = {
         return result;
     },
     findexistuser: async (data) => {
-        var result = await user.findOne({ username: data })
+        var result = await user.findOne({ username: data }).lean()
         return result;
     },
     findedituserbyid: async (data) => {
@@ -207,6 +208,9 @@ module.exports = {
         await user.findOneAndUpdate({username:user1},{
             $set:{password: data}
         })
+    },
+    subscribe:async(data)=>{
+        await subscription.insertMany(data)
     }
 
 };

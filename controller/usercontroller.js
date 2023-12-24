@@ -11,8 +11,9 @@ module.exports = {
     return data;
   },
   currentuser: async (req, res) => {
-    const user = req.session.user;
-    return user
+    const currentuser = req.session.user;
+    const user1 = await user.findexistuser(currentuser.username);
+    return user1.name
   },
   edituser: async (req, res) => {
     const existuser = req
@@ -61,7 +62,6 @@ module.exports = {
     }
     else {
       const passwordmatch = await bcrypt.compare(req.body.password, usercheck.password)
-      console.log(passwordmatch);
       if (passwordmatch) {
         const currrentuser = usercheck.name;
         req.session.loggedIn = true;
@@ -229,6 +229,13 @@ module.exports = {
     }else{
       res.render('users/changepassword',{message:"Password is Not Match"})
     }
+  },
+  subscribe:async(req,res)=>{
+    let email ={
+      email: req.body.email,
+    } 
+    await user.subscribe(email)
+    res.json(email)
   }
 
 }

@@ -2,7 +2,8 @@ const mongoose=require('mongoose')
 
 const signup = new mongoose.Schema({
     role: String,
-    status: String,
+    login: String,
+    image: String,
     name: {
         type: String,
         required: true
@@ -22,7 +23,6 @@ const signup = new mongoose.Schema({
     address: String,
     password: {
         type: String,
-        required: true
     }
 })
 const signupdata = new mongoose.model("users", signup)
