@@ -5,8 +5,8 @@ const user = require('../helpers/userhelper')
 const isAuth=require('../middleware/isAuth')
 const home=require('../homepage/home')
 const {
-  signUpUser,signInUser,edituser,alldata,edituserpost,moredata,orders,payment,paymentverify,
-  addcart,cartitems,deletecart,countitems,quantityadd,quantityminus,count,placeorder,password
+  signUpUser,signInUser,edituser,alldata,edituserpost,moredata,orders,payment,paymentverify,currentuser,
+  addcart,cartitems,deletecart,countitems,quantityadd,quantityminus,count,placeorder,password,subscribe,
 } = require('../controller/usercontroller')
 
 /* GET users listing. */
@@ -15,19 +15,20 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 router.get('/home',isAuth,async(req,res)=>{
-  const data=await alldata();
-  const loggedInUser=await req.session.user;
+  // const data=await alldata();
+  const loggedInUser=await currentuser(req);
+  console.log(loggedInUser);
   const count=await countitems(req);
   const categorizedProducts=await home.mainpage()
-  res.render('users/index',{categorizedProducts,username:loggedInUser.username,count})
+  res.render('users/index',{categorizedProducts,username:loggedInUser,count})
 })
 router.get('/shop',async(req,res)=>{
   console.log(req.session.loggedIn);
   if(req.session.loggedIn){
-    const loggedInUser=await req.session.user;
+    const loggedInUser=await currentuser(req);
     const count=await countitems(req);
     const categorizedProducts=await home.allproductslimit()
-    res.render('users/shop',{categorizedProducts,username:loggedInUser.username,count})
+    res.render('users/shop',{categorizedProducts,username:loggedInUser,count})
   }
   const categorizedProducts=await home.allproductslimit()
   res.render('users/shop',{categorizedProducts})
@@ -46,12 +47,26 @@ router.get('/products/search', async (req, res) => {
   var categorizedProducts=await home.search(query);
   res.render('users/search',{categorizedProducts})
 })
-// router.get('/products/category', async (req, res) => {
-//   const {selectedCategory} = req.query;
-//   console.log(selectedCategory);
-//   // var categorizedProducts=await home.category(query);
-//   // res.render('users/search',{categorizedProducts})
-// })
+router.get('/products-cat-fasion', async (req, res) => {
+  var data='fasion';
+  var categorizedProducts=await home.category(data);
+  res.render('users/shop',{categorizedProducts})
+})
+router.get('/products-cat-electronics', async (req, res) => {
+  var data='electronics';
+  var categorizedProducts=await home.category(data);
+  res.render('users/shop',{categorizedProducts})
+})
+router.get('/products-cat-jwellery', async (req, res) => {
+  var data='jwellery';
+  var categorizedProducts=await home.category(data);
+  res.render('users/shop',{categorizedProducts})
+})
+router.get('/products-cat-other', async (req, res) => {
+  var data='other';
+  var categorizedProducts=await home.category(data);
+  res.render('users/shop',{categorizedProducts})
+})
 router.get('/login',(req,res)=>{
   res.render('users/login') 
 })
@@ -140,6 +155,9 @@ router.post('/password',isAuth,async(req,res)=>{
 })
 router.get('/payment',isAuth,async(req,res)=>{
   await payment(req,res)
+})
+router.post('/subscribe',async(req,res)=>{
+  await subscribe(req,res)
 })
 
 module.exports = router;

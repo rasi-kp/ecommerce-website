@@ -46,6 +46,29 @@
 </div>
 <!-- banner section end -->
 </div>
+{{#if search}}
+<div class="fashion_section_1 mt-3" id="search-results">
+   <div class="row">
+      {{!-- <div id="search-results"> --}}
+         {{#each categorizedProducts}}
+         <div class="col-lg-4 col-sm-6 ">
+            <div class="box_main ">
+               <h4 class="shirt_text">{{this.name}}</h4>
+               <p class="price_text">Price <span style="color: #262626;">Rs {{this.price}}</span></p>
+               <div class="tshirt_imgshop"><img src="products-images/{{this.image}}"></div>
+               <div class="btn_main">
+                  <div class="buy_bt"><a href="/users/cart/{{this._id}}">Add to Cart</a></div>
+                  <div class="seemore_bt"><a href="/users/moredetails/{{this._id}}">See More</a></div>
+               </div>
+            </div>
+         </div>
+         {{/each}}
+         {{!--
+      </div> --}}
+   </div>
+</div>
+
+{{else}}
 
 <!-- fashion section start -->
 <div class="fashion_section">
@@ -210,16 +233,15 @@
          <i class="fa fa-angle-right"></i>
       </a>
       <div class="loader_main">
-         <div class="loader"><li><a href="/users/shop" class="mt-5">Click </a></li>
-         <li><a href="/users/shop" class=" mt-3">More </a></li>
-         <li><a href="/users/shop" class=" mt-3">Click</li>
+         <div class="loader">
+            <li><a href="/users/shop" class="mt-5">Click </a></li>
+            <li><a href="/users/shop" class=" mt-3">More </a></li>
+            <li><a href="/users/shop" class=" mt-3">Click</li>
          </div>
       </div> </a>
    </div>
-   {{!-- <div class="text-center mt-3">
-      <a href="/users/shop" class="btn btn-secondary">More</a>
-   </div> --}}
 </div>
+{{/if}}
 <!-- jewellery  section end -->
 
 {{> userfooter}}
@@ -269,32 +291,36 @@
                else {
                   location.href = "/users/login";
                }
-
             }
          });
       });
    });
 </script>
-{{!--
+
 <script>
    $(document).ready(function () {
-      let selectedCategory;
-      $('.cat').click(function (e) {
+      $('#subscribe').click(function (e) {
          e.preventDefault();
-
-         const selectedCategory = $(this).data('value');
-         console.log(`Selected Category: ${selectedCategory}`);
-      });
-      $.ajax({
-         url: `/users/products/category?selectedCategory=${selectedCategory}`, // Adjust the endpoint as needed
-         method: 'GET',
-         success: function (products) {
-            // Update the product container with the new products
-            $('#productContainer').html(products);
-         },
-         error: function (error) {
-            console.error(error);
+         var email = $('#email').val();
+         if (!email || !email.endsWith('@gmail.com')) {
+            alert('Please enter Valid Email !!!');
+            return;
          }
+         $.ajax({
+            url: '/users/subscribe',
+            method: 'POST',
+            data: { email: email },
+            success: function (response) {
+               console.log('Subscription successful:', response);
+               Swal.fire({
+                  icon: 'success',
+                  title: 'Subsribed!',
+                  text: 'successfully added Email',
+                  width: '300px',
+               });
+            },
+         });
       });
    });
-</script> --}}
+
+</script>

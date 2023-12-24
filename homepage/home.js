@@ -48,5 +48,9 @@ module.exports={
     search:async(search)=>{
       const data=await product.search(search)
       return data
+    },
+    category:async(data)=>{
+      const result=await product.category(data)
+      return result
     }
 }

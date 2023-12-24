@@ -50,4 +50,8 @@ module.exports = {
             }
         });
     },
+    category:async(data)=>{
+        const category=await Product.find({category:data}).lean()
+        return category
+    }
 }
