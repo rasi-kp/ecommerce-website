@@ -10,6 +10,10 @@ module.exports = {
     const data = await user.finduser()
     return data;
   },
+  searchuser: async (search) => {
+    const data = await user.searchuser(search)
+    return data;
+  },
   deleteuser: async (req, res) => {
     let proid = req.params.id;
     const result = await user.finduserid(proid)
@@ -182,9 +186,17 @@ module.exports = {
       qty: req.body.qty,
     }
     const result = await product.editproduct(datas, proid)
-
-
-
     res.redirect('/admin/products')
+  },
+  totalordercount:async(req,res)=>{
+    const result=await order.totalorderedcount()
+    const resultmonth=await order.monthordercount()
+    const TotalProductCount=await order.totalproductcount()
+    const monthamount=await order.monthorderamount()
+    const [totalQuantity, todayorder]=await order.todayorderdetails()
+    const ordercount= result[0].totalOrderedQuantity
+    const totalamount= result[0].totalamount
+    // console.log(resultmonth);
+    res.render('admin/admin',{ordercount,totalamount,monthamount,TotalProductCount,resultmonth,totalQuantity,todayorder});
   },
 }

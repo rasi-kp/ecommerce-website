@@ -6,10 +6,15 @@
       <!-- left column -->
       <div class="col-md-3">
         <div class="text-center">
-          <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="avatar img-circle img-thumbnail" alt="avatar">
-          <h6>Upload photo...</h6>
-          
+          {{#if data.image}}
+          <img src="{{data.image}}" class="avatar img-circle img-thumbnail" >
+          <h6>Upload new photo...</h6>
           <input type="file" class="form-control">
+          {{else}}
+          <img src="../images/profile.png" class="avatar img-circle img-thumbnail" >
+          <h6>Upload new photo...</h6>
+          <input type="file" class="form-control">
+          {{/if}}
         </div>
       </div>
       

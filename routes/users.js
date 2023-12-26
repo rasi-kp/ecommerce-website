@@ -5,8 +5,8 @@ const user = require('../helpers/userhelper')
 const isAuth=require('../middleware/isAuth')
 const home=require('../homepage/home')
 const {
-  signUpUser,signInUser,edituser,alldata,edituserpost,moredata,orders,payment,paymentverify,currentuser,
-  addcart,cartitems,deletecart,countitems,quantityadd,quantityminus,count,placeorder,password,subscribe,
+  signUpUser,signInUser,edituser,edituserpost,moredata,orders,payment,paymentverify,currentuser,
+  addcart,cartitems,deletecart,countitems,quantityadd,quantityminus,count,placeorder,password,subscribe, quantityupdate,
 } = require('../controller/usercontroller')
 
 /* GET users listing. */
@@ -96,9 +96,8 @@ router.get('/cart',isAuth,async(req,res)=>{
 })
 router.get('/cart/:id',isAuth,async(req,res)=>{
   console.log(req.params.id);
-  const data=await addcart(req,res)
+  const result=await addcart(req,res)
   const count=await countitems(req);
-  console.log(count);
   res.json(count)
 
   //  res.redirect('/users/home')
@@ -132,6 +131,11 @@ router.post('/verifypayment',isAuth,async(req,res)=>{
   await paymentverify(req,res)
 })
 router.get('/sucess',(req,res)=>{
+  res.render('users/sucess')
+})
+router.get('/check',async(req,res)=>{
+  const orderid='657bde6f62508bca74942307'
+  await quantityupdate(orderid)
   res.render('users/sucess')
 })
 
