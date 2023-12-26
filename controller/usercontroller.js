@@ -24,7 +24,7 @@ module.exports = {
     else {
       flag = false
     }
-    res.render('users/profile', { data: data, flag: flag, username: existuser.username })
+    res.render('users/profile', { data: data, flag: flag, username: existuser.name })
   },
   edituserpost: async (req, res) => {
     let proid = req.params.id;
@@ -104,13 +104,16 @@ module.exports = {
     if (cart) {
       if (productexist) {
         const result = await user.updatecart(userid._id, cartItem)
+        return result
       }
       else {
         const result = await user.pushitems(userid._id, cartItem)
+        return result
       }
     }
     else {
       const result = await user.insertcart(userid._id, proid, cartItem)
+      return result
     }
   },
 
@@ -203,8 +206,8 @@ module.exports = {
     hmac.update(orderId+'|'+paymentId);
     hmachex=hmac.digest('hex')
     if(hmachex==signature){
-      console.log(req.body.orderID);
       await order.placed(req.body.orderID)
+      await order.updatequantity(req.body.orderID)
       // await user.paymentstatus(req.body.orderID,paymentId,orderId,signature)
       res.json("sucess");
     }
@@ -212,6 +215,11 @@ module.exports = {
       res.json("failure");
     }
   },
+  quantityupdate:async(order1)=>{
+    const result=await order.updatequantity(order1)
+    console.log(result);
+  },
+
   orders: async (req, res) => {
     const currentuser = req.session.user
     const username = currentuser.username

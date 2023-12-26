@@ -43,6 +43,10 @@ module.exports = {
         var result = await user.find({}).lean();
         return result;
     },
+    searchuser: async (data) => {
+        var result = await user.find({name: new RegExp(`^${data}`, 'i') }).lean();
+        return result;
+    },
     findexistuser: async (data) => {
         var result = await user.findOne({ username: data }).lean()
         return result;
@@ -114,13 +118,19 @@ module.exports = {
     },
     insertcart: async (userid, proid, cartItem) => {
         var price = await product.finddata(proid)
-        var totprice = cartItem.quantity * price.price
-        datas = {
+        if(price.qty>0){
+            var totprice = cartItem.quantity * price.price
+            datas = {
             user: userid,
             items: [cartItem],
             totalPrice: totprice,
         }
         await cart.insertMany(datas)
+        }else{
+            console.log("Out of Stock")
+            return false
+        }
+        
     },
     quantityadd: async (userid, data) => {
         const productPrice = await product.finddata(data);
@@ -148,7 +158,8 @@ module.exports = {
     },
     pushitems: async (userid, data) => {
         var price = await product.finddata(data.product)
-        var totprice = data.quantity * price.price
+        if(price.qty>0){
+            var totprice = data.quantity * price.price
         const updatedCart = await cart.findOneAndUpdate(
             { user: userid },
             {
@@ -157,17 +168,26 @@ module.exports = {
             },
             { new: true }
         );
+        }else{
+            return false
+        }
     },
     updatecart: async (userid, data) => {
         const productPrice = await product.finddata(data.product);
-        const newTotalPrice = 1 * productPrice.price;
-        const updatedCart = await cart.findOneAndUpdate(
+        console.log("check   "+ productPrice.qty);
+        if(productPrice.qty>0){
+            const newTotalPrice = 1 * productPrice.price;
+            const updatedCart = await cart.findOneAndUpdate(
             { user: userid, 'items.product': data.product },
             {
                 $inc: { 'items.$.quantity': 1, totalPrice: newTotalPrice },
             },
             { new: true }
         );
+        }else{
+            return false
+        }
+        
     },
     getitemscart: async (data) => {
         const result = await cart.findOne({ user: data }).populate('items.product').lean();
