@@ -1,0 +1,80 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Invoice Example</title>
+    <link rel="stylesheet" href="stylesheets/invoice.css" />
+</head>
+
+<body>
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <img src="/images/lr.png" style="width: 100%; max-width: 88px" /> Ras Shopping
+                            </td>
+                           
+                        </tr>
+                        <tr>
+                            <td >
+                                Ras Shopping, LLC.<br />
+                                Kannur,Kerala<br />
+                                Pin: 670591<br>
+                                9605942261
+                            </td>
+                            <td>
+                                Invoice #:
+                                {{invoiceData.invoice_id}}<br />
+                                Created:
+                                {{invoiceData.creation_date}}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td>                   
+                            </td>
+                            <td>
+                                Ras Shopping LLC.<br />
+                                Rasi K P<br />
+                                rasshoping@gmail.com
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="heading">
+                <td>Payment Method</td>
+                <td># Transaction Id</td>
+            </tr>
+            <tr class="details">
+                <td>Online Payment</td>
+                <td>{{invoiceData.transaction_id}}</td>
+            </tr>
+            <tr class="heading">
+                <td>Item</td>
+                <td>Amount</td>
+            </tr>
+            {{#each invoiceItems}}
+            <tr class="item {{#if @last}} last {{/if}}">
+                <td>{{this.item}}</td>
+                <td>{{this.amount}}</td>
+            </tr>
+            {{/each}}
+            <tr class="total">
+                <td></td>
+                <td>Total: {{invoiceData.total_amount}}</td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session=require('express-session')
 var fileupload=require('express-fileupload')
-// const exphbs = require('express-handlebars');
 const {engine}=require('express-handlebars')
 
 
@@ -40,7 +39,7 @@ app.use('/users', express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'public')));
 app.use(fileupload())
 
-const oneDay = 1000 * 60 * 60 *.1;
+const oneDay = 1000 * 60 * 60 * 24;
 app.use(session({
     secret: process.env.SESSION_KEY,
     saveUninitialized:true,

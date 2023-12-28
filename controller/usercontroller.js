@@ -57,7 +57,8 @@ module.exports = {
 
   signInUser: async (req, res) => {
     const usercheck = await user.findexistuser(req.body.username)
-    if (usercheck == '') {
+    console.log(usercheck);
+    if (!usercheck) {
       res.render('users/login', { errorMessage: 'Invalied User ID' });
     }
     else {
@@ -142,7 +143,6 @@ module.exports = {
     const userid = await user.findexistuser(currentuser.username);
     const quantity = await user.quantity(userid._id, proid)
     const cart = await user.quantityadd(userid._id, proid)
-    console.log(cart);
     const response = {
       quantity: quantity,
       totalPrice: cart.totalPrice
@@ -162,8 +162,6 @@ module.exports = {
       };
       res.json(response)
     }
-    
-    // return quantity
   },
   placeorder: async (req, res) => {
     const currentuser = req.session.user
@@ -195,7 +193,6 @@ module.exports = {
     else{
       res.redirect('/users/home')
     }
-    
   },
   paymentverify: async(req,res) => {
     const paymentId = req.body['payment[razorpay_payment_id]'];

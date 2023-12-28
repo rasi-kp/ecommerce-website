@@ -1,124 +1,189 @@
 {{> adminheader}}
-<!-- / Menu -->
+
 <!-- Layout container -->
 <script>
     var orderCount = {{ ordercount }};
     var Resultmonth = [{{ resultmonth }}];
-    var Monthamount = [{{monthamount}}]
-    var totalproductcount={{TotalProductCount}}
+    var Monthamount = [{{ monthamount }}]
+    var totalproductcount = {{ TotalProductCount }}
 </script>
-    <!-- / Navbar -->
-    <!-- Content wrapper -->
-    <div class="content-wrapper">
-        <!-- Content -->
-        <div class="container-xxl flex-grow-1 container-p-y">
-            <div class="row">
-                <div class="col-lg-8 mb-4 order-0">
-                    <div class="card">
-                        <div class="d-flex align-items-end row">
-                            <div class="col-8 col-sm-7">
-                                <div class="card-body">
-                                    <h5 class="card-title text-primary">Congratulations 🎉</h5>
-                                    <p class="mb-4">
-                                        Today total <span class="fw-medium text-primary">{{totalQuantity}} </span> Products will sale.
-                                    </p>
-                                    <p class="mb-4">
-                                        Todays total amount  <span class="fw-medium text-primary">{{todayorder}} </span> 
-                                    </p>
-                                    <a href="/admin/orders" class="btn btn-sm btn-outline-primary">View details</a>
-                                </div>
-                            </div>
-                            <div class="col-4 col-sm-5 text-center text-sm-left">
-                                <div class="card-body pb-0 px-0 px-md-4">
-                                    <img src="../assets/img/illustrations/man-with-laptop-light.png" height="140"
-                                        alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png"
-                                        data-app-light-img="illustrations/man-with-laptop-light.png" />
-                                </div>
+<!-- / Navbar -->
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-lg-8 mb-4 order-0">
+                <div class="card">
+                    <div class="d-flex align-items-end row">
+                        <div class="col-8 col-sm-7">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">Congratulations 🎉</h5>
+                                <p class="mb-4">
+                                    Today total <span class="fw-medium text-primary">{{totalQuantity}} </span> Products
+                                    will sale.
+                                </p>
+                                <p class="mb-4">
+                                    Todays total amount <span class="fw-medium text-primary">{{todayorder}} </span>
+                                </p>
+                                <a href="/admin/orders" class="btn btn-sm btn-outline-primary">View details</a>
                             </div>
                         </div>
-                    </div>
-                    <br>
-                    <div class="card">
-                        <div class="row row-bordered g-0">
-                            <div class="col-sm-7">
-                                <h5 class="card-header m-0 me-2 pb-3">Total Sales</h5>
-                                <div id="totalRevenueChart" class="px-2"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card-body">
-                                    <div class="text-center">
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
-                                                id="growthReportId" data-bs-toggle="dropdown" aria-haspopup="true"
-                                                aria-expanded="false">
-                                                2023
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-end"
-                                                aria-labelledby="growthReportId">
-                                                <a class="dropdown-item" href="javascript:void(0);">2022</a>
-                                                <a class="dropdown-item" href="javascript:void(0);">2021</a>
-
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="growthChart"></div>
-                                <div class="text-center fw-medium pt-3 mb-2">Total product count {{TotalProductCount}} </div>
-                                <div class="text-center fw-medium pt-3 mb-2">Total {{ordercount}}  Product will sale</div>
+                        <div class="col-4 col-sm-5 text-center text-sm-left">
+                            <div class="card-body pb-0 px-0 px-md-4">
+                                <img src="../assets/img/illustrations/man-with-laptop-light.png" height="140"
+                                    alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png"
+                                    data-app-light-img="illustrations/man-with-laptop-light.png" />
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Expense Overview -->
-                <div class="col-lg-4 col-md-4 order-1">
-                    <div class="card h-100">
-                        <div class="card-header">Total Revenew Details   
+                <br>
+                <div class="card">
+                    <div class="row row-bordered g-0">
+                        <div class="col-sm-7">
+                            <h5 class="card-header m-0 me-2 pb-3">Total Sales</h5>
+                            <div id="totalRevenueChart" class="px-2"></div>
                         </div>
-                        <div class="card-body px-0">
-                            <div class="tab-content p-0">
-                                <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
-                                    <div class="d-flex p-4 pt-3">
-                                        <div class="avatar flex-shrink-0 me-3">
-                                            <img src="../assets/img/icons/unicons/wallet.png" alt="User" />
+                        <div class="col-md-4">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
+                                            id="growthReportId" data-bs-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
+                                            2023
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
+                                            <a class="dropdown-item" href="javascript:void(0);">2022</a>
+                                            <a class="dropdown-item" href="javascript:void(0);">2021</a>
+
                                         </div>
-                                        <div>
-                                            <small class="text-muted d-block">Total Amount</small>
-                                            <div class="d-flex align-items-center">
-                                                <h6 class="mb-0 me-1">Rs: {{ totalamount }}</h6>
-                                                {{!-- <small class="text-success fw-medium">
-                                                    <i class="bx bx-chevron-up"></i>
-                                                    42.9%
-                                                </small> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="incomeChart" class="ml-2">
 
                                     </div>
-                                    <div class="d-flex justify-content-center pt-4 gap-2">
-                                        <div class="flex-shrink-0">
-                                            <div id="expensesOfWeek"></div>
-                                        </div>
-                                        <div>
-                                            <p class=" mb-n1 mt-1">Expenses This Week</p>
-                                            <small class="mb-n1 mt-1 text-muted">$39 less than last week</small>
-                                            <button class="mt-5 mb-1 btn btn-primary">Sales Report</button>
-                                            
-                                        </div>
-                                        
-                                    </div>
-                                    
                                 </div>
+                            </div>
+                            <div id="growthChart"></div>
+                            <div class="text-center fw-medium pt-3 mb-2">Total product count {{TotalProductCount}}
+                            </div>
+                            <div class="text-center fw-medium pt-3 mb-2">Total {{ordercount}} Product will sale</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Expense Overview -->
+            <div class="col-lg-4 col-md-4 order-1">
+                <div class="card h-100">
+                    <div class="card-header">Total Revenew Details
+                    </div>
+                    <div class="card-body px-0">
+                        <div class="tab-content p-0">
+                            <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
+                                <div class="d-flex p-4 pt-3">
+                                    <div class="avatar flex-shrink-0 me-3">
+                                        <img src="../assets/img/icons/unicons/wallet.png" alt="User" />
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Total Amount</small>
+                                        <div class="d-flex align-items-center">
+                                            <h6 class="mb-0 me-1">Rs: {{ totalamount }}</h6>
+                                            {{!-- <small class="text-success fw-medium">
+                                                <i class="bx bx-chevron-up"></i>
+                                                42.9%
+                                            </small> --}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="incomeChart" class="ml-2">
+
+                                </div>
+                                <div class="d-flex justify-content-center pt-4 gap-2">
+                                    <div class="flex-shrink-0">
+                                        <div id="expensesOfWeek"></div>
+                                    </div>
+                                    <div>
+                                        <p class=" mb-n1 mt-1">Expenses This Week</p>
+                                        <small class="mb-n1 mt-1 text-muted">$39 less than last week</small>
+                                        <button type="button" class="mt-5 mb-1 btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#staticBackdrop">Sale Report</button>
+                                        <a href="/admin/pdfController" class="mt-5 mb-1 btn btn-primary">test</a>
+                                    </div>
+
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Sales Reoprt</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/admin/salereport" method="post" id="saleReportForm">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="dateFrom">From Date:</label>
+                                        <input type="date" id="dateFrom" name="datefrom" class="form-control" required>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="dateTo">To Date:</label>
+                                        <input type="date" id="dateTo" name="dateto" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Status:</label>
+                                    <div class="col-sm-10">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="statusPlaced"
+                                                name="status" value="Placed">
+                                            <label class="form-check-label" for="statusPlaced">Placed</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="statusConfirm"
+                                                name="status" value="Confirm">
+                                            <label class="form-check-label" for="statusConfirm">Confirm</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="statusPending"
+                                                name="status" value="Pending">
+                                            <label class="form-check-label" for="statusPending">Pending</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="statusDelivered"
+                                                name="status" value="Delivered">
+                                            <label class="form-check-label" for="statusDelivered">Delivered</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="statusShipped"
+                                                name="status" value="Shipped">
+                                            <label class="form-check-label" for="statusShipped">Shipped</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <!-- / Content -->
-    {{> adminfooter}}
+</div>
+<!-- / Content -->
+{{> adminfooter}}
+
 
 </div>
 <!-- Content wrapper -->
