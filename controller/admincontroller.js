@@ -2,7 +2,9 @@ const bcrypt = require('bcrypt')
 const fs = require('fs');
 const puppeteer = require('puppeteer');
 const PuppeteerHTMLPDF = require('puppeteer-html-pdf');
-const hbs=require('hbs')
+const hbs = require('hbs')
+const moment = require('moment');
+const today = moment().format('DD-MM-YYYY');
 
 const user = require('../helpers/userhelper')
 const product = require('../helpers/producthelper')
@@ -203,125 +205,36 @@ module.exports = {
     df = req.body.datefrom
     dt = req.body.dateto
     status = req.body.status
-    const [orders, totalAmount, totalOrders, categorycount,categoryamount] = await order.salereport(df, dt, status)
-    res.render('admin/salereport', { orders, totalAmount, totalOrders, df, dt, status ,categorycount,categoryamount})
+    const [orders, totalAmount, totalOrders, categorycount, categoryamount] = await order.salereport(df, dt, status)
+    res.render('admin/salereport', { orders, totalAmount, totalOrders, df, dt, status, categorycount, categoryamount, today})
   },
   pdf: async (req, res) => {
-    try {
-      const [orders, totalAmount, totalOrders] = await order.salereport(df, dt, status);
-
-      const dateRange = `${df} to ${dt}`;
-  
-      if (orders.length > 0) {
-        // Generate PDF using Puppeteer
-        const browser = await puppeteer.launch({ headless: true });
-        const page = await browser.newPage();
-  
-        // Add your header, logo, and styling here
-        const headerContent = `
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="/images/lr.png" alt="Ras shopping" style="max-width: 200px;">
-            <h1 style="margin: 10px 0;">Ras Shopping</h1><br>
-          </div>
-          <div>
-            <p class="text-align: right;">Date Range: ${dateRange}</p><br><br>
-          </div>
-        `;
-  
-        const tableHeader = `
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <th style="border: 1px solid #ddd; padding: 8px;">Order ID</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Customer Name</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Quantity</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Status</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Total Price</th>
-            </tr>
-        `;
-  
-        const getTotalQuantity = (items) => items.reduce((total, item) => total + item.quantity, 0);
-        const tableRows = orders.map(order => `
-          <tr>
-            <td style="border: 1px solid #ddd; padding: 8px;">${order.orderID}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${order.name}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${getTotalQuantity(order.items)}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${order.status}</td>
-            <td style="border: 1px solid #ddd; padding: 8px;">${order.totalamount}</td>
-          </tr>
-        `).join('');
-  
-        const tableFooter = '</table>';
-  
-        await page.setContent(`
-          <html>
-          <head>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-          </head>
-          <body>
-            <div style="margin: 20px;">
-              ${headerContent}      
-              ${tableHeader}
-              ${tableRows}
-              ${tableFooter}
-            </div>
-          </body>
-          </html>
-        `);
-  
-        await page.pdf({ path: df + '_salereport.pdf', format: 'A4' });
-  
-        await browser.close();
-        res.json({ message: 'Success!' });
-        res.redirect('/admin')
-      } else {
-        console.log('No orders found within the specified criteria.');
-      }
-    } catch (error) {
-      console.error(error);
-      // Handle the error and send an appropriate response
-    }
-  },
-  pdfController:async(req,res)=>{
-     const [orders, totalAmount, totalOrders] = await order.salereport(df, dt, status);
-     console.log(orders);
-    const pdfData = 
+    const [orders, totalAmount, totalOrders, categorycount, categoryamount] = await order.salereport(df, dt, status)
+    const pdfData =
     {
-      invoiceItems: [
-          { item: 'Website Design', amount: 5000 },
-          { item: 'Hosting (3 months)', amount: 2000 },
-          { item: 'Domain (1 year)', amount: 1000 },
-      ],
-      invoiceData: {
-          invoice_id: 123,
-          transaction_id: 1234567,
-          payment_method: 'Paypal',
-          creation_date: orders.orderdate,
-          total_amount: totalAmount,
-      },
-  }
-
-  const htmlPDF = new PuppeteerHTMLPDF();
-  htmlPDF.setOptions({ format: 'A4' }); 
-
-  try {
-      const html = await htmlPDF.readFile('views/admin/invoice.hbs', 'utf8');  
+      orders, totalAmount, totalOrders, categorycount, categoryamount,df,dt,today
+    }
+    const htmlPDF = new PuppeteerHTMLPDF();
+    htmlPDF.setOptions({ format: 'A4' });
+    try {
+      const html = await htmlPDF.readFile('views/admin/salereportpdf.hbs', 'utf8');
       const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
-      const htmlWithStyles = `
-      <style>
-        ${cssContent}
-      </style>
-      ${html}
-    `;
+      const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
+      const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
       const template = hbs.compile(htmlWithStyles);
-      const content = template(pdfData);
-
-      const pdfBuffer = await htmlPDF.create(content); 
-      res.attachment('invoice.pdf')
+      const content = template({ ...pdfData, imageContent });
+      
+      const pdfBuffer = await htmlPDF.create(content);
+      res.attachment(df+'_'+dt+'.pdf')
       res.end(pdfBuffer);
-  } catch (error) {
+    } catch (error) {
       console.log(error);
       res.send('Something went wrong.')
-  }
+    }
+  },
+  gmail:async(req,res)=>{
+    const email=req.params.id
+    await user.gmail(email);
   }
 }
 

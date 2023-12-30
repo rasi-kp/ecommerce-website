@@ -7,7 +7,7 @@ var session=require('express-session')
 var fileupload=require('express-fileupload')
 const {engine}=require('express-handlebars')
 
-
+require('./helpers/handlebars');
 var adminRouter = require('./routes/admin');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -28,7 +28,6 @@ app.engine(
     layoutsDir:path.join(__dirname,'views/layouts'),
     partialsDir:path.join(__dirname,'views/partials')
   }),
-  
 )
 app.use(logger('dev'));
 app.use(express.json());

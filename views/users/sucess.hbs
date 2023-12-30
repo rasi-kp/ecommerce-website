@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,14 +33,35 @@
         p {
             color: #6c757d;
         }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #007bff;
+            color: #fff;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Order Successfully Placed!</h1>
         <img src="../images/success.gif" style="height: 150px;,width:150px" alt="Success GIF">
         <p>Your order has been confirmed. Thank you for shopping with us!</p>
         <a href="/users/orders" class="btn btn-success">Go To Orders</a>
+        <a href="/admin/pdfController/{{orderid}}" class="btn btn-success">Download Invoice</a>
     </div>
 </body>
+
 </html>

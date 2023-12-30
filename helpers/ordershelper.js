@@ -16,11 +16,11 @@ module.exports = {
             console.error('Error in findOrderId:');
         }
     },
-    placed: async (data) => {
+    placed: async (data, payment) => {
         await order.findOneAndUpdate(
             { orderID: data },
             {
-                $set: { status: "placed" }
+                $set: { status: "placed", paymentID: payment }
             },
             { new: true }
         );
@@ -75,6 +75,10 @@ module.exports = {
                 { new: true }
             );
         }
+    },
+    invoice: async (orderid) => {
+        const details = await order.findOne({ orderID: orderid }).populate('items.product').lean();
+        return details
     },
     totalorderedcount: async () => {
         const result = await order.aggregate([
@@ -179,13 +183,13 @@ module.exports = {
         const categoryTotalAmount = {};
         orders.forEach(order => {
             order.items.forEach(item => {
-                const categoryName = item.product.category; 
-                const itemTotal = item.quantity * item.product.price; 
+                const categoryName = item.product.category;
+                const itemTotal = item.quantity * item.product.price;
                 categoryTotalAmount[categoryName] = (categoryTotalAmount[categoryName] || 0) + itemTotal;
             });
         });
         const categoryamount = Object.values(categoryTotalAmount);
-        const result = [orders, totalAmount, totalOrders, categorycount,categoryamount];
+        const result = [orders, totalAmount, totalOrders, categorycount, categoryamount];
         return result
     }
 }

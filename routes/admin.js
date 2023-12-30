@@ -4,7 +4,7 @@ const isAuth = require('../middleware/isAuth')
 const {
   alluser, adduser, deleteuser, edituser, edituserpost, blockuser, unblockuser, addproduct, edit_product,searchuser,
   allproducts, deleteproduct, orders, confirm, shipped, delivered, productdetails, editproduct,totalordercount,
-  cancelled,salereport,pdf,pdfController
+  cancelled,salereport,pdf,pdfController,gmail,
 } = require('../controller/admincontroller')
 
 router.get('/', async(req, res, next)=> {
@@ -105,11 +105,14 @@ router.post('/salereport',async(req,res)=>{
 router.get('/pdfgenerator',async(req,res)=>{
   await pdf(req,res);
 })
-router.get('/pdfController',async(req,res)=>{
+router.get('/pdfController/:id',async(req,res)=>{
   await pdfController(req,res);
 }); 
 router.get('/test',async(req,res)=>{
   res.render('admin/invoice')
+})
+router.get('/gmail/:id',async(req,res)=>{
+  await gmail(req,res);
 })
 
 module.exports = router;

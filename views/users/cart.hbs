@@ -21,7 +21,9 @@
                     {{#each data.items}}
                     <div class="row border-top border-bottom">
                         <div class="row main align-items-center">
-                            <div class="col-2"><img class="img-fluid" src="../products-images/{{this.product.image}}">
+                            <div class="col-2">
+                                <a href="/users/moredetails/{{this.product._id}}"><img class="img-fluid" src="../products-images/{{this.product.image}}">
+                                </a>
                             </div>
                             <div class="col">
                                 <div class="row text-muted">{{this.product.category}}</div>
@@ -31,7 +33,7 @@
                             <div class="col">
                                 <a class="minus" href="/users/cart/quantityminus/{{this.product._id}}"> - </a>
                                 <a id="quantityLink_{{this.product._id}}" class="border">{{this.quantity}}</a>
-                                <a class="add" href="/users/cart/quantityadd/{{this.product._id}}"> +  </a>
+                                <a class="add" href="/users/cart/quantityadd/{{this.product._id}}"> + </a>
                             </div>
                             <div class="col">Rs : {{this.product.price}} <span class="close"><a
                                         href="/users/cart/delete/{{this.product._id}}">&#10005;</a></span></div>
@@ -92,7 +94,7 @@
                 type: 'GET',
                 url: '/users/cart/quantityminus/' + productId,
                 success: function (response) {
-                    $('#'+ uniqueId).text(response.quantity);
+                    $('#' + uniqueId).text(response.quantity);
                     $('#totpriceLink').text('Rs: ' + response.totalPrice);
                     $('#totlink').text('Rs: ' + (response.totalPrice + 40));
                 },
@@ -103,6 +105,7 @@
         });
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function () {
         $('.add').click(function (e) {
@@ -113,10 +116,18 @@
                 type: 'GET',
                 url: '/users/cart/quantityadd/' + productId,
                 success: function (response) {
-                    console.log(response)
-                    $('#'+ uniqueId).text(response.quantity + 2);
-                    $('#totpriceLink').text('Rs: ' + response.totalPrice);
-                    $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+                    {{!-- if (response.quantity === false) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Out of Stock!',
+                            text: 'Item will added back.',
+                            width: '300px',
+                        });
+                    } --}}
+                        $('#' + uniqueId).text(response.quantity + 2);
+                        $('#totpriceLink').text('Rs: ' + response.totalPrice);
+                        $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+
                 },
                 error: function (error) {
                     console.error(error);

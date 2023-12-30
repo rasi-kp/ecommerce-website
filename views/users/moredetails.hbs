@@ -42,16 +42,15 @@
                 <hr class="m-0 pt-2 mt-2">
               </div>
               <div class="col-lg-12">
+                {{#eq data.category 'fasion'}}
                 <label for="size">Select Size:</label>
                 <select id="size" name="size">
                   <option value="medium">Medium</option>
                   <option value="large">Large</option>
                   <option value="small">Small</option>
                 </select>
-                {{!-- <div class="col-lg-12">
-                  <h6>Quantity :</h6>
-                  <input type="number" class="form-control text-center w-100" value="1">
-                </div> --}}
+                {{/eq}}
+
                 <div class="col-lg-12">
                   <h6>Quantity :</h6>
                   <div class="input-group">
@@ -63,7 +62,7 @@
                 <div class="col-lg-12 mt-3">
                   <div class="row">
                     <div class="col-lg-6 pb-2">
-                      <a href="/users/cart/{{data._id}}" class="btn btn-danger w-100">Add To Cart</a>
+                      <a id="cart" href="/users/cart/{{data._id}}" class="btn btn-danger w-100">Add To Cart</a>
                     </div>
                     <div class="col-lg-6">
                       <a href="/users/home" class="btn btn-success w-100">Shop Now</a>
@@ -92,6 +91,47 @@
 
       </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+   $(document).ready(function () {
+      $('#cart').click(function (e) {
+         e.preventDefault();
+         var productId = $(this).attr('href').split('/').pop();
+         var productCount = $(this).closest('.box_main').find('.badge').text();
+         $.ajax({
+            type: 'GET',
+            url: '/users/cart/' + productId,
+            success: function (response) {
+               console.log(response)
+               if(response.result === false){
+                  Swal.fire({
+                     icon: 'warning',
+                     title: 'Out of Stock!',
+                     text: 'Item will added back.',
+
+                     width: '300px',
+                  });
+               }
+               else{
+                  if (typeof response.count === 'number') {
+                  Swal.fire({
+                     icon: 'success',
+                     title: 'Success!',
+                     text: 'Item successfully added to the cart.',
+                     width: '300px',
+                  });
+               }
+               else {
+                  location.href = "/users/login";
+               }
+               }
+               
+            }
+         });
+      });
+   });
+</script>
     <script>
       function incrementQuantity() {
         var quantityInput = document.getElementById('quantityInput');

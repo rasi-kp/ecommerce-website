@@ -21,7 +21,7 @@
     vertical-align: top;
 }
 
-.invoice-box table tr td:nth-child(2) {
+.invoice-box table tr td:nth-child(4) {
     text-align: right;
 }
 
@@ -36,7 +36,7 @@
 }
 
 .invoice-box table tr.information table td {
-    padding-bottom: 40px;
+    /* padding-bottom: 40px; */
 }
 
 .invoice-box table tr.heading td {
@@ -57,7 +57,7 @@
     border-bottom: none;
 }
 
-.invoice-box table tr.total td:nth-child(2) {
+.invoice-box table tr.total td:nth-child(4) {
     border-top: 2px solid #eee;
     font-weight: bold;
 }
@@ -86,6 +86,10 @@
     text-align: right;
 }
 
-.invoice-box.rtl table tr td:nth-child(2) {
+.invoice-box.rtl table tr td:nth-child(4) {
     text-align: left;
+}
+.last {
+    page-break-before: avoid;
+    text-align: center;
 }

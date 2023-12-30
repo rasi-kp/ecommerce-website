@@ -15,9 +15,8 @@
                     <table>
                         <tr>
                             <td class="title">
-                                <img src="/images/lr.png" style="width: 100%; max-width: 88px" /> Ras Shopping
+                                <img src="data:image/png;base64,{{imageContent}}" style="margin-top: 2px; max-width: 50px;" alt="Logo" /> <span>Ras Shopping</span>
                             </td>
-                           
                         </tr>
                         <tr>
                             <td >
@@ -26,11 +25,13 @@
                                 Pin: 670591<br>
                                 9605942261
                             </td>
+                            <td></td>
+                            <td></td>
                             <td>
-                                Invoice #:
-                                {{invoiceData.invoice_id}}<br />
+                                Invoice ID:
+                                {{invoiceItems.orderID}}<br />
                                 Created:
-                                {{invoiceData.creation_date}}
+                                {{invoiceItems.orderdate}}
                             </td>
                         </tr>
                     </table>
@@ -40,41 +41,82 @@
                 <td colspan="2">
                     <table>
                         <tr>
-                            <td>                   
-                            </td>
+                             <td></td>
+                             <td></td>
+                            <td></td>
                             <td>
-                                Ras Shopping LLC.<br />
-                                Rasi K P<br />
-                                rasshoping@gmail.com
+                                {{invoiceItems.name}} <br />
+                                {{invoiceItems.address}} <br />
+                                {{invoiceItems.city}} Pin: {{invoiceItems.pincode}}<br>
+                                {{invoiceItems.phoneno}}
                             </td>
                         </tr>
                     </table>
                 </td>
             </tr>
+            
+        </table>
+        <table>
             <tr class="heading">
                 <td>Payment Method</td>
+                <td></td>
+                <td></td>
                 <td># Transaction Id</td>
             </tr>
             <tr class="details">
                 <td>Online Payment</td>
-                <td>{{invoiceData.transaction_id}}</td>
+                <td></td>
+                <td></td>
+                <td>{{invoiceItems.paymentID}}</td>
             </tr>
             <tr class="heading">
-                <td>Item</td>
+                <td>Item</td>  
+                <td>Quantity</td>
+                <td></td>
                 <td>Amount</td>
+                
             </tr>
-            {{#each invoiceItems}}
-            <tr class="item {{#if @last}} last {{/if}}">
-                <td>{{this.item}}</td>
-                <td>{{this.amount}}</td>
+            {{#each invoiceItems.items}}
+            <tr class="item ">
+                <td>{{this.product.name}} </td>
+                <td>{{this.quantity}}</td>
+                <td></td>
+                <td>{{this.product.price}}</td>
             </tr>
             {{/each}}
             <tr class="total">
                 <td></td>
-                <td>Total: {{invoiceData.total_amount}}</td>
+                <td></td>
+                <td>Sub Total :</td>
+                <td>{{invoiceItems.total}}</td>
+            </tr>
+            <tr class="total">
+                <td></td>
+                <td></td>
+                <td>Shipping Charge :</td>
+                <td>40</td>
+            </tr>
+             <tr class="total">
+                <td></td>
+                <td></td>
+                <td>GST :</td>
+                <td>1.8 %</td>
+            </tr>
+             <tr class="total">
+                <td></td>
+                <td></td>
+                <td>CGST :</td>
+                <td>0.6 %</td>
+            </tr>
+            <tr class="total">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Total : {{invoiceItems.totalamount}}</td>
             </tr>
         </table>
     </div>
+    <p class="last">Thank you for Shopping </p>
 </body>
 
 </html>

@@ -53,7 +53,7 @@ router.get('/cart',isAuth,async(req,res)=>{
 router.get('/cart/:id',isAuth,async(req,res)=>{
   const result=await addcart(req,res)
   const count=await countitems(req);
-  res.json(count)
+  res.json({ count, result });
 })
 router.get('/cart/delete/:id',isAuth,async(req,res)=>{
   await deletecart(req,res)
@@ -81,8 +81,10 @@ router.post('/placeorder',isAuth,placeorder);
 router.post('/verifypayment',isAuth,async(req,res)=>{
   await paymentverify(req,res)
 })
-router.get('/sucess',(req,res)=>{
-  res.render('users/sucess')
+router.get('/sucess/:id',(req,res)=>{
+  const orderid=req.params.id
+  console.log(orderid);
+  res.render('users/sucess',{orderid})
 })
 router.get('/moredetails/:id',async(req,res)=>{
   const data=await moredata(req)
