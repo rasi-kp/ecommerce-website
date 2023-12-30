@@ -1,0 +1,205 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Invoice Example</title>
+    <link rel="stylesheet" href="stylesheets/invoice.css" />
+    <style>
+        #myChart,
+        #myChartpei {
+            width: 90%;
+            /* Set the width as needed */
+            height: 250px;
+            /* Set the height as needed */
+            margin: 0 auto;
+            /* Center the chart horizontally */
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .col {
+            width: 50%;
+            box-sizing: border-box;
+            float: left;
+            padding: 0 10px;
+            padding-top: 10px;
+            padding-bottom: 15px;
+        }
+        .text {
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <img src="data:image/png;base64,{{imageContent}}"
+                                    style="margin-top: 2px; max-width: 50px;" alt="Logo" /> <span>Ras Shopping</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Ras Shopping, LLC.<br />
+                                Kannur,Kerala<br />
+                                Pin: 670591<br>
+                                9605942261
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                Date Range:
+                                {{df}} to {{dt}}<br />
+                                Created:
+                                {{today}}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="information">
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <table>
+                                    <tr class="heading">
+                                        <td>Category</td>
+                                        <td>Count</td>
+                                        <td>Price</td>
+                                    </tr>
+                                    <tr class="item ">
+                                        <td>Fasion</td>
+                                        <td>{{categorycount.[0]}}</td>
+                                        <td>{{categoryamount.[0]}}</td>
+                                    </tr>
+                                    <tr class="item ">
+                                        <td>Electronics</td>
+                                        <td>{{categorycount.[1]}}</td>
+                                        <td>{{categoryamount.[1]}}</td>
+                                    </tr>
+                                    <tr class="item ">
+                                        <td>Jwellery</td>
+                                        <td>{{categorycount.[2]}}</td>
+                                        <td>{{categoryamount.[2]}}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                Total Orders :{{totalOrders}} <br />
+                                Total Product Sale :{{categorycount}} <br />
+                                Total Amount : {{totalAmount}} <br>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+        </table>
+        <div class="container">
+            <h5 class="card-header m-0 me-2 pb-3">Total Sale Report {{df}} to {{dt}}</h5>
+            <div class="row row-bordered g-0">
+                <div class="col col-sm-6">
+
+                    <div class="card-body">
+                        <p class="text">Total Amount Graph</p>
+                        <div id="totalRevenueChart" class="px-3 m-4">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-md-5">
+                    <div class="card-body">
+                        <p class="text">Total Product Graph</p>
+                        <div id="totalRevenueChartpei" class="px-3 m-4">
+                            <canvas id="myChartpei"></canvas>
+                        </div>
+                    </div>
+                    <div class="text-center fw-medium pt-3 mb-2">Total {{totalOrders}} Orders</div>
+                </div>
+            </div>
+        </div>
+
+        <table>
+
+            <tr class="heading">
+                <td>Order ID</td>
+                <td>Quantity</td>
+                <td>Status</td>
+                <td>Total Amount</td>
+            </tr>
+            {{#each orders}}
+            <tr class="item ">
+                <td>{{this.orderID}} </td>
+                <td>{{this.items.length}}</td>
+                <td>{{this.status}}</td>
+                <td>{{this.total}}</td>
+            </tr>
+            {{/each}}
+            <tr class="total">
+                <td></td>
+                <td></td>
+                <td> Total Amount :</td>
+                <td>{{totalAmount}}</td>
+            </tr>
+
+        </table>
+    </div>
+    <p class="last">Thank you for Shopping </p>
+
+
+    <script>
+        var data = {
+            labels: ["Fasion", "Electronics", "Jwellery", "others"],
+            datasets: [{
+                data: [{{ categoryamount }}],
+            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+        }]
+    };
+        var ctx = document.getElementById("myChart");
+        if (ctx) {
+            var myPieChart = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        }
+    </script>
+    <!-- / Content -->
+    <script>
+        var data = {
+            labels: ["Fasion", "Electronics", "Jwellery", "others"],
+            datasets: [{
+                data: [{{ categorycount }}],
+            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#56FF0E"]
+        }]
+    };
+        var ctx = document.getElementById("myChartpei");
+        if (ctx) {
+            var myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

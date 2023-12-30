@@ -33,6 +33,9 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    phoneno: {
+        type: String,
+    },
     items: [
         {
           product: {
@@ -59,6 +62,10 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'Pending'
+    },
+    paymentID: {
+        type: String,
+        default: 'null'
     }
 });
 

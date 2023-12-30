@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const product = require('../helpers/producthelper')
-const user = require('../helpers/userhelper')
 const isAuth=require('../middleware/isAuth')
+const back=require('../middleware/back')
 const home=require('../homepage/home')
 const {
   signUpUser,signInUser,edituser,edituserpost,moredata,orders,payment,paymentverify,currentuser,
@@ -10,72 +10,27 @@ const {
 } = require('../controller/usercontroller')
 
 /* GET users listing. */
-
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 router.get('/home',isAuth,async(req,res)=>{
-  // const data=await alldata();
   const loggedInUser=await currentuser(req);
-  console.log(loggedInUser);
   const count=await countitems(req);
   const categorizedProducts=await home.mainpage()
   res.render('users/index',{categorizedProducts,username:loggedInUser,count})
 })
-router.get('/shop',async(req,res)=>{
-  console.log(req.session.loggedIn);
+router.get('/login',back,(req,res)=>{
   if(req.session.loggedIn){
-    const loggedInUser=await currentuser(req);
-    const count=await countitems(req);
-    const categorizedProducts=await home.allproductslimit()
-    res.render('users/shop',{categorizedProducts,username:loggedInUser,count})
+    return res.redirect('/users/home')
+  }else{
+    res.render('users/login')
   }
-  const categorizedProducts=await home.allproductslimit()
-  res.render('users/shop',{categorizedProducts})
-  
 })
-router.get('/shop2',async(req,res)=>{
-  const categorizedProducts=await home.allproducts1()
-  res.render('users/shop',{categorizedProducts})
-})
-router.get('/shop/3',async(req,res)=>{
-  const categorizedProducts=await home.allproducts2()
-  res.render('users/shop',{categorizedProducts})
-})
-router.get('/products/search', async (req, res) => {
-  const {query} = req.query;
-  var categorizedProducts=await home.search(query);
-  res.render('users/search',{categorizedProducts})
-})
-router.get('/products-cat-fasion', async (req, res) => {
-  var data='fasion';
-  var categorizedProducts=await home.category(data);
-  res.render('users/shop',{categorizedProducts})
-})
-router.get('/products-cat-electronics', async (req, res) => {
-  var data='electronics';
-  var categorizedProducts=await home.category(data);
-  res.render('users/shop',{categorizedProducts})
-})
-router.get('/products-cat-jwellery', async (req, res) => {
-  var data='jwellery';
-  var categorizedProducts=await home.category(data);
-  res.render('users/shop',{categorizedProducts})
-})
-router.get('/products-cat-other', async (req, res) => {
-  var data='other';
-  var categorizedProducts=await home.category(data);
-  res.render('users/shop',{categorizedProducts})
-})
-router.get('/login',(req,res)=>{
-  res.render('users/login') 
-})
-
-router.post('/user_signin',signInUser)
 
 router.get('/user_registration',(req,res)=>{
   res.render('users/signup')
 })
+router.post('/user_signin',signInUser)
 
 router.post('/user_registration',signUpUser)
 
@@ -91,16 +46,14 @@ router.get('/cart',isAuth,async(req,res)=>{
   if(data){
     total=data.totalPrice+40
     res.render('users/cart',{data,total,count:count1})
+  }else{
+    res.render('users/cart')
   }
-  res.render('users/cart')
 })
 router.get('/cart/:id',isAuth,async(req,res)=>{
-  console.log(req.params.id);
   const result=await addcart(req,res)
   const count=await countitems(req);
-  res.json(count)
-
-  //  res.redirect('/users/home')
+  res.json({ count, result });
 })
 router.get('/cart/delete/:id',isAuth,async(req,res)=>{
   await deletecart(req,res)
@@ -114,14 +67,12 @@ router.get('/cart/quantityminus/:id',isAuth,async(req,res)=>{
 })
 router.get('/checkout',isAuth,async(req,res)=>{
   const orderID = req.query.orderID;
-  console.log(orderID);
   const data=await cartitems(req)
   const count1=await count(req)
   if(count1){
     total=data.totalPrice+40
     res.render('users/checkout',{data,total,count:count1,orderID})
-  }
-  else{
+  }else{
     res.redirect('/users/home')
   }
 })
@@ -130,15 +81,11 @@ router.post('/placeorder',isAuth,placeorder);
 router.post('/verifypayment',isAuth,async(req,res)=>{
   await paymentverify(req,res)
 })
-router.get('/sucess',(req,res)=>{
-  res.render('users/sucess')
+router.get('/sucess/:id',(req,res)=>{
+  const orderid=req.params.id
+  console.log(orderid);
+  res.render('users/sucess',{orderid})
 })
-router.get('/check',async(req,res)=>{
-  const orderid='657bde6f62508bca74942307'
-  await quantityupdate(orderid)
-  res.render('users/sucess')
-})
-
 router.get('/moredetails/:id',async(req,res)=>{
   const data=await moredata(req)
   const otherdata=await product.allproducts(req)
@@ -162,6 +109,52 @@ router.get('/payment',isAuth,async(req,res)=>{
 })
 router.post('/subscribe',async(req,res)=>{
   await subscribe(req,res)
+})
+//show all products with pagination
+router.get('/shop',async(req,res)=>{
+  if(req.session.loggedIn){
+    const loggedInUser=await currentuser(req);
+    const count=await countitems(req);
+    const categorizedProducts=await home.allproductslimit()
+    res.render('users/shop',{categorizedProducts,username:loggedInUser,count})
+  }
+  const categorizedProducts=await home.allproductslimit()
+  res.render('users/shop',{categorizedProducts})
+})
+router.get('/shop2',async(req,res)=>{
+  const categorizedProducts=await home.allproducts1()
+  res.render('users/shop',{categorizedProducts})
+})
+router.get('/shop/3',async(req,res)=>{
+  const categorizedProducts=await home.allproducts2()
+  res.render('users/shop',{categorizedProducts})
+})
+//Products Searchs
+router.get('/products/search', async (req, res) => {
+  const {query} = req.query;
+  var categorizedProducts=await home.search(query);
+  res.render('users/search',{categorizedProducts})
+})
+//categorized Products APIs
+router.get('/products-cat-fasion', async (req, res) => {
+  var data='fasion';
+  var categorizedProducts=await home.category(data);
+  res.render('users/shop',{categorizedProducts})
+})
+router.get('/products-cat-electronics', async (req, res) => {
+  var data='electronics';
+  var categorizedProducts=await home.category(data);
+  res.render('users/shop',{categorizedProducts})
+})
+router.get('/products-cat-jwellery', async (req, res) => {
+  var data='jwellery';
+  var categorizedProducts=await home.category(data);
+  res.render('users/shop',{categorizedProducts})
+})
+router.get('/products-cat-other', async (req, res) => {
+  var data='other';
+  var categorizedProducts=await home.category(data);
+  res.render('users/shop',{categorizedProducts})
 })
 
 module.exports = router;

@@ -56,9 +56,9 @@
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label for="emailaddress">Mob No:</label>
+                            <label for="phoneno">Mob No:</label>
                             <input type="text" id="contact" class="form-control" placeholder="9605942261"
-                                name="mobileno" required>
+                                name="phoneno" required>
                         </div>
                     </div>
 
@@ -169,7 +169,7 @@
                 },
                 success: (response)=>{
                     if(response=="sucess"){
-                        location.href = "/users/sucess";
+                        location.href = "/users/sucess/"+ orderID;
                     }
                     else{
                         location.href = "/users/fail";

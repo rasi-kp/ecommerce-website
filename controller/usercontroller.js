@@ -3,7 +3,11 @@ var bcrypt = require('bcrypt')
 const user = require('../helpers/userhelper')
 const product = require('../helpers/producthelper')
 const order = require('../helpers/ordershelper')
-const crypto=require('crypto')
+const PuppeteerHTMLPDF = require('puppeteer-html-pdf');
+var nodemailer = require('nodemailer');
+const fs = require('fs');
+const hbs = require('hbs')
+const crypto = require('crypto')
 
 module.exports = {
   alldata: async (req, res) => {
@@ -51,13 +55,15 @@ module.exports = {
       const hashpassword = await bcrypt.hash(req.body.password, saltRounds)
       datas.password = hashpassword
       const result = await user.insert(datas)
+      await user.gmail(datas.email,datas.name) //welcome mail 
       res.redirect('/users/login')
     }
   },
 
   signInUser: async (req, res) => {
     const usercheck = await user.findexistuser(req.body.username)
-    if (usercheck == '') {
+    console.log(usercheck);
+    if (!usercheck) {
       res.render('users/login', { errorMessage: 'Invalied User ID' });
     }
     else {
@@ -113,6 +119,7 @@ module.exports = {
     }
     else {
       const result = await user.insertcart(userid._id, proid, cartItem)
+      console.log(result);
       return result
     }
   },
@@ -142,7 +149,6 @@ module.exports = {
     const userid = await user.findexistuser(currentuser.username);
     const quantity = await user.quantity(userid._id, proid)
     const cart = await user.quantityadd(userid._id, proid)
-    console.log(cart);
     const response = {
       quantity: quantity,
       totalPrice: cart.totalPrice
@@ -162,8 +168,6 @@ module.exports = {
       };
       res.json(response)
     }
-    
-    // return quantity
   },
   placeorder: async (req, res) => {
     const currentuser = req.session.user
@@ -172,7 +176,7 @@ module.exports = {
     const timestamp = Date.now();
     const randomNum = Math.floor(Math.random() * 1000);
     orderID = `ORD-${timestamp}-${randomNum}`;
-    if(result){
+    if (result) {
       const orders = {
         orderID: orderID,
         orderdate: new Date(),
@@ -182,42 +186,81 @@ module.exports = {
         city: req.body.city,
         state: req.body.state,
         pincode: req.body.pincode,
+        phoneno: req.body.phoneno,
         items: result.items,
         total: result.totalPrice,
         totalamount: result.totalPrice + 40,
         status: "Pending",
+        paymentId: "null",
       }
       const order = await user.payment(orderID, orders.totalamount);
       res.json(order);
       await user.orders(orders);
       await user.deletecartoredered(userid._id)
     }
-    else{
+    else {
       res.redirect('/users/home')
     }
-    
   },
-  paymentverify: async(req,res) => {
+  paymentverify: async (req, res) => {
+    const currentuser = req.session.user
+    const userid = await user.findexistuser(currentuser.username);
     const paymentId = req.body['payment[razorpay_payment_id]'];
     const orderId = req.body['payment[razorpay_order_id]'];
     const signature = req.body['payment[razorpay_signature]'];
+    const orderID = req.body.orderID
+    const hmac = crypto.createHmac('sha256', process.env.KEY_SECRET)
+    hmac.update(orderId + '|' + paymentId);
+    hmachex = hmac.digest('hex')
+    if (hmachex == signature) {
+      await order.placed(orderID, paymentId)
+      await order.updatequantity(orderID)
+      //Create Invoice
+      const result = await order.invoice(orderID)
+      const pdfData ={
+        invoiceItems: result,
+      }
+      const htmlPDF = new PuppeteerHTMLPDF();
+      htmlPDF.setOptions({ format: 'A4' });
 
-    const hmac=crypto.createHmac('sha256',process.env.KEY_SECRET)
-    hmac.update(orderId+'|'+paymentId);
-    hmachex=hmac.digest('hex')
-    if(hmachex==signature){
-      await order.placed(req.body.orderID)
-      await order.updatequantity(req.body.orderID)
-      // await user.paymentstatus(req.body.orderID,paymentId,orderId,signature)
+      const html = await htmlPDF.readFile('views/admin/invoice.hbs', 'utf8');
+      const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
+      const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
+      const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
+
+      const template = hbs.compile(htmlWithStyles);
+      const content = template({ ...pdfData, imageContent });
+      const pdfBuffer = await htmlPDF.create(content);
+      //Generate email
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_ID,
+          pass: process.env.EMAIL_PASS,
+        }
+      });
+      var mailOptions = {
+        from: 'rasir239@gmail.com',
+        to: userid.email,
+        subject: 'THANK YOU FOR SHOPPING "Ras Shopping"' + orderID,
+        text: 'Thank you for Choosing Ras Shopping  !!! Attached is the invoice for your recent purchase.',
+        attachments: [
+          {
+            filename: `${orderID}.pdf`,
+            content: pdfBuffer,
+          },
+        ],
+      };
+      transporter.sendMail(mailOptions, function (error, info) {
+      });
       res.json("sucess");
     }
-    else{
+    else {
       res.json("failure");
     }
   },
-  quantityupdate:async(order1)=>{
-    const result=await order.updatequantity(order1)
-    console.log(result);
+  quantityupdate: async (order1) => {
+    const result = await order.updatequantity(order1)
   },
 
   orders: async (req, res) => {
@@ -226,22 +269,22 @@ module.exports = {
     const orders = await user.ordersfind(username);
     res.render('users/orders', { data: orders })
   },
-  password:async(req,res)=>{
+  password: async (req, res) => {
     const currentuser = req.session.user
     const username = currentuser.username
-    if(req.body.password==req.body.confirmpassword){
+    if (req.body.password == req.body.confirmpassword) {
       const saltRounds = 10;
       const hashpassword = await bcrypt.hash(req.body.password, saltRounds)
-      await user.updatepassword(username,hashpassword)
-      res.render('users/changepassword',{message:"Sucessfully Updated Paswword"})
-    }else{
-      res.render('users/changepassword',{message:"Password is Not Match"})
+      await user.updatepassword(username, hashpassword)
+      res.render('users/changepassword', { message: "Sucessfully Updated Paswword" })
+    } else {
+      res.render('users/changepassword', { message: "Password is Not Match" })
     }
   },
-  subscribe:async(req,res)=>{
-    let email ={
+  subscribe: async (req, res) => {
+    let email = {
       email: req.body.email,
-    } 
+    }
     await user.subscribe(email)
     res.json(email)
   }

@@ -12,8 +12,8 @@
         <table class="table">
           <thead>
             <tr>
-
-              <th>Username</th>
+              <th>date</th>
+              
               <th>Name</th>
               <th>Product</th>
               <th>Price</th>
@@ -22,15 +22,15 @@
               <th>Actions</th>
               <th>City</th>
               <th>Pincode</th>
-              <th>date</th>
+              <th>Username</th>
+              
             </tr>
           </thead>
           <tbody class="table-border-bottom-0">
             {{#each orders}}
             <tr>
-              <td>
-                <span class="fw-medium">{{username}}</span>
-              </td>
+              <td>{{formatDate orderdate}}</td>
+              
               <td>
                 <span class="fw-medium">{{name}}</span>
               </td>
@@ -51,14 +51,16 @@
                       Shipped</a>
                     <a class="dropdown-item" href="/admin/orders/delivered/{{_id}}"><i class="fa-solid fa-truck me-1"></i>
                       Delivered</a>
-                      <a class="dropdown-item" href="/admin/orders/delivered/{{_id}}"><i class="fa fa-trash me-1"></i>
+                      <a class="dropdown-item" href="/admin/orders/cancelled/{{_id}}"><i class="fa fa-trash me-1"></i>
                       Cancelled</a>
                   </div>
                 </div>
               </td>
               <td>{{city}}</td>
               <td>{{pincode}}</td>
-              <td>{{orderdate}}</td>
+              <td>
+                <span class="fw-medium">{{username}}</span>
+              </td>
             </tr>
             {{/each}}
 

@@ -1,21 +1,24 @@
 const user = require('../model/userschema');
 const product = require('../helpers/producthelper')
+const Product = require('../model/productschema')
 const deleteuser = require('../model/deleteuser')
 const cart = require('../model/cartschema')
 const order = require('../model/orderschema')
 const subscription = require('../model/subscribeschema')
 const Razorpay = require('razorpay')
-const wishlist=require('../model/wishlistschema')
+const wishlist = require('../model/wishlistschema')
+var nodemailer = require('nodemailer');
 
 var instance = new Razorpay({
     key_id: process.env.KEY_ID,
     key_secret: process.env.KEY_SECRET,
 });
 module.exports = {
+    //create payment instance
     payment: (orderID, amount) => {
         return new Promise((resolve, reject) => {
             var options = {
-                amount: amount*100,
+                amount: amount * 100,
                 currency: "INR",
                 receipt: orderID
             };
@@ -44,7 +47,7 @@ module.exports = {
         return result;
     },
     searchuser: async (data) => {
-        var result = await user.find({name: new RegExp(`^${data}`, 'i') }).lean();
+        var result = await user.find({ name: new RegExp(`^${data}`, 'i') }).lean();
         return result;
     },
     findexistuser: async (data) => {
@@ -105,6 +108,7 @@ module.exports = {
 
     },
     quantity: async (userid, data) => {
+        const result = await Product.findOne({ _id: data });
         const currentCartItem = await cart.findOne(
             { user: userid, 'items.product': data },
             { items: { $elemMatch: { product: data } } }
@@ -118,19 +122,18 @@ module.exports = {
     },
     insertcart: async (userid, proid, cartItem) => {
         var price = await product.finddata(proid)
-        if(price.qty>0){
+        if (price.qty > 0) {
             var totprice = cartItem.quantity * price.price
             datas = {
-            user: userid,
-            items: [cartItem],
-            totalPrice: totprice,
-        }
-        await cart.insertMany(datas)
-        }else{
-            console.log("Out of Stock")
+                user: userid,
+                items: [cartItem],
+                totalPrice: totprice,
+            }
+            await cart.insertMany(datas)
+        } else {
             return false
         }
-        
+
     },
     quantityadd: async (userid, data) => {
         const productPrice = await product.finddata(data);
@@ -158,36 +161,36 @@ module.exports = {
     },
     pushitems: async (userid, data) => {
         var price = await product.finddata(data.product)
-        if(price.qty>0){
+        if (price.qty > 0) {
             var totprice = data.quantity * price.price
-        const updatedCart = await cart.findOneAndUpdate(
-            { user: userid },
-            {
-                $push: { items: data },
-                $inc: { totalPrice: totprice }
-            },
-            { new: true }
-        );
-        }else{
+            const updatedCart = await cart.findOneAndUpdate(
+                { user: userid },
+                {
+                    $push: { items: data },
+                    $inc: { totalPrice: totprice }
+                },
+                { new: true }
+            );
+        } else {
             return false
         }
     },
     updatecart: async (userid, data) => {
         const productPrice = await product.finddata(data.product);
-        console.log("check   "+ productPrice.qty);
-        if(productPrice.qty>0){
+        console.log("check   " + productPrice.qty);
+        if (productPrice.qty > 0) {
             const newTotalPrice = 1 * productPrice.price;
             const updatedCart = await cart.findOneAndUpdate(
-            { user: userid, 'items.product': data.product },
-            {
-                $inc: { 'items.$.quantity': 1, totalPrice: newTotalPrice },
-            },
-            { new: true }
-        );
-        }else{
+                { user: userid, 'items.product': data.product },
+                {
+                    $inc: { 'items.$.quantity': 1, totalPrice: newTotalPrice },
+                },
+                { new: true }
+            );
+        } else {
             return false
         }
-        
+
     },
     getitemscart: async (data) => {
         const result = await cart.findOne({ user: data }).populate('items.product').lean();
@@ -224,13 +227,30 @@ module.exports = {
     deletecartoredered: async (userid) => {
         await cart.findOneAndDelete({ user: userid });
     },
-    updatepassword:async(user1,data)=>{
-        await user.findOneAndUpdate({username:user1},{
-            $set:{password: data}
+    updatepassword: async (user1, data) => {
+        await user.findOneAndUpdate({ username: user1 }, {
+            $set: { password: data }
         })
     },
-    subscribe:async(data)=>{
+    subscribe: async (data) => {
         await subscription.insertMany(data)
-    }
+    },
+    gmail: async (email,name) => {
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_ID,
+                pass: process.env.EMAIL_PASS,
+            }
+        });
+        var mailOptions = {
+            from: 'rasir239@gmail.com',
+            to: email,
+            subject: 'Welcome '+ name,
+            text: 'Thank You for choosing "Ras shopping"!!!!! '
+        };
 
+        transporter.sendMail(mailOptions, function (error, info) {
+        });
+    },
 };

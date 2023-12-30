@@ -1,10 +1,17 @@
 const bcrypt = require('bcrypt')
 const fs = require('fs');
+const puppeteer = require('puppeteer');
+const PuppeteerHTMLPDF = require('puppeteer-html-pdf');
+const hbs = require('hbs')
+const moment = require('moment');
+const today = moment().format('DD-MM-YYYY');
 
 const user = require('../helpers/userhelper')
 const product = require('../helpers/producthelper')
-const order = require('../helpers/ordershelper')
-
+const order = require('../helpers/ordershelper');
+var df;
+var dt;
+var status;
 module.exports = {
   alluser: async (req, res) => {
     const data = await user.finduser()
@@ -32,7 +39,6 @@ module.exports = {
     res.redirect('/admin/alluser')
   },
   adduser: async (req, res) => {
-    console.log(req.body);
     const datas = {
       role: req.body.role,
       name: req.body.name,
@@ -45,7 +51,6 @@ module.exports = {
     }
     const existuser = await user.findexistuser(req.body.username);
     if (existuser) {
-      console.log(existuser)
       res.render('admin/adduser', { errorMessage: "UserID Already Exist" })
     }
     else {
@@ -53,18 +58,15 @@ module.exports = {
       const hashpassword = await bcrypt.hash(req.body.password, saltRounds)
       datas.password = hashpassword
       const result = await user.insert(datas)
-      console.log('Data inserted successfully:' + result);
       res.redirect('/admin/alluser')
     }
-
   },
   edituser: async (req, res) => {
     const proid = req.params.id
     const data = await user.findedituserbyid(proid)
     if (data.gender == 'male') {
       flag = true
-    }
-    else {
+    } else {
       flag = false
     }
     res.render('admin/edituser', { data: data, flag: flag })
@@ -125,32 +127,10 @@ module.exports = {
     });
     await product.deleteproduct(proid)
   },
-
-  orders: async (req, res) => {
-    const orders = await order.orders()
-    res.render("admin/order", { orders })
-  },
-  confirm: async (req, res) => {
-    const proid = req.params.id
-    const result = await order.confirm(proid)
-    res.redirect('/admin/orders')
-  },
-  shipped: async (req, res) => {
-    const proid = req.params.id
-    const result = await order.shipped(proid)
-    res.redirect('/admin/orders')
-  },
-  delivered: async (req, res) => {
-    const proid = req.params.id
-    const result = await order.delivered(proid)
-    res.redirect('/admin/orders')
-  },
   productdetails: async (req, res) => {
     const proid = req.params.id
     const orders = await order.findorderid(proid)
-    console.log(orders);
     res.render('admin/product-details', { orders });
-
   },
   editproduct: async (req, res) => {
     const proid = req.params.id
@@ -159,10 +139,8 @@ module.exports = {
   },
   edit_product: async (req, res) => {
     const proid = req.params.id
-    console.log(req.body);
     const data = await product.finddata(proid);
     var image = data.image
-    console.log(req.files);
     if (req.files) {
       var file = req.files.image;
       var image = file.name;
@@ -188,15 +166,76 @@ module.exports = {
     const result = await product.editproduct(datas, proid)
     res.redirect('/admin/products')
   },
-  totalordercount:async(req,res)=>{
-    const result=await order.totalorderedcount()
-    const resultmonth=await order.monthordercount()
-    const TotalProductCount=await order.totalproductcount()
-    const monthamount=await order.monthorderamount()
-    const [totalQuantity, todayorder]=await order.todayorderdetails()
-    const ordercount= result[0].totalOrderedQuantity
-    const totalamount= result[0].totalamount
-    // console.log(resultmonth);
-    res.render('admin/admin',{ordercount,totalamount,monthamount,TotalProductCount,resultmonth,totalQuantity,todayorder});
+  //************************  Orders ************************** */
+  totalordercount: async (req, res) => {
+    const result = await order.totalorderedcount()
+    const resultmonth = await order.monthordercount()
+    const TotalProductCount = await order.totalproductcount()
+    const monthamount = await order.monthorderamount()
+    const [totalQuantity, todayorder] = await order.todayorderdetails()
+    const ordercount = result[0].totalOrderedQuantity
+    const totalamount = result[0].totalamount
+    res.render('admin/admin', { ordercount, totalamount, monthamount, TotalProductCount, resultmonth, totalQuantity, todayorder });
   },
+  orders: async (req, res) => {
+    const orders = await order.orders()
+    res.render("admin/order", { orders })
+  },
+  confirm: async (req, res) => {
+    const proid = req.params.id
+    const result = await order.confirm(proid)
+    res.redirect('/admin/orders')
+  },
+  shipped: async (req, res) => {
+    const proid = req.params.id
+    const result = await order.shipped(proid)
+    res.redirect('/admin/orders')
+  },
+  delivered: async (req, res) => {
+    const proid = req.params.id
+    const result = await order.delivered(proid)
+    res.redirect('/admin/orders')
+  },
+  cancelled: async (req, res) => {
+    const proid = req.params.id
+    await order.cancelled(proid)
+    res.redirect('/admin/orders')
+  },
+  salereport: async (req, res) => {
+    df = req.body.datefrom
+    dt = req.body.dateto
+    status = req.body.status
+    const [orders, totalAmount, totalOrders, categorycount, categoryamount] = await order.salereport(df, dt, status)
+    res.render('admin/salereport', { orders, totalAmount, totalOrders, df, dt, status, categorycount, categoryamount, today})
+  },
+  pdf: async (req, res) => {
+    const [orders, totalAmount, totalOrders, categorycount, categoryamount] = await order.salereport(df, dt, status)
+    const pdfData =
+    {
+      orders, totalAmount, totalOrders, categorycount, categoryamount,df,dt,today
+    }
+    const htmlPDF = new PuppeteerHTMLPDF();
+    htmlPDF.setOptions({ format: 'A4' });
+    try {
+      const html = await htmlPDF.readFile('views/admin/salereportpdf.hbs', 'utf8');
+      const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
+      const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
+      const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
+      const template = hbs.compile(htmlWithStyles);
+      const content = template({ ...pdfData, imageContent });
+      
+      const pdfBuffer = await htmlPDF.create(content);
+      res.attachment(df+'_'+dt+'.pdf')
+      res.end(pdfBuffer);
+    } catch (error) {
+      console.log(error);
+      res.send('Something went wrong.')
+    }
+  },
+  gmail:async(req,res)=>{
+    const email=req.params.id
+    await user.gmail(email);
+  }
 }
+
+

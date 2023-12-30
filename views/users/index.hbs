@@ -276,9 +276,21 @@
             type: 'GET',
             url: '/users/cart/' + productId,
             success: function (response) {
-               if (typeof response === 'number') {
-                  var newCount = response;
-                  console.log(response)
+               console.log(response)
+               if(response.result === false){
+                  Swal.fire({
+                     icon: 'warning',
+                     title: 'Out of Stock!',
+                     text: 'Item will added back.',
+
+                     width: '300px',
+                  });
+               }
+               else{
+                  if (typeof response.count === 'number') {
+                  console.log(response.result)
+                  var newCount = response.count;
+                  
                   $('.fa-shopping-cart + .badge').text(newCount);
                   Swal.fire({
                      icon: 'success',
@@ -291,6 +303,8 @@
                else {
                   location.href = "/users/login";
                }
+               }
+               
             }
          });
       });

@@ -5,10 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session=require('express-session')
 var fileupload=require('express-fileupload')
-// const exphbs = require('express-handlebars');
 const {engine}=require('express-handlebars')
 
-
+require('./helpers/handlebars');
 var adminRouter = require('./routes/admin');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -29,7 +28,6 @@ app.engine(
     layoutsDir:path.join(__dirname,'views/layouts'),
     partialsDir:path.join(__dirname,'views/partials')
   }),
-  
 )
 app.use(logger('dev'));
 app.use(express.json());
@@ -40,7 +38,7 @@ app.use('/users', express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'public')));
 app.use(fileupload())
 
-const oneDay = 1000 * 60 * 60 *.1;
+const oneDay = 1000 * 60 * 60 * 24;
 app.use(session({
     secret: process.env.SESSION_KEY,
     saveUninitialized:true,

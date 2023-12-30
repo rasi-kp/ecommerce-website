@@ -1,0 +1,122 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Invoice Example</title>
+    <link rel="stylesheet" href="stylesheets/invoice.css" />
+</head>
+
+<body>
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <img src="data:image/png;base64,{{imageContent}}" style="margin-top: 2px; max-width: 50px;" alt="Logo" /> <span>Ras Shopping</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >
+                                Ras Shopping, LLC.<br />
+                                Kannur,Kerala<br />
+                                Pin: 670591<br>
+                                9605942261
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                Invoice ID:
+                                {{invoiceItems.orderID}}<br />
+                                Created:
+                                {{invoiceItems.orderdate}}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                             <td></td>
+                             <td></td>
+                            <td></td>
+                            <td>
+                                {{invoiceItems.name}} <br />
+                                {{invoiceItems.address}} <br />
+                                {{invoiceItems.city}} Pin: {{invoiceItems.pincode}}<br>
+                                {{invoiceItems.phoneno}}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+        </table>
+        <table>
+            <tr class="heading">
+                <td>Payment Method</td>
+                <td></td>
+                <td></td>
+                <td># Transaction Id</td>
+            </tr>
+            <tr class="details">
+                <td>Online Payment</td>
+                <td></td>
+                <td></td>
+                <td>{{invoiceItems.paymentID}}</td>
+            </tr>
+            <tr class="heading">
+                <td>Item</td>  
+                <td>Quantity</td>
+                <td></td>
+                <td>Amount</td>
+                
+            </tr>
+            {{#each invoiceItems.items}}
+            <tr class="item ">
+                <td>{{this.product.name}} </td>
+                <td>{{this.quantity}}</td>
+                <td></td>
+                <td>{{this.product.price}}</td>
+            </tr>
+            {{/each}}
+            <tr class="total">
+                <td></td>
+                <td></td>
+                <td>Sub Total :</td>
+                <td>{{invoiceItems.total}}</td>
+            </tr>
+            <tr class="total">
+                <td></td>
+                <td></td>
+                <td>Shipping Charge :</td>
+                <td>40</td>
+            </tr>
+             <tr class="total">
+                <td></td>
+                <td></td>
+                <td>GST :</td>
+                <td>1.8 %</td>
+            </tr>
+             <tr class="total">
+                <td></td>
+                <td></td>
+                <td>CGST :</td>
+                <td>0.6 %</td>
+            </tr>
+            <tr class="total">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Total : {{invoiceItems.totalamount}}</td>
+            </tr>
+        </table>
+    </div>
+    <p class="last">Thank you for Shopping </p>
+</body>
+
+</html>
