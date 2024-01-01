@@ -2,8 +2,60 @@
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 <link rel='stylesheet' href='/stylesheets/cart.css' />
 
+
 <div class="row">
     {{!-- {{> header}} --}}
+    <div class="container d-flex justify-content-center">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="logo">
+                    <a href="" class="d-flex align-items-center">
+                        <img src="images/lr.png" class="mt-0" style="height: 35px; width: 35px; margin-right: 10px;">
+                        <h3 class="mt-2">Ras Shopping</h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- logo section end -->
+    <!-- header section start -->
+    <div class="header_section">
+        <div class="container">
+            <div class="containt_main">
+
+                <div class="main">
+                    <!-- Another variation with a button -->
+
+                </div>
+
+                <div class="header_box">
+                    <div class="lang_box ">
+                        <a href="" class="nav-link"><i class="fa-solid text-dark">{{username}}</i>
+
+                            <div class="dropdown-menu ">
+
+                                <a href="#" class="dropdown-item">
+
+                                </a>
+                            </div>
+                    </div>
+
+                    <div class="login_menu">
+                        <ul>
+                            <li><a href="/users/home">
+                                    <i class="fa fa-home text-dark mr-0"></i>
+                                    <span class="padding_10 mr-3" style="color: black;">Home</span></a>
+                            </li>
+
+                            <li><a href="/users/logout">
+                                    <i class="fa-solid fa-right-from-bracket text-dark"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="col">
         <div class="card mb-5 mt-5">
             <div class="row">
@@ -22,7 +74,8 @@
                     <div class="row border-top border-bottom">
                         <div class="row main align-items-center">
                             <div class="col-2">
-                                <a href="/users/moredetails/{{this.product._id}}"><img class="img-fluid" src="../products-images/{{this.product.image}}">
+                                <a href="/users/moredetails/{{this.product._id}}"><img class="img-fluid"
+                                        src="../products-images/{{this.product.image}}">
                                 </a>
                             </div>
                             <div class="col">
@@ -116,23 +169,21 @@
                 type: 'GET',
                 url: '/users/cart/quantityadd/' + productId,
                 success: function (response) {
-                    {{!-- if (response.quantity === false) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Out of Stock!',
-                            text: 'Item will added back.',
-                            width: '300px',
-                        });
-                    } --}}
+                        {{!-- if (response.quantity === false) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Out of Stock!',
+                                text: 'Item will added back.',
+                                width: '300px',
+                            });
+                        } --}}
                         $('#' + uniqueId).text(response.quantity + 2);
                         $('#totpriceLink').text('Rs: ' + response.totalPrice);
                         $('#totlink').text('Rs: ' + (response.totalPrice + 40));
 
-                },
-                error: function (error) {
-                    console.error(error);
-                }
-            });
+                    },
+
+                });
         });
     });
 </script>

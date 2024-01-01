@@ -15,11 +15,12 @@ var status;
 module.exports = {
   alluser: async (req, res) => {
     const data = await user.finduser()
-    return data;
+    res.render('admin/alluser', { data });
   },
-  searchuser: async (search) => {
-    const data = await user.searchuser(search)
-    return data;
+  searchuser: async (req,res) => {
+    const {query} = req.query;
+    const data = await user.searchuser(query)
+    res.render('admin/search', { data: data });
   },
   deleteuser: async (req, res) => {
     let proid = req.params.id;
@@ -37,6 +38,9 @@ module.exports = {
     await user.insertdelete(datas)
     await user.delete(proid)
     res.redirect('/admin/alluser')
+  },
+  adduserpage: function (req, res, next) {
+    res.render('admin/adduser');
   },
   adduser: async (req, res) => {
     const datas = {
@@ -89,13 +93,22 @@ module.exports = {
   blockuser: async (req, res) => {
     const proid = req.params.id
     await user.blockuser(proid)
+    res.redirect('/admin/alluser');
   },
   unblockuser: async (req, res) => {
     const proid = req.params.id
     await user.unblockuser(proid)
+    res.redirect('/admin/alluser');
+  },
+  adminlogout: (req, res) => {
+    req.session.destroy()
+    res.redirect('/')
   },
 
   //***************    product add section    **********************
+  addproductpage:async (req, res, next)=> {
+    res.render('admin/addproduct');
+  },
   addproduct: async (req, res) => {
     const image = req.files.image;
     const datas = {
@@ -111,10 +124,11 @@ module.exports = {
       if (err)
         return res.status(500).send(err);
     });
+    res.redirect('/admin/products');
   },
   allproducts: async (req, rse) => {
     const data = await product.allproducts()
-    return data;
+      res.render('admin/allproduct', { data: data });
   },
   deleteproduct: async (req, res) => {
     const proid = req.params.id
@@ -126,6 +140,7 @@ module.exports = {
       }
     });
     await product.deleteproduct(proid)
+    res.redirect('/admin/products');
   },
   productdetails: async (req, res) => {
     const proid = req.params.id
@@ -136,6 +151,7 @@ module.exports = {
     const proid = req.params.id
     const data = await product.finddata(proid)
     res.render('admin/editproduct', { data })
+    
   },
   edit_product: async (req, res) => {
     const proid = req.params.id

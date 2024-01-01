@@ -9,3 +9,6 @@ handlebars.registerHelper('eq', function (a, b, options) {
 handlebars.registerHelper('formatDate', function (date) {
   return moment(date).format('DD MMM YYYY');
 });
+handlebars.registerHelper('lte', function(a, b) {
+  return a <= b;
+});
