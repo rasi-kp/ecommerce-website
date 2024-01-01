@@ -133,7 +133,6 @@ module.exports = {
         } else {
             return false
         }
-
     },
     quantityadd: async (userid, data) => {
         const productPrice = await product.finddata(data);
@@ -163,7 +162,7 @@ module.exports = {
         var price = await product.finddata(data.product)
         if (price.qty > 0) {
             var totprice = data.quantity * price.price
-            const updatedCart = await cart.findOneAndUpdate(
+            await cart.findOneAndUpdate(
                 { user: userid },
                 {
                     $push: { items: data },

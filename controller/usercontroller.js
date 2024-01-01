@@ -3,6 +3,7 @@ var bcrypt = require('bcrypt')
 const user = require('../helpers/userhelper')
 const product = require('../helpers/producthelper')
 const order = require('../helpers/ordershelper')
+const home = require('../homepage/home')
 const PuppeteerHTMLPDF = require('puppeteer-html-pdf');
 var nodemailer = require('nodemailer');
 const fs = require('fs');
@@ -10,6 +11,64 @@ const hbs = require('hbs')
 const crypto = require('crypto')
 
 module.exports = {
+  homepage: async (req, res) => {
+    const currentuser = req.session.user;
+    const loggedInUser = await user.findexistuser(currentuser.username);
+    const count = await user.countitems(loggedInUser._id)
+    const categorizedProducts = await home.mainpage()
+    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count })
+  },
+  login: async (req, res) => {
+    if (req.session.loggedIn) {
+      return res.redirect('/users/home')
+    } else {
+      res.render('users/login')
+    }
+  },
+  cart: async (req, res) => {
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    const data = await user.getitemscart(userid._id);
+    const count = await user.count(userid._id)
+    if (data) {
+      total = data.totalPrice + 40
+      res.render('users/cart', { data, total, count })
+    } else {
+      res.render('users/cart')
+    }
+  },
+  cartid: async (req, res) => {
+    const proid = req.params.id;
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    const cart = await user.cartexist(userid._id)
+    const productexist = await user.productexist(proid)
+    const quantity = req.query.quantity || 1;
+    const size = req.query.size || 'medium';
+    const cartItem = {
+      product: proid,
+      quantity: quantity,
+      size: size,
+    };
+    const count = await user.countitems(userid._id)
+    if (cart) {
+      if (productexist) {
+        const result = await user.updatecart(userid._id, cartItem)
+        res.json({ count, result });
+      }
+      else {
+        const result = await user.pushitems(userid._id, cartItem)
+        res.json({ count, result });
+      }
+    }
+    else {
+      const result = await user.insertcart(userid._id, proid, cartItem)
+      res.json({ count, result });
+    }  
+  },
+  user_registration: async (req, res) => {
+    res.render('users/signup')
+  },
   alldata: async (req, res) => {
     const data = product.allproducts()
     return data;
@@ -20,7 +79,7 @@ module.exports = {
     return user1.name
   },
   edituser: async (req, res) => {
-    const existuser = req
+    const existuser = req.session.user
     const data = await user.findexistuser(existuser.username)
     if (data.gender == 'male') {
       flag = true
@@ -29,6 +88,10 @@ module.exports = {
       flag = false
     }
     res.render('users/profile', { data: data, flag: flag, username: existuser.name })
+  },
+  logout:(req, res) => {
+    req.session.destroy()
+    res.redirect('/')
   },
   edituserpost: async (req, res) => {
     let proid = req.params.id;
@@ -55,7 +118,7 @@ module.exports = {
       const hashpassword = await bcrypt.hash(req.body.password, saltRounds)
       datas.password = hashpassword
       const result = await user.insert(datas)
-      await user.gmail(datas.email,datas.name) //welcome mail 
+      await user.gmail(datas.email, datas.name) //welcome mail 
       res.redirect('/users/login')
     }
   },
@@ -85,27 +148,33 @@ module.exports = {
       }
     }
   },
+  moredetails:async(req,res)=>{
+    const proid = req.params.id;
+    var data = await product.finddata(proid);
+    const otherdata=await product.allproducts(req)
+    res.render('users/moredetails',{data,otherdata})
+  },
+  //remove for home page setup
   countitems: async (req, res) => {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const countitems = await user.countitems(userid._id)
     return countitems
   },
-  moredata: async (req, res) => {
-    const proid = req.params.id;
-    var result = await product.finddata(proid);
-    return result;
-  },
+
+  //remove
   addcart: async (req, res) => {
     const proid = req.params.id;
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const cart = await user.cartexist(userid._id)
     const productexist = await user.productexist(proid)
+    const quantity = req.query.quantity || 1;
+    const size = req.query.size || 'medium';
     const cartItem = {
       product: proid,
-      quantity: 1,
-      size: 'medium',
+      quantity: quantity,
+      size: size,
     };
     if (cart) {
       if (productexist) {
@@ -123,14 +192,14 @@ module.exports = {
       return result
     }
   },
-
+  //remove for cart arrange
   cartitems: async (req, res) => {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const items = await user.getitemscart(userid._id);
-    const count = await user.count(userid._id)
     return items
   },
+  //remove for cart arrange
   count: async (req, res) => {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
@@ -142,6 +211,7 @@ module.exports = {
     const currentuser = req.session.user
     const userid = await user.findexistuser(currentuser.username);
     await user.deletecart(userid._id, proid);
+    res.redirect('/users/cart')
   },
   quantityadd: async (req, res) => {
     const proid = req.params.id;
@@ -167,6 +237,19 @@ module.exports = {
         totalPrice: cart.totalPrice
       };
       res.json(response)
+    }
+  },
+  checkout:async(req,res)=>{
+    const orderID = req.query.orderID;
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    const data = await user.getitemscart(userid._id);
+    const count = await user.count(userid._id)
+    if(count){
+      total=data.totalPrice+40
+      res.render('users/checkout',{data,total,count,orderID})
+    }else{
+      res.redirect('/users/home')
     }
   },
   placeorder: async (req, res) => {
@@ -217,7 +300,7 @@ module.exports = {
       await order.updatequantity(orderID)
       //Create Invoice
       const result = await order.invoice(orderID)
-      const pdfData ={
+      const pdfData = {
         invoiceItems: result,
       }
       const htmlPDF = new PuppeteerHTMLPDF();
@@ -259,6 +342,13 @@ module.exports = {
       res.json("failure");
     }
   },
+  sucess:(req,res)=>{
+    const orderid=req.params.id
+    res.render('users/sucess',{orderid})
+  },
+  changepassword:async(req,res)=>{
+    res.render('users/changepassword')
+  },
   quantityupdate: async (order1) => {
     const result = await order.updatequantity(order1)
   },
@@ -287,6 +377,52 @@ module.exports = {
     }
     await user.subscribe(email)
     res.json(email)
-  }
+  },
+  shop:async(req,res)=>{
+    if(req.session.loggedIn){
+      const currentuser = req.session.user;
+      const loggedInUser= await user.findexistuser(currentuser.username);
+      const count = await user.countitems(loggedInUser._id)
+      const categorizedProducts=await home.allproductslimit()
+      res.render('users/shop',{categorizedProducts,username:loggedInUser.name,count})
+    }
+    else{
+      const categorizedProducts=await home.allproductslimit()
+      res.render('users/shop',{categorizedProducts})
+    }
+  },
+  shop2:async(req,res)=>{
+    const categorizedProducts=await home.allproducts1()
+    res.render('users/shop',{categorizedProducts})
+  },
+  shop3:async(req,res)=>{
+    const categorizedProducts=await home.allproducts1()
+    res.render('users/shop',{categorizedProducts})
+  },
+  search:async (req, res) => {
+    const {query} = req.query;
+    var categorizedProducts=await home.search(query);
+    res.render('users/search',{categorizedProducts})
+  },
+  cat_fasion: async (req, res) => {
+    var data='fasion';
+    var categorizedProducts=await home.category(data);
+    res.render('users/shop',{categorizedProducts})
+  },
+  cat_electronics: async (req, res) => {
+    var data='electronics';
+    var categorizedProducts=await home.category(data);
+    res.render('users/shop',{categorizedProducts})
+  },
+  cat_jwellery: async (req, res) => {
+    var data='jwellery';
+    var categorizedProducts=await home.category(data);
+    res.render('users/shop',{categorizedProducts})
+  },
+  cat_others: async (req, res) => {
+    var data='jwellery';
+    var categorizedProducts=await home.category(data);
+    res.render('users/shop',{categorizedProducts})
+  },
 
 }
