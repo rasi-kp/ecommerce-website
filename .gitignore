@@ -1,3 +1,5 @@
 node_modules
 task
 .env
+# Local Netlify folder
+.netlify
