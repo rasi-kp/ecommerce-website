@@ -1,14 +1,14 @@
 var bcrypt = require('bcrypt')
-
-const user = require('../helpers/userhelper')
-const product = require('../helpers/producthelper')
-const order = require('../helpers/ordershelper')
-const home = require('../homepage/home')
 const PuppeteerHTMLPDF = require('puppeteer-html-pdf');
 var nodemailer = require('nodemailer');
 const fs = require('fs');
 const hbs = require('hbs')
 const crypto = require('crypto')
+
+const user = require('../helpers/userhelper')
+const product = require('../helpers/producthelper')
+const order = require('../helpers/ordershelper')
+const home = require('../homepage/home')
 
 module.exports = {
   homepage: async (req, res) => {
@@ -73,11 +73,6 @@ module.exports = {
     const data = product.allproducts()
     return data;
   },
-  currentuser: async (req, res) => {
-    const currentuser = req.session.user;
-    const user1 = await user.findexistuser(currentuser.username);
-    return user1.name
-  },
   edituser: async (req, res) => {
     const existuser = req.session.user
     const data = await user.findexistuser(existuser.username)
@@ -109,8 +104,10 @@ module.exports = {
       address: req.body.address,
       password: req.body.password
     }
-    const existuser = await user.findexistuser(req.body.username);
-    if (existuser) {
+    if ( /\s/.test(datas.username)) {
+      res.render('users/signup', { errorMessage: "Space not Alowed" })
+    }
+    else if(existuser) {
       res.render('users/signup', { errorMessage: "UserID Already Exist" })
     }
     else {
@@ -125,7 +122,6 @@ module.exports = {
 
   signInUser: async (req, res) => {
     const usercheck = await user.findexistuser(req.body.username)
-    console.log(usercheck);
     if (!usercheck) {
       res.render('users/login', { errorMessage: 'Invalied User ID' });
     }
@@ -153,58 +149,6 @@ module.exports = {
     var data = await product.finddata(proid);
     const otherdata=await product.allproducts(req)
     res.render('users/moredetails',{data,otherdata})
-  },
-  //remove for home page setup
-  countitems: async (req, res) => {
-    const currentuser = req.session.user;
-    const userid = await user.findexistuser(currentuser.username);
-    const countitems = await user.countitems(userid._id)
-    return countitems
-  },
-
-  //remove
-  addcart: async (req, res) => {
-    const proid = req.params.id;
-    const currentuser = req.session.user;
-    const userid = await user.findexistuser(currentuser.username);
-    const cart = await user.cartexist(userid._id)
-    const productexist = await user.productexist(proid)
-    const quantity = req.query.quantity || 1;
-    const size = req.query.size || 'medium';
-    const cartItem = {
-      product: proid,
-      quantity: quantity,
-      size: size,
-    };
-    if (cart) {
-      if (productexist) {
-        const result = await user.updatecart(userid._id, cartItem)
-        return result
-      }
-      else {
-        const result = await user.pushitems(userid._id, cartItem)
-        return result
-      }
-    }
-    else {
-      const result = await user.insertcart(userid._id, proid, cartItem)
-      console.log(result);
-      return result
-    }
-  },
-  //remove for cart arrange
-  cartitems: async (req, res) => {
-    const currentuser = req.session.user;
-    const userid = await user.findexistuser(currentuser.username);
-    const items = await user.getitemscart(userid._id);
-    return items
-  },
-  //remove for cart arrange
-  count: async (req, res) => {
-    const currentuser = req.session.user;
-    const userid = await user.findexistuser(currentuser.username);
-    const count = await user.count(userid._id)
-    return count
   },
   deletecart: async (req, res) => {
     const proid = req.params.id

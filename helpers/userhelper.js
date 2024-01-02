@@ -248,7 +248,6 @@ module.exports = {
             subject: 'Welcome '+ name,
             text: 'Thank You for choosing "Ras shopping"!!!!! '
         };
-
         transporter.sendMail(mailOptions, function (error, info) {
         });
     },
