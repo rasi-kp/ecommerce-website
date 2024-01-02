@@ -40,22 +40,22 @@
 
                                             <div class=" mb-2">
                                                 <label>Username :</label>
-                                                <input type="name" name="username" placeholder="Username" required
-                                                    class="form-control form-control-lg" />
+                                                <input type="name" name="username" id="username" placeholder="Username"
+                                                    required class="form-control form-control-lg" />
                                             </div>
                                             <div class=" mb-2">
                                                 <label>Email :</label>
-                                                <input type="email" name="email" id="typeEmailX" placeholder="Email"
-                                                    required class="form-control form-control-lg" />
+                                                <input type="email" name="email" id="email" placeholder="Email" required
+                                                    class="form-control form-control-lg" />
                                             </div>
                                             <div class=" mb-2">
                                                 <label>Name :</label>
-                                                <input type="name" name="name" id="typeEmailX" placeholder="Name"
-                                                    required class="form-control form-control-lg" />
+                                                <input type="name" name="name" id="name" placeholder="Name" required
+                                                    class="form-control form-control-lg" />
                                             </div>
                                             <div class=" mb-2">
                                                 <label>Phone no:</label>
-                                                <input type="number" name="number" id="typeEmailX" placeholder="9605942261"
+                                                <input type="text" name="number" id="phoneno" placeholder="Mobile No"
                                                     required class="form-control form-control-lg" />
                                             </div>
                                             <div class=" mb-2">
@@ -73,10 +73,9 @@
                                             </div>
                                             <div class="form-outline form-white mb-3">
                                                 <label>Password :</label>
-                                                <input type="password" name="password" id="typePasswordX"
+                                                <input type="password" name="password" id="password"
                                                     placeholder="Password" required
                                                     class="form-control form-control-lg" />
-
                                             </div>
                                             <h5 class=" mb-3" id="errorMessage" style="color: red;">
                                                 {{errorMessage}}
@@ -87,18 +86,68 @@
 
 
                                             <div>
-                                                <p class="mb-0">Already have an account? <a href="/users/login" class=" fw-bold">
-                                                        Login</a>
+                                               <div class="text-center mt-3">
+                                                <p class="mb-3 pb-lg-2" style="color: #393f81; font-size: 18px;">Already Have an Account
+                                                    <a href="/users/login"
+                                                        style="color: blue; font-weight: bold; font-size: 16px;">  Login Now</a>
                                                 </p>
+                                            </div>
                                     </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
     </section>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function (event) {
+            const passwordInput = document.getElementById('password');
+            const usernameInput = document.getElementById('username');
+            const mobileInput = document.getElementById('phoneno'); // Assuming you have an input field for mobile number
+
+            const usernameValue = usernameInput.value.trim();
+            const mobileValue = mobileInput ? mobileInput.value.trim() : '';
+
+            if (usernameValue === '' || /\s/.test(usernameValue)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Username!',
+                    text: 'Username cannot be null or contain spaces.',
+                    width: '300px',
+                });
+                event.preventDefault();
+                console.log(mobileValue, mobileInput)
+            } else if (mobileValue.length !== 10 || !/^\d{10}$/.test(mobileValue)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Mobile Number!',
+                    text: 'Mobile number must be a 10-digit numeric value.',
+                    width: '300px',
+                });
+                event.preventDefault();
+            } else if (passwordInput.value.length < 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Password too short!',
+                    text: 'Password must be at least 6 characters long.',
+                    width: '300px',
+                });
+                event.preventDefault();
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Successfully Sign Up.',
+                    width: '300px',
+                    showConfirmButton: false,
+                    timer: 15000,
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

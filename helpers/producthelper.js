@@ -1,4 +1,3 @@
-const user = require('../model/userschema');
 const Product = require('../model/productschema')
 const cart = require('../model/cartschema')
 module.exports = {

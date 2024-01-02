@@ -1,8 +1,14 @@
 //configure home page to control it
-
 const product = require('../helpers/producthelper')
+
+
 module.exports = {
+  main: async (req, res) => {
+    const categorizedProducts = await module.exports.mainpage(req, res)
+    res.render('users/index', { categorizedProducts });
+  },
   mainpage: async (req, res) => {
+
     const data = await product.allproducts()
 
     const categorizedProducts = {};

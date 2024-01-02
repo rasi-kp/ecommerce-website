@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt')
 const fs = require('fs');
-const puppeteer = require('puppeteer');
 const PuppeteerHTMLPDF = require('puppeteer-html-pdf');
 const hbs = require('hbs')
 const moment = require('moment');
