@@ -104,6 +104,7 @@ module.exports = {
       address: req.body.address,
       password: req.body.password
     }
+    const existuser=await user.findexistuser(datas.username)
     if ( /\s/.test(datas.username)) {
       res.render('users/signup', { errorMessage: "Space not Alowed" })
     }

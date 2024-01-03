@@ -3,7 +3,6 @@ var router = express.Router();
 const home=require('../homepage/home')
 const googleauth=require('../config/googleauthendication')
 
-
 router.get('/',home.main)  // GET home page.
 
 router.get('/auth/google', googleauth.google) //google Authendication
