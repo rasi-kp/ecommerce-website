@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>OTP Validation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .card {
+            width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h5 class="card-title">OTP Validation</h5>
+            <form id="otpForm">
+                <div class="mb-3">
+                    <label for="otpInput" class="form-label">Enter OTP:</label>
+                    <input type="text" name="otp" class="form-control" id="otpInput" required>
+                    <input type="text" name="id" value="{{userid}}" id="id" hidden>
+                </div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" id="validateOTP">Validate OTP</button>
+                </div>
+                <div id="message" class="alert" role="alert"></div>
+                <div class="timer" id="timer"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const otpForm = document.getElementById("otpForm");
+            const validateOTPButton = document.getElementById("validateOTP");
+            const messageContainer = document.getElementById("message");
+            const timerContainer = document.getElementById("timer");
+
+            let otpStartTime;
+            let countdownTimer;
+            console.log(otpStartTime)
+            validateOTPButton.addEventListener("click", function () {
+                const enteredOTP = document.getElementById("otpInput").value;
+                const id = document.getElementById("id").value;
+                const currentTime = new Date().getTime();
+                const elapsedTime = currentTime - otpStartTime;
+                console.log(elapsedTime, enteredOTP, id)
+
+                if (elapsedTime < 300000) { // 5 seconds in milliseconds
+                    // Make an AJAX request to the server for OTP validation
+                    $.ajax({
+                        url: '/users/validate-otp', // Replace with your server-side endpoint
+                        method: 'POST',
+                        data: { enteredOTP, id },
+                        success: function (response) {
+                            if (response.success) {
+                                showMessage("success", "OTP is valid!");
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Successfully Sign Up.',
+                                    width: '300px',
+                                    showConfirmButton: false,
+                                    timer: 15000,
+                                });
+                                clearInterval(countdownTimer);
+                                timerContainer.textContent = '';
+                                location.href = "/users/login"
+                            } else {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Invalied OTP!',
+                                    text: 'Pls Enter Correct OTP, Pls try again',
+                                    width: '300px',
+                                });
+                                location.href = "/users/signup"
+                            }
+                        },
+                        error: function () {
+                            showMessage("danger", "Error occurred during OTP validation. Please try again.");
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'ERROR!',
+                                text: 'Error occurred during OTP validation. Please try again.',
+                                width: '300px',
+                            });
+                        }
+                    });
+                } else {
+                    location.href = "/users/timeexceed/" + id;
+                    showMessage("danger", "Time limit exceeded. Please request a new OTP.");
+                }
+            });
+
+            function showMessage(type, text) {
+                messageContainer.className = `alert alert-${type}`;
+                messageContainer.textContent = text;
+            }
+
+            function startTimer() {
+                let remainingTime = 300;
+                countdownTimer = setInterval(function () {
+                    timerContainer.textContent = `Time remaining: ${remainingTime}s`;
+                    remainingTime--;
+
+                    if (remainingTime < 0) {
+                        clearInterval(countdownTimer);
+                        timerContainer.textContent = '';
+                    }
+                }, 1000);
+            }
+
+            // Simulate server-side OTP generation
+            otpStartTime = new Date().getTime(); // Save the start time when the OTP is generated
+
+            // Start the timer
+            startTimer();
+        });
+    </script>
+</body>
+
+</html>

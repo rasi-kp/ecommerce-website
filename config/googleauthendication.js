@@ -2,21 +2,19 @@ const user = require('../helpers/userhelper')
 const { OAuth2Client } = require('google-auth-library');
 const oAuth2Client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URL);
 
-
 module.exports = {
   google: async (req, res) => {
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: ['https://www.googleapis.com/auth/plus.me', 'profile', 'email'],
     });
-    // console.log("auth url     :"+ authUrl);
-   res.redirect(authUrl);
-    
+    console.log("auth url     :"+ authUrl);
+    res.redirect(authUrl);
   },
   googlecallback: async (req, res) => {
     const code = req.query.code;
   
-    // console.log("code   :" + code);
+    console.log("code   :" + code);
   
     const { tokens } = await oAuth2Client.getToken(code);
     oAuth2Client.setCredentials(tokens);
@@ -37,7 +35,7 @@ module.exports = {
       name : payload.given_name,
       image : payload.picture,
     }
-    // console.log(datas);
+    console.log(datas);
     const userexist=await user.findexistuser(datas.username)
     if(!userexist){
       const result = await user.insert(datas)

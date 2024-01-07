@@ -105,7 +105,7 @@
             },
             success: function (response) {
               console.log(response)
-              if (response.result === false) {
+              if (response === false) {
                 Swal.fire({
                   icon: 'warning',
                   title: 'Out of Stock!',
@@ -115,7 +115,7 @@
                 });
               }
               else {
-                if (typeof response.count === 'number') {
+                if (typeof response === 'number') {
                   Swal.fire({
                     icon: 'success',
                     title: 'Success!',
@@ -127,7 +127,6 @@
                   location.href = "/users/login";
                 }
               }
-
             }
           });
         });

@@ -169,18 +169,19 @@
                 type: 'GET',
                 url: '/users/cart/quantityadd/' + productId,
                 success: function (response) {
-                        {{!-- if (response.quantity === false) {
+                        if (response === false) {
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Out of Stock!',
                                 text: 'Item will added back.',
                                 width: '300px',
                             });
-                        } --}}
-                        $('#' + uniqueId).text(response.quantity + 2);
+                        }
+                        else{
+                            $('#' + uniqueId).text(response.quantity + 2);
                         $('#totpriceLink').text('Rs: ' + response.totalPrice);
                         $('#totlink').text('Rs: ' + (response.totalPrice + 40));
-
+                        }
                     },
 
                 });

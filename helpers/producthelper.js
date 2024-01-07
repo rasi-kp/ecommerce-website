@@ -11,7 +11,7 @@ module.exports = {
         return result;
     },
     allproducts: async (data) => {
-        var result = await Product.find({}).limit(9).lean();
+        var result = await Product.find({}).lean();
         return result
     },
     allproductspagination: async (data) => {

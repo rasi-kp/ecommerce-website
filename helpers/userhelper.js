@@ -4,6 +4,7 @@ const Product = require('../model/productschema')
 const deleteuser = require('../model/deleteuser')
 const cart = require('../model/cartschema')
 const order = require('../model/orderschema')
+const address=require('../model/addresshema')
 const subscription = require('../model/subscribeschema')
 const Razorpay = require('razorpay')
 const wishlist = require('../model/wishlistschema')
@@ -62,11 +63,21 @@ module.exports = {
         var result = await user.findOne({ _id: data })
         return result;
     },
+    finduseremail: async (data) => {
+        var result = await user.findOne({ email: data })
+        return result;
+    },
     blockuser: async (data) => {
         await user.updateOne({ _id: data }, { $set: { status: "block" } })
     },
+    forgotpassword:async(email1,password1)=>{
+        await user.updateOne({ email: email1 }, { $set: { password: password1 } })
+    },
     unblockuser: async (data) => {
         await user.updateOne({ _id: data }, { $unset: { status: 1 } })
+    },
+    verified: async (data) => {
+        await user.updateOne({ _id: data }, { $set: { verification: true } })
     },
     edituser: async (data, proid) => {
         const result = await user.updateOne({ _id: proid }, {
@@ -89,12 +100,20 @@ module.exports = {
         const result = await cart.findOne({ user: data })
         return result
     },
+    countmain: async (userid) => {
+        const result = await cart.findOne({ user: userid })
+        if (result) {
+            const count = result.items.reduce((total, item) => total + item.quantity, 0);
+            return count;
+        }
+    },
     countitems: async (userid) => {
         const result = await cart.findOne({ user: userid })
         if (result) {
             const count = result.items.reduce((total, item) => total + item.quantity, 0);
             return count;
         }
+        else return 0
     },
     count: async (userid) => {
         const result = await cart.findOne({ user: userid })
@@ -105,7 +124,6 @@ module.exports = {
         else {
             return 0
         }
-
     },
     quantity: async (userid, data) => {
         const result = await Product.findOne({ _id: data });
@@ -122,7 +140,7 @@ module.exports = {
     },
     insertcart: async (userid, proid, cartItem) => {
         var price = await product.finddata(proid)
-        if (price.qty > 0) {
+
             var totprice = cartItem.quantity * price.price
             datas = {
                 user: userid,
@@ -130,9 +148,6 @@ module.exports = {
                 totalPrice: totprice,
             }
             await cart.insertMany(datas)
-        } else {
-            return false
-        }
     },
     quantityadd: async (userid, data) => {
         const productPrice = await product.finddata(data);
@@ -160,7 +175,6 @@ module.exports = {
     },
     pushitems: async (userid, data) => {
         var price = await product.finddata(data.product)
-        if (price.qty > 0) {
             var totprice = data.quantity * price.price
             await cart.findOneAndUpdate(
                 { user: userid },
@@ -170,14 +184,11 @@ module.exports = {
                 },
                 { new: true }
             );
-        } else {
-            return false
-        }
+
     },
     updatecart: async (userid, data) => {
         const productPrice = await product.finddata(data.product);
-        console.log("check   " + productPrice.qty);
-        if (productPrice.qty > 0) {
+        
             const newTotalPrice = 1 * productPrice.price;
             const updatedCart = await cart.findOneAndUpdate(
                 { user: userid, 'items.product': data.product },
@@ -186,9 +197,7 @@ module.exports = {
                 },
                 { new: true }
             );
-        } else {
-            return false
-        }
+
 
     },
     getitemscart: async (data) => {
@@ -251,4 +260,23 @@ module.exports = {
         transporter.sendMail(mailOptions, function (error, info) {
         });
     },
+    address:async(data)=>{
+        await address.updateOne(
+            { userID: data.userID },
+            { $push: { addresses: data.addresses } }
+        )
+    },
+    existaddress:async(data)=>{
+        const existingAddress = await address.findOne({
+            userID: data.userID,
+            'addresses.name': data.addresses.name,
+            'addresses.city': data.addresses.city,
+            'addresses.pincode': data.addresses.pincode,
+        });
+        return existingAddress
+    },
+    addresstake:async(id)=>{
+        const result=address.find({userID:id}).lean()
+        return result
+    }
 };

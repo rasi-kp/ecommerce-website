@@ -25,6 +25,7 @@
     "nodemailer": "^6.9.7",
     "puppeteer": "^21.6.1",
     "puppeteer-html-pdf": "^3.0.3",
+    "randomstring": "^1.3.0",
     "razorpay": "^2.9.2",
     "winston": "^3.11.0"
   },

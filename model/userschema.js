@@ -23,10 +23,10 @@ const signup = new mongoose.Schema({
     address: String,
     password: {
         type: String,
-    }
+    },
+    verification:String,
 })
 const signupdata = new mongoose.model("users", signup)
 
 
-
-module.exports=signupdata;
+module.exports = signupdata;
