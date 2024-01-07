@@ -83,7 +83,13 @@
 
                                             <button class="btn btn-dark btn-lg btn-block mb-2" type="submit">Sign
                                                 Up</button>
-
+                                            <div class="pt-1 mb-3">
+                                                <a href="/auth/google" class="btn btn-lg btn-block border border-dark">
+                                                    <img src="../images/google.png" alt="Google Login"
+                                                        class="google-logo mr-2" style="height: 40px;"><span
+                                                        class="">SignUp with Google</span>
+                                                </a>
+                                            </div>
 
                                             <div>
                                                <div class="text-center mt-3">
@@ -137,14 +143,7 @@
                 });
                 event.preventDefault();
             } else {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: 'Successfully Sign Up.',
-                    width: '300px',
-                    showConfirmButton: false,
-                    timer: 15000,
-                });
+                console.log("Otp verify")
             }
         });
     </script>

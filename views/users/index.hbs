@@ -281,7 +281,7 @@
             url: '/users/cart/' + productId,
             success: function (response) {
                console.log(response)
-               if(response.result === false){
+               if(response === false){
                   Swal.fire({
                      icon: 'warning',
                      title: 'Out of Stock!',
@@ -291,9 +291,9 @@
                   });
                }
                else{
-                  if (typeof response.count === 'number') {
-                  console.log(response.result)
-                  var newCount = response.count;
+                  if (typeof response === 'number') {
+                  console.log(response)
+                  var newCount = response;
                   
                   $('.fa-shopping-cart + .badge').text(newCount);
                   Swal.fire({

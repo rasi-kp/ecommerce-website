@@ -81,7 +81,7 @@
         }
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov','Dec'],
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov','Dec','jan'],
         labels: {
           style: {
             fontSize: '11px',
@@ -282,7 +282,7 @@
 
   var orderCount1=window.orderCount
   var Totalproductcount=window.totalproductcount
-  var orderper=((orderCount1 /Totalproductcount)*100).toFixed(2);
+  var orderper=((Totalproductcount/orderCount1)*100).toFixed(2);
 
   const growthChartEl = document.querySelector('#growthChart'),
     growthChartOptions = {
@@ -575,7 +575,7 @@
       }
     },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov','Dec'],
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov','Dec','jan'],
       axisBorder: {
         show: false
       },

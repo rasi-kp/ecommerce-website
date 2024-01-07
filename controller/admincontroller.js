@@ -125,7 +125,7 @@ module.exports = {
     });
     res.redirect('/admin/products');
   },
-  allproducts: async (req, rse) => {
+  allproducts: async (req, res) => {
     const data = await product.allproducts()
       res.render('admin/allproduct', { data: data });
   },
