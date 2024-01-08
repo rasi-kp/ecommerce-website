@@ -266,10 +266,7 @@ module.exports = {
         });
     },
     address:async(data)=>{
-        await address.updateOne(
-            { userID: data.userID },
-            { $push: { addresses: data.addresses } }
-        )
+        await address.insertMany(data)
     },
     existaddress:async(data)=>{
         const existingAddress = await address.findOne({
