@@ -134,9 +134,14 @@ module.exports = {
         const quantity = currentCartItem.items[0].quantity - 1;
         return quantity
     },
-    productexist: async (data) => {
-        const result = await cart.findOne({ 'items.product': data })
-        return result
+    productexist: async (data,userid) => {
+        const result = await cart.findOne({user:userid,'items.product': data })
+        // if(result!=''){
+            return result
+        // }
+        // else{
+        //     return null
+        // }
     },
     insertcart: async (userid, proid, cartItem) => {
         var price = await product.finddata(proid)

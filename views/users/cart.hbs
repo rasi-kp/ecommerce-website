@@ -73,7 +73,7 @@
                     {{#each data.items}}
                     <div class="row border-top border-bottom">
                         <div class="row main align-items-center">
-                            <div class="col-2">
+                            <div class="col">
                                 <a href="/users/moredetails/{{this.product._id}}"><img class="img-fluid"
                                         src="../products-images/{{this.product.image}}">
                                 </a>
@@ -84,13 +84,13 @@
                                 <div class="row text-muted">{{this.size}}</div>
                             </div>
                             <div class="col">
-                                <a class="minus" href="/users/cart/quantityminus/{{this.product._id}}"> - </a>
-                                <a id="quantityLink_{{this.product._id}}" class="border">{{this.quantity}}</a>
-                                <a class="add" href="/users/cart/quantityadd/{{this.product._id}}"> + </a>
+                                <a class="minus border" href="/users/cart/quantityminus/{{this.product._id}}"> - </a>
+                                <a id="quantityLink_{{this.product._id}}" class="">{{this.quantity}}</a>
+                                <a class="add border" href="/users/cart/quantityadd/{{this.product._id}}"> + </a>
                             </div>
                             <div class="col">Rs : {{this.product.price}} <span class="close"><a
                                         href="/users/cart/delete/{{this.product._id}}">&#10005;</a></span></div>
-                        </div>
+                            </div>
                     </div>
                     {{/each}}
                     {{else}}

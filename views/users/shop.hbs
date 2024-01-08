@@ -72,3 +72,45 @@
     });
   });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+   $(document).ready(function () {
+      $('.buy_bt a').click(function (e) {
+         e.preventDefault();
+         var productId = $(this).attr('href').split('/').pop();
+         var productCount = $(this).closest('.box_main').find('.badge').text();
+         $.ajax({
+            type: 'GET',
+            url: '/users/cart/' + productId,
+            success: function (response) {
+               console.log(response)
+               if(response === false){
+                  Swal.fire({
+                     icon: 'warning',
+                     title: 'Out of Stock!',
+                     text: 'Item will added back.',
+                     width: '300px',
+                  });
+               }
+               else{
+                  if (typeof response === 'number') {
+                  console.log(response)
+                  var newCount = response;
+                  
+                  $('.fa-shopping-cart + .badge').text(newCount);
+                  Swal.fire({
+                     icon: 'success',
+                     title: 'Success!',
+                     text: 'Item successfully added to the cart.',
+                     width: '300px',
+                  });
+               }
+               else {
+                  location.href = "/users/login";
+               }
+               }
+            }
+         });
+      });
+   });
+</script>
