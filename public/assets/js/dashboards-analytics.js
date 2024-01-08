@@ -282,7 +282,7 @@
 
   var orderCount1=window.orderCount
   var Totalproductcount=window.totalproductcount
-  var orderper=((Totalproductcount/orderCount1)*100).toFixed(2);
+  var orderper=(((Totalproductcount-30)/(orderCount1))*100).toFixed(2);
 
   const growthChartEl = document.querySelector('#growthChart'),
     growthChartOptions = {

@@ -52,7 +52,6 @@ module.exports = {
       var cartqty = foundItem.quantity
     }
     const productqty = await product.finddata(proid)
-    console.log(productqty.qty,cartqty);
     if (productqty.qty > cartqty) {
       const quantity = req.query.quantity || 1;
       const size = req.query.size || 'medium';
@@ -64,18 +63,15 @@ module.exports = {
       count = await user.countitems(userid._id)
       if (cart) {
         if (productexist) {
-          console.log("add product count");
           await user.updatecart(userid._id, cartItem)
           res.json(count + 1);
         }
         else {
-          console.log("push product");
           await user.pushitems(userid._id, cartItem)
           res.json(count + 1);
         }
       }
       else {
-        console.log("insert new product");
         await user.insertcart(userid._id, proid, cartItem)
         res.json(count + 1);
       }
@@ -271,10 +267,12 @@ module.exports = {
     if (count) {
       const data = await user.getitemscart(userid._id);
       const address1 = await user.addresstake(userid._id)
+      console.log(address1);
       if (address1 != '') {
         var address = address1[0].addresses
       }
       total = data.totalPrice + 40
+      console.log(address);
       res.render('users/checkout', { data, total, count, orderID, address })
     } else {
       res.redirect('/users/home')
@@ -305,10 +303,9 @@ module.exports = {
         paymentId: "null",
       }
       const order = await user.payment(orderID, orders.totalamount);
-      res.json(order);
       await user.orders(orders);
       const newAddress = {
-        userID: userid,
+        userID: userid._id,
         addresses: {
           name: req.body.name,
           address: req.body.address,
@@ -322,6 +319,7 @@ module.exports = {
       if (!existingAddress) {
         await user.address(newAddress)
       }
+      res.json(order);
     }
   },
   paymentverify: async (req, res) => {
