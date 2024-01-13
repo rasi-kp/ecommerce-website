@@ -5,6 +5,7 @@ const hbs = require('hbs')
 const moment = require('moment');
 const today = moment().format('DD-MM-YYYY');
 
+const multer = require('../config/multer')
 const user = require('../helpers/userhelper')
 const product = require('../helpers/producthelper')
 const order = require('../helpers/ordershelper');
@@ -16,8 +17,8 @@ module.exports = {
     const data = await user.finduser()
     res.render('admin/alluser', { data });
   },
-  searchuser: async (req,res) => {
-    const {query} = req.query;
+  searchuser: async (req, res) => {
+    const { query } = req.query;
     const data = await user.searchuser(query)
     res.render('admin/search', { data: data });
   },
@@ -105,29 +106,24 @@ module.exports = {
   },
 
   //***************    product add section    **********************
-  addproductpage:async (req, res, next)=> {
+  addproductpage: async (req, res, next) => {
     res.render('admin/addproduct');
   },
   addproduct: async (req, res) => {
-    const image = req.files.image;
-    const datas = {
-      name: req.body.name,
-      image: image.name,
-      description: req.body.description,
-      price: req.body.price,
-      category: req.body.category,
-      qty: req.body.qty,
-    }
-    const result = await product.insertdata(datas)
-    image.mv('./public/products-images/' + image.name, (err) => {
-      if (err)
-        return res.status(500).send(err);
-    });
-    res.redirect('/admin/products');
+      const datas = {
+        name: req.body.name,
+        image: req.file.filename,
+        description: req.body.description,
+        price: req.body.price,
+        category: req.body.category,
+        qty: req.body.qty,
+      }
+      await product.insertdata(datas)
+      res.redirect('/admin/products');
   },
   allproducts: async (req, res) => {
     const data = await product.allproducts()
-      res.render('admin/allproduct', { data: data });
+    res.render('admin/allproduct', { data: data });
   },
   deleteproduct: async (req, res) => {
     const proid = req.params.id
@@ -150,35 +146,27 @@ module.exports = {
     const proid = req.params.id
     const data = await product.finddata(proid)
     res.render('admin/editproduct', { data })
-    
+
   },
   edit_product: async (req, res) => {
     const proid = req.params.id
     const data = await product.finddata(proid);
     var image = data.image
-    if (req.files) {
-      var file = req.files.image;
-      var image = file.name;
       const imagePath = './public/products-images/' + image;
       fs.unlink(imagePath, (err) => {
         if (err && err.code !== 'ENOENT') {
           console.error('Error deleting existing image:', unlinkErr);
         }
       });
-      file.mv('./public/products-images/' + image, (err) => {
-        if (err)
-          return res.status(500).send(err);
-      });
-    }
     const datas = {
       name: req.body.name,
-      image: image,
+      image: req.file.filename,
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
       qty: req.body.qty,
     }
-    const result = await product.editproduct(datas, proid)
+    await product.editproduct(datas, proid)
     res.redirect('/admin/products')
   },
   //************************  Orders ************************** */
@@ -221,13 +209,13 @@ module.exports = {
     dt = req.body.dateto
     status = req.body.status
     const [orders, totalAmount, totalOrders, categorycount, categoryamount] = await order.salereport(df, dt, status)
-    res.render('admin/salereport', { orders, totalAmount, totalOrders, df, dt, status, categorycount, categoryamount, today})
+    res.render('admin/salereport', { orders, totalAmount, totalOrders, df, dt, status, categorycount, categoryamount, today })
   },
   pdf: async (req, res) => {
     const [orders, totalAmount, totalOrders, categorycount, categoryamount] = await order.salereport(df, dt, status)
     const pdfData =
     {
-      orders, totalAmount, totalOrders, categorycount, categoryamount,df,dt,today
+      orders, totalAmount, totalOrders, categorycount, categoryamount, df, dt, today
     }
     const htmlPDF = new PuppeteerHTMLPDF();
     htmlPDF.setOptions({ format: 'A4' });
@@ -238,17 +226,17 @@ module.exports = {
       const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
       const template = hbs.compile(htmlWithStyles);
       const content = template({ ...pdfData, imageContent });
-      
+
       const pdfBuffer = await htmlPDF.create(content);
-      res.attachment(df+'_'+dt+'.pdf')
+      res.attachment(df + '_' + dt + '.pdf')
       res.end(pdfBuffer);
     } catch (error) {
       console.log(error);
       res.send('Something went wrong.')
     }
   },
-  gmail:async(req,res)=>{
-    const email=req.params.id
+  gmail: async (req, res) => {
+    const email = req.params.id
     await user.gmail(email);
   }
 }

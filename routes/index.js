@@ -9,9 +9,5 @@ router.get('/auth/google', googleauth.google) //google Authendication
 
 router.get('/auth/google/callback', googleauth.googlecallback) //callback authendication
 
-// router.get('/auth/googlelogin', googleauth.googlelogin) //google Authendication login
-
-// router.get('/auth/google/callbacklogin', googleauth.googlelogincallback) //callback authendication
-
 
 module.exports = router;

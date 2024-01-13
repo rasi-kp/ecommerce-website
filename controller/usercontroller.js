@@ -10,6 +10,8 @@ const product = require('../helpers/producthelper')
 const order = require('../helpers/ordershelper')
 const home = require('../homepage/home')
 const otp = require('../config/otp')
+const razorpay = require('../config/razorpay')
+const stripe = require('../config/stripe')
 
 module.exports = {
   homepage: async (req, res) => {
@@ -46,7 +48,7 @@ module.exports = {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const cart = await user.cartexist(userid._id)
-    const productexist = await user.productexist(proid,userid._id)
+    const productexist = await user.productexist(proid, userid._id)
     if (productexist) {
       var foundItem = productexist.items.find(item => item.product.toString() === proid);
       var cartqty = foundItem.quantity
@@ -146,7 +148,6 @@ module.exports = {
         res.render('users/login')
       }
       else {
-        console.log("hai");
         await user.delete(req.body.id)
         res.json({ success: false });
       }
@@ -176,7 +177,6 @@ module.exports = {
     }
   },
   resetpassword: async (req, res) => {
-    console.log(req.body);
     const saltRounds = 10;
     const hashpassword = await bcrypt.hash(req.body.newPassword, saltRounds)
     await user.forgotpassword(req.body.email, hashpassword)
@@ -227,7 +227,7 @@ module.exports = {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const quantity = await user.quantity(userid._id, proid)
-    const productexist = await user.productexist(proid,userid._id)
+    const productexist = await user.productexist(proid, userid._id)
     if (productexist) {
       var foundItem = productexist.items.find(item => item.product.toString() === proid);
       var cartqty = foundItem.quantity
@@ -267,12 +267,10 @@ module.exports = {
     if (count) {
       const data = await user.getitemscart(userid._id);
       const address1 = await user.addresstake(userid._id)
-      console.log(address1);
       if (address1 != '') {
         var address = address1[0].addresses
       }
       total = data.totalPrice + 40
-      console.log(address);
       res.render('users/checkout', { data, total, count, orderID, address })
     } else {
       res.redirect('/users/home')
@@ -302,7 +300,9 @@ module.exports = {
         status: "Pending",
         paymentId: "null",
       }
-      const order = await user.payment(orderID, orders.totalamount);
+      if (req.body.paymentMethod === "razorpay") {
+        var order = await razorpay.payment(orderID, orders.totalamount);
+      }
       await user.orders(orders);
       const newAddress = {
         userID: userid._id,
@@ -336,49 +336,53 @@ module.exports = {
       await order.placed(orderID, paymentId)
       await order.updatequantity(orderID)
       await user.deletecartoredered(userid._id)
-      // //Create Invoice
-      // const result = await order.invoice(orderID)
-      // const pdfData = {
-      //   invoiceItems: result,
-      // }
-      // const htmlPDF = new PuppeteerHTMLPDF();
-      // htmlPDF.setOptions({ format: 'A4' });
+      //Create Invoice
+      const result = await order.invoice(orderID)
+      const pdfData = {
+        invoiceItems: result,
+      }
+      const htmlPDF = new PuppeteerHTMLPDF();
+      htmlPDF.setOptions({ format: 'A4' });
 
-      // const html = await htmlPDF.readFile('views/admin/invoice.hbs', 'utf8');
-      // const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
-      // const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
-      // const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
+      const html = await htmlPDF.readFile('views/admin/invoice.hbs', 'utf8');
+      const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
+      const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
+      const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
 
-      // const template = hbs.compile(htmlWithStyles);
-      // const content = template({ ...pdfData, imageContent });
-      // const pdfBuffer = await htmlPDF.create(content);
-      // //Generate email
-      // var transporter = nodemailer.createTransport({
-      //   service: 'gmail',
-      //   auth: {
-      //     user: process.env.EMAIL_ID,
-      //     pass: process.env.EMAIL_PASS,
-      //   }
-      // });
-      // var mailOptions = {
-      //   from: 'rasir239@gmail.com',
-      //   to: userid.email,
-      //   subject: 'THANK YOU FOR SHOPPING "Ras Shopping"' + orderID,
-      //   text: 'Thank you for Choosing Ras Shopping  !!! Attached is the invoice for your recent purchase.',
-      //   attachments: [
-      //     {
-      //       filename: `${orderID}.pdf`,
-      //       content: pdfBuffer,
-      //     },
-      //   ],
-      // };
-      // transporter.sendMail(mailOptions, function (error, info) {
-      // });
+      const template = hbs.compile(htmlWithStyles);
+      const content = template({ ...pdfData, imageContent });
+      const pdfBuffer = await htmlPDF.create(content);
+      //Generate email
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_ID,
+          pass: process.env.EMAIL_PASS,
+        }
+      });
+      var mailOptions = {
+        from: 'rasir239@gmail.com',
+        to: userid.email,
+        subject: 'THANK YOU FOR SHOPPING "Ras Shopping"' + orderID,
+        text: 'Thank you for Choosing Ras Shopping  !!! Attached is the invoice for your recent purchase.',
+        attachments: [
+          {
+            filename: `${orderID}.pdf`,
+            content: pdfBuffer,
+          },
+        ],
+      };
+      transporter.sendMail(mailOptions, function (error, info) {
+      });
+
       res.json("sucess");
     }
     else {
       res.json("failure");
     }
+  },
+  stripe: async (req, res) => {
+    var order = await stripe.payment(req,res);
   },
   sucess: (req, res) => {
     const orderid = req.params.id

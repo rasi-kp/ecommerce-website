@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const multer=require('../config/multer')
 const isAuth = require('../middleware/isAuth')
 const isAdmin=require('../middleware/isAuthadmin')
 const {
@@ -25,9 +26,9 @@ router.get('/logout',adminlogout)
 //******************************  Product Section  ********************** */
 router.get('/products',isAdmin, isAuth,allproducts)
 router.get('/products/add_product',isAdmin, isAuth,addproductpage)
-router.post('/products/add_product',isAdmin,isAuth,addproduct)
+router.post('/products/add_product',isAdmin, isAuth,multer.single('image'),addproduct)
 router.get('/edit_product/:id',isAdmin, isAuth,editproduct)
-router.post('/edit_product/:id',isAdmin, isAuth,edit_product)
+router.post('/edit_product/:id',isAdmin, isAuth,multer.single('image'),edit_product)
 router.get('/products/editproductview',isAdmin,isAuth,allproducts);
 router.get('/products/deleteproduct/:id',isAdmin,isAuth,deleteproduct);
 
@@ -43,9 +44,8 @@ router.get('/pdfgenerator',isAdmin,isAuth,pdf);
 router.get('/gmail/:id',gmail);
 // Testing route
 router.get('/test',async(req,res)=>{
-  res.render('admin')
+  res.render('users/test')
 })
-
 
 
 module.exports = router;
