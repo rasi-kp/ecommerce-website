@@ -187,14 +187,14 @@
                 </div>
             </div>
             </form>
-            <form id="stripe" class="" action="/users/stripe" method="POST">
+            {{!-- <form id="stripe" class="" action="/users/stripe" method="POST">
                 <input type="hidden" name="amount" value="{{total}}">
                 <script src="https://js.stripe.com/v3/"></script>
                 <script src="https://checkout.stripe.com/checkout.js" class=""
                     data-key="pk_test_51OWO4DSDcHlKMfjV6xPSHM2Y3WUWUZTYYTyDIFxlD3sC21SWGVGqZIxdZEFzXgoAHhCIHuK7Z3YBjWO7Tyrb78zC00OUbvO57s"
                     data-amount="{{total}}" data-currency="INR" data-name="Ras Shopping" data-image="../images/lr.png"
                     data-locale="auto"></script>
-            </form>
+            </form> --}}
         </div>
     </div>
 </div>
@@ -215,8 +215,6 @@
     });
 </script>
 
-<script src="https://js.stripe.com/v3/"></script>
-
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     $("#formorder").submit((e) => {
@@ -236,8 +234,19 @@
                 }
             });
         } else if (paymentMethod === 'stripe') {
-            
-            $('#stripe').submit();
+            location.href='/users/stripepage'
+            {{!-- $.ajax({
+                url: '/users/stripepage', 
+                method: 'POST',
+                data: $("#formorder").serialize(),
+                success: (res) => {
+                    // Handle success for Stripe, if needed
+                    console.log("Stripe AJAX Success:", res);
+                },
+                error: (xhr, status, error) => {
+                    console.error("Stripe AJAX Error:", status, error);
+                }
+            }); --}}
         }
     });
 

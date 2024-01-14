@@ -6,7 +6,7 @@ const {
   signUpUser,signInUser,edituser,edituserpost,orders,paymentverify,homepage,login,forgotpassword,
   deletecart,quantityadd,quantityminus,search,placeorder,password,subscribe,invoice,sendotp,stripe,
   user_registration,cart,cartid,checkout,sucess,moredetails,logout,changepassword,resetpassword,
-  timeexeed,validateotp,shop,shop2,shop3,cat_fasion,cat_jwellery,cat_electronics,cat_others
+  timeexeed,validateotp,shop,shop2,shop3,cat_fasion,cat_jwellery,cat_electronics,cat_others,stripepage,
 } = require('../controller/usercontroller')
 
 // *************************** USERS MANAGE *************************
@@ -34,6 +34,7 @@ router.get('/cart/quantityminus/:id',isAuth,quantityminus)
 router.get('/checkout',isAuth,checkout)
 router.post('/placeorder',isAuth,placeorder);
 router.post('/stripe',stripe);
+router.get('/stripepage',stripepage);
 router.post('/verifypayment',isAuth,paymentverify)
 router.get('/logout',isAuth,logout)
 router.get('/orders',isAuth,orders)

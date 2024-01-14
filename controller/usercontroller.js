@@ -260,7 +260,6 @@ module.exports = {
     }
   },
   checkout: async (req, res) => {
-    const orderID = req.query.orderID;
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const count = await user.count(userid._id)
@@ -271,7 +270,7 @@ module.exports = {
         var address = address1[0].addresses
       }
       total = data.totalPrice + 40
-      res.render('users/checkout', { data, total, count, orderID, address })
+      res.render('users/checkout', { data, total, count, address })
     } else {
       res.redirect('/users/home')
     }
@@ -380,6 +379,10 @@ module.exports = {
     else {
       res.json("failure");
     }
+  },
+  stripepage:async(req,res)=>{
+    console.log(req.body);
+    res.render('users/stripepage')
   },
   stripe: async (req, res) => {
     var order = await stripe.payment(req,res);
