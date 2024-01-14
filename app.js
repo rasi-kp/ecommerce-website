@@ -10,8 +10,8 @@ require('./helpers/handlebars');
 var adminRouter = require('./routes/admin');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-require('dotenv').config();//require env variables
-require('./config/dbconnection');//database connection
+require('dotenv').config(); //require env variables
+require('./config/dbconnection'); //database connection
 
 var app = express();
 // view engine setup
