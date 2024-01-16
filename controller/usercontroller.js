@@ -336,43 +336,43 @@ module.exports = {
       await order.updatequantity(orderID)
       await user.deletecartoredered(userid._id)
       //Create Invoice
-      // const result = await order.invoice(orderID)
-      // const pdfData = {
-      //   invoiceItems: result,
-      // }
-      // const htmlPDF = new PuppeteerHTMLPDF();
-      // htmlPDF.setOptions({ format: 'A4' });
+      const result = await order.invoice(orderID)
+      const pdfData = {
+        invoiceItems: result,
+      }
+      const htmlPDF = new PuppeteerHTMLPDF();
+      htmlPDF.setOptions({ format: 'A4' });
 
-      // const html = await htmlPDF.readFile('views/admin/invoice.hbs', 'utf8');
-      // const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
-      // const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
-      // const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
+      const html = await htmlPDF.readFile('views/admin/invoice.hbs', 'utf8');
+      const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
+      const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
+      const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
 
-      // const template = hbs.compile(htmlWithStyles);
-      // const content = template({ ...pdfData, imageContent });
-      // const pdfBuffer = await htmlPDF.create(content);
-      // //Generate email
-      // var transporter = nodemailer.createTransport({
-      //   service: 'gmail',
-      //   auth: {
-      //     user: process.env.EMAIL_ID,
-      //     pass: process.env.EMAIL_PASS,
-      //   }
-      // });
-      // var mailOptions = {
-      //   from: 'rasir239@gmail.com',
-      //   to: userid.email,
-      //   subject: 'THANK YOU FOR SHOPPING "Ras Shopping"' + orderID,
-      //   text: 'Thank you for Choosing Ras Shopping  !!! Attached is the invoice for your recent purchase.',
-      //   attachments: [
-      //     {
-      //       filename: `${orderID}.pdf`,
-      //       content: pdfBuffer,
-      //     },
-      //   ],
-      // };
-      // transporter.sendMail(mailOptions, function (error, info) {
-      // });
+      const template = hbs.compile(htmlWithStyles);
+      const content = template({ ...pdfData, imageContent });
+      const pdfBuffer = await htmlPDF.create(content);
+      //Generate email
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_ID,
+          pass: process.env.EMAIL_PASS,
+        }
+      });
+      var mailOptions = {
+        from: 'rasir239@gmail.com',
+        to: userid.email,
+        subject: 'THANK YOU FOR SHOPPING "Ras Shopping"' + orderID,
+        text: 'Thank you for Choosing Ras Shopping  !!! Attached is the invoice for your recent purchase.',
+        attachments: [
+          {
+            filename: `${orderID}.pdf`,
+            content: pdfBuffer,
+          },
+        ],
+      };
+      transporter.sendMail(mailOptions, function (error, info) {
+      });
 
       res.json("sucess");
     }
@@ -380,11 +380,11 @@ module.exports = {
       res.json("failure");
     }
   },
-  stripepage:async(req,res)=>{
+  stripepage: async (req, res) => {
     res.render('users/stripepage')
   },
   stripe: async (req, res) => {
-    var order = await stripe.payment(req,res);
+    var order = await stripe.payment(req, res);
   },
   sucess: (req, res) => {
     const orderid = req.params.id
@@ -443,16 +443,18 @@ module.exports = {
     res.json(email)
   },
   shop: async (req, res) => {
+    const page = parseInt(req.params.page) || 1;
+    const pageSize = 6;
+    const skip = (page - 1) * pageSize;
+    const { categorizedProducts, totalPages } = await user.pagination(skip, pageSize);
     if (req.session.loggedIn) {
       const currentuser = req.session.user;
       const loggedInUser = await user.findexistuser(currentuser.username);
       const count = await user.countitems(loggedInUser._id)
-      const categorizedProducts = await home.allproductslimit()
-      res.render('users/shop', { categorizedProducts, username: loggedInUser.name, count })
+      res.render('users/shop', { categorizedProducts, username: loggedInUser.name, count, totalPages, currentPage: page, pages: Array.from({ length: totalPages }, (_, i) => i + 1) });
     }
     else {
-      const categorizedProducts = await home.allproductslimit()
-      res.render('users/shop', { categorizedProducts })
+      res.render('users/shop', { categorizedProducts, totalPages, currentPage: page, pages: Array.from({ length: totalPages }, (_, i) => i + 1) });
     }
   },
   shop2: async (req, res) => {

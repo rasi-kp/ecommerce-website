@@ -12,3 +12,6 @@ handlebars.registerHelper('formatDate', function (date) {
 handlebars.registerHelper('lte', function(a, b) {
   return a <= b;
 });
+handlebars.registerHelper('isEqual', function (a, b, options) {
+  return a === b ? options.fn(this) : options.inverse(this);
+});

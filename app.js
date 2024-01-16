@@ -33,6 +33,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/users', express.static(path.join(__dirname, 'public')));
+app.use('/users/shop', express.static(path.join(__dirname, 'public')));
+app.use('/users/moredetails', express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'public')));
 
 const oneDay = 1000 * 60 * 60 * 24;

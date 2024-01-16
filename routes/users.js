@@ -46,7 +46,7 @@ router.post('/subscribe',subscribe)//last subscribe
 router.get('/products/search',search)//Products Search
 
 //show all products with pagination
-router.get('/shop',shop)
+router.get('/shop/:page',shop)
 router.get('/shop2',shop2)
 router.get('/shop3',shop3)
 
