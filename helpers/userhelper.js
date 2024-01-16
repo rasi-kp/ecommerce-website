@@ -4,14 +4,13 @@ const Product = require('../model/productschema')
 const deleteuser = require('../model/deleteuser')
 const cart = require('../model/cartschema')
 const order = require('../model/orderschema')
-const address=require('../model/addresshema')
+const address = require('../model/addresshema')
 const subscription = require('../model/subscribeschema')
 const wishlist = require('../model/wishlistschema')
 var nodemailer = require('nodemailer');
 
 
 module.exports = {
-    
     insert: async (data) => {
         const result = await user.insertMany(data);
         return result;
@@ -50,7 +49,7 @@ module.exports = {
     blockuser: async (data) => {
         await user.updateOne({ _id: data }, { $set: { status: "block" } })
     },
-    forgotpassword:async(email1,password1)=>{
+    forgotpassword: async (email1, password1) => {
         await user.updateOne({ email: email1 }, { $set: { password: password1 } })
     },
     unblockuser: async (data) => {
@@ -114,25 +113,20 @@ module.exports = {
         const quantity = currentCartItem.items[0].quantity - 1;
         return quantity
     },
-    productexist: async (data,userid) => {
-        const result = await cart.findOne({user:userid,'items.product': data })
-        // if(result!=''){
-            return result
-        // }
-        // else{
-        //     return null
-        // }
+    productexist: async (data, userid) => {
+        const result = await cart.findOne({ user: userid, 'items.product': data })
+        return result
     },
     insertcart: async (userid, proid, cartItem) => {
         var price = await product.finddata(proid)
 
-            var totprice = cartItem.quantity * price.price
-            datas = {
-                user: userid,
-                items: [cartItem],
-                totalPrice: totprice,
-            }
-            await cart.insertMany(datas)
+        var totprice = cartItem.quantity * price.price
+        datas = {
+            user: userid,
+            items: [cartItem],
+            totalPrice: totprice,
+        }
+        await cart.insertMany(datas)
     },
     quantityadd: async (userid, data) => {
         const productPrice = await product.finddata(data);
@@ -160,30 +154,27 @@ module.exports = {
     },
     pushitems: async (userid, data) => {
         var price = await product.finddata(data.product)
-            var totprice = data.quantity * price.price
-            await cart.findOneAndUpdate(
-                { user: userid },
-                {
-                    $push: { items: data },
-                    $inc: { totalPrice: totprice }
-                },
-                { new: true }
-            );
-
+        var totprice = data.quantity * price.price
+        await cart.findOneAndUpdate(
+            { user: userid },
+            {
+                $push: { items: data },
+                $inc: { totalPrice: totprice }
+            },
+            { new: true }
+        );
     },
     updatecart: async (userid, data) => {
         const productPrice = await product.finddata(data.product);
-        
-            const newTotalPrice = 1 * productPrice.price;
-            const updatedCart = await cart.findOneAndUpdate(
-                { user: userid, 'items.product': data.product },
-                {
-                    $inc: { 'items.$.quantity': 1, totalPrice: newTotalPrice },
-                },
-                { new: true }
-            );
 
-
+        const newTotalPrice = 1 * productPrice.price;
+        const updatedCart = await cart.findOneAndUpdate(
+            { user: userid, 'items.product': data.product },
+            {
+                $inc: { 'items.$.quantity': 1, totalPrice: newTotalPrice },
+            },
+            { new: true }
+        );
     },
     getitemscart: async (data) => {
         const result = await cart.findOne({ user: data }).populate('items.product').lean();
@@ -228,7 +219,7 @@ module.exports = {
     subscribe: async (data) => {
         await subscription.insertMany(data)
     },
-    gmail: async (email,name) => {
+    gmail: async (email, name) => {
         var transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -239,17 +230,17 @@ module.exports = {
         var mailOptions = {
             from: 'rasir239@gmail.com',
             to: email,
-            subject: 'Welcome '+ name,
+            subject: 'Welcome ' + name,
             text: 'Thank You for choosing "Ras shopping"!!!!! '
         };
         transporter.sendMail(mailOptions, function (error, info) {
         });
     },
-    address:async(data)=>{
+    address: async (data) => {
         await address.insertMany(data)
         //add
     },
-    existaddress:async(data)=>{
+    existaddress: async (data) => {
         const existingAddress = await address.findOne({
             userID: data.userID,
             'addresses.name': data.addresses.name,
@@ -258,8 +249,17 @@ module.exports = {
         });
         return existingAddress
     },
-    addresstake:async(id)=>{
-        const result=address.find({userID:id}).lean()
+    addresstake: async (id) => {
+        const result = address.find({ userID: id }).lean()
         return result
+    },
+    pagination: async (skip, pageSize) => {
+        const categorizedProducts = await Product.find().skip(skip).limit(pageSize).lean();
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / pageSize);
+        return {
+            categorizedProducts,
+            totalPages
+        };
     }
 };
