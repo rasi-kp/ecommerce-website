@@ -162,7 +162,6 @@ module.exports = {
     salereport: async (df, dt, status) => {
         const fromdate = new Date(`${df}T00:00:00.000Z`);
         const todate = new Date(`${dt}T23:59:59.999Z`);
-
         const orders = await order.find({
             orderdate: { $gte: fromdate, $lte: todate },
             status: { $in: status }
@@ -170,20 +169,23 @@ module.exports = {
         const totalAmount = orders.reduce((sum, order) => sum + order.total, 0);
         const totalOrders = orders.length;
         const categoryCount = {};
-
         orders.forEach(order => {
             order.items.forEach(item => {
-                const categoryName = item.product.category;
-                categoryCount[categoryName] = (categoryCount[categoryName] || 0) + 1;
+                if (item.product && item.product.category) {
+                    const categoryName = item.product.category;
+                    categoryCount[categoryName] = (categoryCount[categoryName] || 0) + 1;
+                }
             });
         });
         const categorycount = Object.values(categoryCount);
         const categoryTotalAmount = {};
         orders.forEach(order => {
             order.items.forEach(item => {
+                if (item.product && item.product.category) {
                 const categoryName = item.product.category;
                 const itemTotal = item.quantity * item.product.price;
                 categoryTotalAmount[categoryName] = (categoryTotalAmount[categoryName] || 0) + itemTotal;
+                }
             });
         });
         const categoryamount = Object.values(categoryTotalAmount);

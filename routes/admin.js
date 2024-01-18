@@ -39,7 +39,7 @@ router.get('/orders/shipped/:id',isAdmin,isAuth,shipped);
 router.get('/orders/delivered/:id',isAdmin,isAuth,delivered);
 router.get('/orders/cancelled/:id',isAuth,cancelled);
 router.get('/ordersproduct/:id',isAuth,productdetails)
-router.post('/salereport',isAdmin,isAuth,salereport)
+router.post('/salereport',salereport)
 router.get('/pdfgenerator',isAdmin,isAuth,pdf);
 router.get('/gmail/:id',gmail);
 // Testing route
