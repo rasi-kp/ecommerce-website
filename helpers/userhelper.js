@@ -188,7 +188,7 @@ module.exports = {
         );
         const quantity = currentCartItem.items[0].quantity;
         const totprice = quantity * productPrice.price
-        await cart.findOneAndUpdate(
+        const updatecart=await cart.findOneAndUpdate(
             { user: userid },
             {
                 $pull: { items: { product: data } },
@@ -200,6 +200,7 @@ module.exports = {
         if (result.items.length == 0) {
             await cart.findOneAndDelete({ user: userid });
         }
+        return updatecart
     },
     orders: async (data) => {
         const result = await order.insertMany(data)

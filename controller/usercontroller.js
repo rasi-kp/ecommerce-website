@@ -187,6 +187,7 @@ module.exports = {
     if (!usercheck) {
       res.render('users/login', { errorMessage: 'Invalied User ID' });
     }
+
     else if (usercheck.verification !== "true") {
       res.render('users/login', { errorMessage: 'Email id not verified' });
     }
@@ -219,8 +220,13 @@ module.exports = {
     const proid = req.params.id
     const currentuser = req.session.user
     const userid = await user.findexistuser(currentuser.username);
-    await user.deletecart(userid._id, proid);
-    res.redirect('/users/cart')
+    const cart= await user.deletecart(userid._id, proid);
+    const count1 = await user.count(userid._id)
+      const response = {
+        count: count1,
+        totalPrice: cart.totalPrice
+      };
+    res.json(response)
   },
   quantityadd: async (req, res) => {
     const proid = req.params.id;

@@ -3,9 +3,9 @@
 <!-- fashion section start -->
 <div class="fashion_section mt-3 " id="search-results">
   <div id="main_slider" class="carousel slide" data-ride="carousel">
-    <div class="container-fluid" id="search-results">
+    <div class="container-fluid">
       <h1 class="fashion_taital " style="color: white;">ALL PRODUCTS</h1>
-      <div class="fashion_section_1 mt-3" id="search-results">
+      <div class="fashion_section_1 mt-3" >
         <div class="row">
           {{#each categorizedProducts}}
           <div class="col-lg-4 col-sm-6 ">
@@ -36,28 +36,6 @@
     </ul>
 </nav>
 
-
-
-  {{!-- <nav class="woocommerce-pagination wd-pagination">
-    <ul class="pagination justify-content-center"> <!-- Adding Bootstrap pagination class and center alignment -->
-      <li class="page-item disabled">
-        <span aria-current="page" class="page-link">1</span>
-      </li>
-      <li class="page-item"><a class="page-link" href="/users/shop2">2</a></li>
-      <li class="page-item"><a class="page-link" href="/users/shop3">3</a></li>
-      <li class="page-item"><a class="page-link" href="/users/shop4">4</a></li>
-      <li class="page-item disabled">
-        <span class="page-link dots">…</span>
-      </li>
-      <li class="page-item"><a class="page-link" href="">7</a></li>
-      <li class="page-item"><a class="page-link" href="">8</a></li>
-      <li class="page-item">
-        <a class="page-link" href="/users/shop2" aria-label="Next">
-          <span aria-hidden="true">→</span>
-        </a>
-      </li>
-    </ul>
-  </nav> --}}
 </div>
 {{> userfooter}}
 
@@ -72,7 +50,7 @@
           if (data.length > 0) {
             $('#search-results').html(data);
           } else {
-            $('#search-results').html('<p>No results found</p>');
+            $('#search-results').html('<p> No results found </p>');
           }
         });
       } else {
