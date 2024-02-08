@@ -1,1 +1,21 @@
+.wishlist-button {
+    background: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #ccc; /* Default color */
+    transition: color 0.3s ease; /* Smooth color transition */
+}
+.wishlist-button.active {
+    color: red; /* Change to your desired color */
+}
+
+.product {
+    display: flex; 
+}
+
+.fa-heart-red {
+    color: red; /* Change heart color to red */
+}
+
+
 
