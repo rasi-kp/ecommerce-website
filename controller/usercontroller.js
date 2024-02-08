@@ -82,6 +82,25 @@ module.exports = {
       res.json(count);
     }
   },
+  wishlist: async (req, res) => {
+    var proid=req.params.id
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    const productwish = await user.addwishlist(proid, userid._id)
+    // console.log(productwish);
+  },
+  wishlists: async(req,res)=>{
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    const allwishlist = await user.wishlist(userid._id)
+    if(allwishlist){
+      res.render('users/wishlist',{wishlist:allwishlist.items})
+    }
+    else{
+      res.render('users/wishlist');
+    }
+    
+  },
   user_registration: async (req, res) => {
     res.render('users/signup')
   },
@@ -220,12 +239,12 @@ module.exports = {
     const proid = req.params.id
     const currentuser = req.session.user
     const userid = await user.findexistuser(currentuser.username);
-    const cart= await user.deletecart(userid._id, proid);
+    const cart = await user.deletecart(userid._id, proid);
     const count1 = await user.count(userid._id)
-      const response = {
-        count: count1,
-        totalPrice: cart.totalPrice
-      };
+    const response = {
+      count: count1,
+      totalPrice: cart.totalPrice
+    };
     res.json(response)
   },
   quantityadd: async (req, res) => {

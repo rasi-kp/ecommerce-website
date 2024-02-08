@@ -75,6 +75,36 @@ module.exports = {
     moredata: async (req, res) => {
         const proid = req.params.id;
     },
+    wishlist:async (user1) => {
+        const result = await wishlist.findOne({ user: user1 }).populate('items.product').lean();;
+        return result
+    },
+    addwishlist: async (id,user1) => {
+        const existingWishlist = await wishlist.findOne({ user: user1 });
+        if (existingWishlist) {
+            const productexist = await wishlist.findOne({ user: user1,'items.product': id });
+            if (productexist) {
+                result = await wishlist.findOneAndUpdate(
+                    { user: user1 },
+                    { $pull: { items: { product: id } } },
+                    { new: true }
+                );
+            } else {
+                result = await wishlist.findOneAndUpdate(
+                    { user: user1 },
+                    { $push: { items: { product: id } } },
+                    { new: true }
+                );
+            }
+        }
+        else{
+            result = await wishlist.insertMany({
+                user: user1,
+                items: [{ product: id }]
+            });
+            return result
+        }
+    },
     cartexist: async (data) => {
         const result = await cart.findOne({ user: data })
         return result
@@ -188,7 +218,7 @@ module.exports = {
         );
         const quantity = currentCartItem.items[0].quantity;
         const totprice = quantity * productPrice.price
-        const updatecart=await cart.findOneAndUpdate(
+        const updatecart = await cart.findOneAndUpdate(
             { user: userid },
             {
                 $pull: { items: { product: data } },

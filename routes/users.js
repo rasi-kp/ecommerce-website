@@ -7,6 +7,7 @@ const {
   deletecart,quantityadd,quantityminus,search,placeorder,password,subscribe,invoice,sendotp,stripe,
   user_registration,cart,cartid,checkout,sucess,moredetails,logout,changepassword,resetpassword,
   timeexeed,validateotp,shop,shop2,shop3,cat_fasion,cat_jwellery,cat_electronics,cat_others,stripepage,
+  wishlist,wishlists,
 } = require('../controller/usercontroller')
 
 // *************************** USERS MANAGE *************************
@@ -24,6 +25,8 @@ router.post('/password',isAuth,password)
 router.get('/forgotpassword',forgotpassword)
 router.post('/send-otp',sendotp)
 router.post('/reset-password',resetpassword)
+router.get('/wishlist/:id',wishlist)
+router.get('/wishlist',wishlists)
 
 // *************************** CART ********************************
 router.get('/cart',isAuth,cart)

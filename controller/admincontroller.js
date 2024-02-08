@@ -151,16 +151,22 @@ module.exports = {
   edit_product: async (req, res) => {
     const proid = req.params.id
     const data = await product.finddata(proid);
-    var image = data.image
+    if(req.file){
+      var image = data.image 
       const imagePath = './public/products-images/' + image;
       fs.unlink(imagePath, (err) => {
         if (err && err.code !== 'ENOENT') {
           console.error('Error deleting existing image:', unlinkErr);
         }
       });
+      var img = req.file.filename
+    }
+    else{
+      var img = data.image
+    }
     const datas = {
       name: req.body.name,
-      image: req.file.filename,
+      image: img,
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
@@ -238,7 +244,17 @@ module.exports = {
   gmail: async (req, res) => {
     const email = req.params.id
     await user.gmail(email);
-  }
+  },
+  coupen:async(req,res)=>{
+    res.render('admin/coupen')
+  },
+  addcoupen:async(req,res)=>{
+    res.render('admin/addcoupen')
+  },
+  editcoupen:async(req,res)=>{
+    res.render('admin/coupen')
+  },
+
 }
 
 

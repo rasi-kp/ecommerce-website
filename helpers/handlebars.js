@@ -15,3 +15,10 @@ handlebars.registerHelper('lte', function(a, b) {
 handlebars.registerHelper('isEqual', function (a, b, options) {
   return a === b ? options.fn(this) : options.inverse(this);
 });
+handlebars.registerHelper('eq', function (a, b, options) {
+  if (a === b) {
+      return options.fn(this);
+  } else {
+      return options.inverse(this);
+  }
+});

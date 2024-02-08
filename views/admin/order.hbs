@@ -13,7 +13,7 @@
           <thead>
             <tr>
               <th>date</th>
-              
+
               <th>Name</th>
               <th>Product</th>
               <th>Price</th>
@@ -23,14 +23,14 @@
               <th>City</th>
               <th>Pincode</th>
               <th>Username</th>
-              
+
             </tr>
           </thead>
           <tbody class="table-border-bottom-0">
             {{#each orders}}
             <tr>
               <td>{{formatDate orderdate}}</td>
-              
+
               <td>
                 <span class="fw-medium">{{name}}</span>
               </td>
@@ -41,20 +41,46 @@
               <td>{{status}}</td>
               <td>
                 <div class="dropdown">
+                  {{#eq status "Cancelled"}}
+                  {{else}}
                   <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                     <i class="bx bx-dots-vertical-rounded"></i>
                   </button>
                   <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/admin/orders/confirm/{{_id}}"><i class="bx bx-edit-alt me-1"></i>
-                      Order Confirmed</a>
-                    <a class="dropdown-item" href="/admin/orders/shipped/{{_id}}"><i class='fas fa-shipping-fast me-1'></i>
-                      Shipped</a>
-                    <a class="dropdown-item" href="/admin/orders/delivered/{{_id}}"><i class="fa-solid fa-truck me-1"></i>
-                      Delivered</a>
-                      <a class="dropdown-item" href="/admin/orders/cancelled/{{_id}}"><i class="fa fa-trash me-1"></i>
-                      Cancelled</a>
+                    {{#eq status "Delivered"}}
+                    <!-- Show only Cancelled link if the status is Delivered -->
+                    <a class="dropdown-item" href="/admin/orders/cancelled/{{_id}}"
+                      onclick="return confirm('Are you want to Cancelled ?')">
+                      <i class="fa fa-trash me-1"></i> Cancelled
+                    </a>
+                    {{else}}
+                    {{#eq status "Shipped"}}
+                    <a class="dropdown-item" href="/admin/orders/delivered/{{_id}}">
+                      <i class="fa-solid fa-truck me-1"></i> Delivered
+                    </a>
+                    <a class="dropdown-item" href="/admin/orders/cancelled/{{_id}}">
+                      <i class="fa fa-trash me-1"></i> Cancelled
+                    </a>
+                    {{else}}
+                    <a class="dropdown-item" href="/admin/orders/confirm/{{_id}}">
+                      <i class="bx bx-edit-alt me-1"></i> Order Confirmed
+                    </a>
+                    <a class="dropdown-item" href="/admin/orders/shipped/{{_id}}">
+                      <i class='fas fa-shipping-fast me-1'></i> Shipped
+                    </a>
+                    <a class="dropdown-item" href="/admin/orders/delivered/{{_id}}">
+                      <i class="fa-solid fa-truck me-1"></i> Delivered
+                    </a>
+                    <a class="dropdown-item" href="/admin/orders/cancelled/{{_id}}">
+                      <i class="fa fa-trash me-1"></i> Cancelled
+                    </a>
+                    {{/eq}}
+
+                    {{/eq}}
                   </div>
+                  {{/eq}}
                 </div>
+
               </td>
               <td>{{city}}</td>
               <td>{{pincode}}</td>
@@ -68,4 +94,13 @@
         </table>
       </div>
     </div>
+
+    <script>
+      function confirmDelivered(orderId) {
+        console.log("hello")
+        var confirmed = confirm("Are you sure you want to mark this order as delivered?");
+
+      }
+    </script>
+
     {{> adminfooter}}
