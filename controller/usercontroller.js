@@ -19,7 +19,10 @@ module.exports = {
     const loggedInUser = await user.findexistuser(currentuser.username);
     const count = await user.countmain(loggedInUser._id)
     const categorizedProducts = await home.mainpage()
-    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count })
+    const allwishlist = await user.wishlist(loggedInUser._id)
+    const wishlist=await allwishlist.items
+    console.log(wishlist);
+    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count ,wishlist})
   },
   login: async (req, res) => {
     if (req.session.loggedIn && req.session.admin) {
@@ -87,7 +90,7 @@ module.exports = {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const productwish = await user.addwishlist(proid, userid._id)
-    // console.log(productwish);
+    res.json(productwish)
   },
   wishlists: async(req,res)=>{
     const currentuser = req.session.user;
