@@ -86,9 +86,12 @@
                         <div class="box_main">
                            <div class="product">
                               <h4 class="ml-3 shirt_text">{{this.name}}</h4>
-                                 <a href="/users/wishlist/{{this._id}}" id="wishlist_link_{{this._id}}">
-                                 <i class="wishlist-button fa-regular fa-heart" id="wishlist_{{this_id}}" aria-label="Add to Wishlist"></i>
-                                 </a>
+                              <i class="wishlist-button far fa-heart" id="wishlist_{{this._id}}"></i>
+                              {{!-- {{#if (isInWishlist this._id wishlist)}}
+                              <i class="wishlist-button fas fa-heart text-danger" id="wishlist_{{this._id}}"></i>
+                              {{else}}
+                              <i class="wishlist-button far fa-heart" id="wishlist_{{this._id}}"></i>
+                              {{/if}} --}}
                            </div>
 
                            <p class="price_text">Price <span style="color: #262626;">Rs {{this.price}}</span></p>
@@ -174,8 +177,6 @@
             </div>
          </div>
 
-
-
       </div>
 
       <a class="carousel-control-prev" href="#electronic_main_slider" role="button" data-slide="prev">
@@ -258,64 +259,45 @@
 <!-- jewellery  section end -->
 
 {{> userfooter}}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-   // Get all the heart icons on the page
-const heartIcons = document.querySelectorAll('.wishlist-button');
+   $(document).ready(function () {
+      $('i[id^="wishlist_"]').click(function (e) {
+         e.preventDefault();
+         var productId = $(this).attr('id').split('_').pop();
+         var currentElement = $(this);
 
-// Attach click event listener to each heart icon
-heartIcons.forEach(icon => {
-    icon.addEventListener('click', async () => {
-        const productId = icon.id.split('_')[1]; // Extract the product ID from the icon ID
+         $.ajax({
+            type: 'GET',
+            url: '/users/wishlist/' + productId,
+            success: function (response) {
+               console.log(response)
+               if (response == 'add') {
+                  // If the response is 'add', set the heart icon to fas-solid and red color
+                  currentElement.removeClass('fa-regular').addClass('fa-solid').addClass('text-danger');
+                  Swal.fire({
+                     icon: 'success',
+                     title: 'Success!',
+                     text: 'Item successfully added to the Wishlist.',
 
-        // Toggle heart color
-        icon.classList.toggle('fa-heart-red');
-
-        // Simulate the process of adding to the wishlist (you might want to perform an AJAX request here)
-        try {
-            const response = await addToWishlist(productId);
-            if (response.success) {
-                // Show SweetAlert popup indicating success
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Added to Wishlist',
-                    text: 'The product has been added to your wishlist!',
-                    timer: 1500, // Auto close after 1.5 seconds
-                    showConfirmButton: false
-                });
-            } else {
-                // Revert heart color if the addition to wishlist failed
-                icon.classList.toggle('fa-heart-red');
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong!',
-                });
+                     width: '300px',
+                  });
+               } else if (response === 'remove') {
+                  // If the response is 'remove', set the heart icon back to fa-regular and remove the text-danger class
+                  currentElement.removeClass('fas-solid').addClass('fa-regular').removeClass('text-danger');
+               }
+            },
+            error: function (error) {
+               console.error(error);
             }
-        } catch (error) {
-            console.error('Error:', error);
-            // Revert heart color if an error occurred
-            icon.classList.toggle('fa-heart-red');
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong!',
-            });
-        }
-    });
-});
-
-// Function to simulate adding to the wishlist (you should replace it with your actual implementation)
-async function addToWishlist(productId) {
-    // Simulate adding to wishlist (replace it with your actual AJAX call)
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve({ success: true }); // Simulate success
-        }, 1000); // Simulate 1 second delay
-    });
-}
+         });
+      });
+   });
 
 </script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+</script>
+
 <script>
    $(document).ready(function () {
       $('#search').on('input', function () {

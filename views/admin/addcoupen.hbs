@@ -10,56 +10,36 @@
           
           <!-- Account -->
           <div class="card-body">
-            <form action="/admin/adduser" method="POST">
+            <form action="/admin/addcoupen" method="POST">
               <div class="row">
 
                 <div class="mb-3 col-md-6">
-                  <label for="firstName" class="form-label">Coupen Name</label>
-                  <input class="form-control" placeholder="Rasi#123" type="text" name="username" autofocus required />
+                  <label  class="form-label">Coupen Code :</label>
+                  <input class="form-control" type="text" name="code" placeholder="NEWYEAR2024" required />
                 </div>
                 <div class="mb-3 col-md-6">
-                  <label for="lastName" class="form-label">Coupen Code :</label>
-                  <input class="form-control" type="text" name="name" placeholder="name" required />
+                  <label class="form-label">Discount (%):</label>
+                  <input class="form-control" type="number" id="discount" name="discount" min="0" placeholder="10 %" required />
                 </div>
                 <div class="mb-3 col-md-6">
-                  <label for="lastName" class="form-label">Expire Date :</label>
-                  <input class="form-control" type="email" name="email" placeholder="abcd@gmail.com" id="lastName"
-                    required />
-                </div>
-
-                <div class="mb-3 col-md-6">
-                  <label class="form-label" for="phoneNumber">Min Price :</label>
-                  <div class="input-group input-group-merge">
-                    <input type="text" name="phoneno" class="form-control" maxlength="10" placeholder="9605942261"
-                      required />
-                  </div>
+                  <label  for="lastName" class="form-label">Valid From:</label>
+                  <input class="form-control" type="datetime-local" id="validFrom" name="validFrom" required>
                 </div>
                 <div class="mb-3 col-md-6">
-                  <label for="address" class="form-label">Max Price :</label>
-                  <input type="text" class="form-control" name="address" placeholder="Address" required />
+                  <label  for="lastName" class="form-label">Valid Until:</label>
+                  <input class="form-control" type="datetime-local" id="validUntil" name="validUntil" required>
                 </div>
 
                 <div class="mb-3 col-md-6">
-                  <label class="form-label" for="country">Description</label>
-                  <select name="gender" class="select2 form-select" required>
-                    <option value="">Select</option>
-                    <option name="gender" value="male">Male</option>
-                    <option name="gender" value="female">Female</option>
-
-                  </select>
+                  <label  class="form-label">Min Price Range:</label>
+                  <input class="form-control" type="number" id="minPriceRange" name="minPriceRange" min="100" required>
                 </div>
                 
                 <div class="mb-3 col-md-6">
-                  <label class="form-label">Role</label>
-                  <select class="select2 form-select" name="role">
-                    <option value="">Select</option>
-                    <option value="user" selected>User</option>
-                    <option value="admin">admin</option>
-                    <option value="seller">Seller</option>
-                    <option value="developer">Developer</option>
-
-                  </select>
+                  <label class="form-label">Max Price Range:</label>
+                  <input class="form-control" type="number" id="maxPriceRange" name="maxPriceRange" required>
                 </div>
+                
               </div>
               <div class="mt-2">
                 <button type="submit" class="btn btn-primary me-2">Add Coupen</button>

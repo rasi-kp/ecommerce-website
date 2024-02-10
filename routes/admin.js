@@ -6,7 +6,7 @@ const isAdmin=require('../middleware/isAuthadmin')
 const {
   alluser, adduser, deleteuser, edituser, edituserpost, blockuser, unblockuser, addproduct, edit_product,searchuser,
   allproducts, deleteproduct, orders, confirm, shipped, delivered, productdetails, editproduct,totalordercount,
-  cancelled,salereport,pdf,gmail,adminlogout,adduserpage,addproductpage,coupen,addcoupen,editcoupen,
+  cancelled,salereport,pdf,gmail,adminlogout,adduserpage,addproductpage,coupen,addcoupen,editcoupen,postaddcoupen,
 } = require('../controller/admincontroller')
 
 router.get('/',isAdmin,isAuth, totalordercount)
@@ -44,12 +44,12 @@ router.get('/pdfgenerator',isAdmin,isAuth,pdf);
 router.get('/gmail/:id',gmail);
 
 //********************** Coupon code *********************/
-// Testing route
 router.get('/coupen',coupen)
 router.get('/addcoupen',addcoupen)
+router.post('/addcoupen',postaddcoupen)
 router.get('/editcoupen',editcoupen)
-// router.get('/coupen',coupen)
 
+// Testing route
 router.get('/test',async(req,res)=>{
   res.render('users/test')
 })

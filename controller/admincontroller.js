@@ -5,10 +5,10 @@ const hbs = require('hbs')
 const moment = require('moment');
 const today = moment().format('DD-MM-YYYY');
 
-const multer = require('../config/multer')
 const user = require('../helpers/userhelper')
 const product = require('../helpers/producthelper')
 const order = require('../helpers/ordershelper');
+const coupen=require('../helpers/coupenhelper')
 var df;
 var dt;
 var status;
@@ -245,16 +245,22 @@ module.exports = {
     const email = req.params.id
     await user.gmail(email);
   },
+  //************************ COUPEN ************************ */
   coupen:async(req,res)=>{
-    res.render('admin/coupen')
+    const allcoupen=await coupen.showcoupen()
+    res.render('admin/coupen',{allcoupen})
   },
   addcoupen:async(req,res)=>{
     res.render('admin/addcoupen')
   },
+  postaddcoupen:async(req,res)=>{
+    console.log(req.body);
+    const result=await coupen.addcoupen(req.body);
+    res.redirect('/admin/coupen')
+  },
   editcoupen:async(req,res)=>{
     res.render('admin/coupen')
   },
-
 }
 
 

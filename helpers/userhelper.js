@@ -89,12 +89,14 @@ module.exports = {
                     { $pull: { items: { product: id } } },
                     { new: true }
                 );
+                return "remove"
             } else {
                 result = await wishlist.findOneAndUpdate(
                     { user: user1 },
                     { $push: { items: { product: id } } },
                     { new: true }
                 );
+                return "add"
             }
         }
         else{
@@ -102,7 +104,7 @@ module.exports = {
                 user: user1,
                 items: [{ product: id }]
             });
-            return result
+            return "create";
         }
     },
     cartexist: async (data) => {

@@ -22,3 +22,7 @@ handlebars.registerHelper('eq', function (a, b, options) {
       return options.inverse(this);
   }
 });
+handlebars.registerHelper('isInWishlist', function(productId, wishlist) {
+  return wishlist.some(item => item._id == productId);
+});
+

@@ -11,7 +11,8 @@ const order = require('../helpers/ordershelper')
 const home = require('../homepage/home')
 const otp = require('../config/otp')
 const razorpay = require('../config/razorpay')
-const stripe = require('../config/stripe')
+const stripe = require('../config/stripe');
+const coupen = require('../helpers/coupenhelper');
 
 module.exports = {
   homepage: async (req, res) => {
@@ -19,7 +20,9 @@ module.exports = {
     const loggedInUser = await user.findexistuser(currentuser.username);
     const count = await user.countmain(loggedInUser._id)
     const categorizedProducts = await home.mainpage()
-    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count })
+    const allwishlist = await user.wishlist(loggedInUser._id)
+    const wishlist=await allwishlist.items
+    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count ,wishlist})
   },
   login: async (req, res) => {
     if (req.session.loggedIn && req.session.admin) {
@@ -35,9 +38,10 @@ module.exports = {
     const userid = await user.findexistuser(currentuser.username);
     const data = await user.getitemscart(userid._id);
     const count = await user.count(userid._id)
+    const allcoupen=await coupen.showcoupen()
     if (data) {
       total = data.totalPrice + 40
-      res.render('users/cart', { data, total, count })
+      res.render('users/cart', { data, total, count ,coupen:allcoupen})
     } else {
       res.render('users/cart')
     }
@@ -87,7 +91,7 @@ module.exports = {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const productwish = await user.addwishlist(proid, userid._id)
-    // console.log(productwish);
+    res.json(productwish)
   },
   wishlists: async(req,res)=>{
     const currentuser = req.session.user;
