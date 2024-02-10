@@ -86,16 +86,12 @@
                         <div class="box_main">
                            <div class="product">
                               <h4 class="ml-3 shirt_text">{{this.name}}</h4>
-                              {{!-- <i class="wishlist-button fa-regular fa-heart" id="wishlist_{{this._id}}"
-                                 aria-label="Add to Wishlist"></i> --}}
-                              {{!-- <i
-                                 class="wishlist-button fa-{{#if (isInWishlist this._id wishlist)}}solid text-danger{{else}}regular {{/if}} fa-heart"
-                                 id="wishlist_{{this._id}}" aria-label="Add to Wishlist"></i> --}}
-                              {{#if (isInWishlist this._id wishlist)}}
+                              <i class="wishlist-button far fa-heart" id="wishlist_{{this._id}}"></i>
+                              {{!-- {{#if (isInWishlist this._id wishlist)}}
                               <i class="wishlist-button fas fa-heart text-danger" id="wishlist_{{this._id}}"></i>
                               {{else}}
                               <i class="wishlist-button far fa-heart" id="wishlist_{{this._id}}"></i>
-                              {{/if}}
+                              {{/if}} --}}
                            </div>
 
                            <p class="price_text">Price <span style="color: #262626;">Rs {{this.price}}</span></p>

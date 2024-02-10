@@ -117,6 +117,16 @@
                         </select>
 
                     </form>
+                    <div class="row">
+                        <div class="col" id="count" style="padding-left:0;">AVAILABLE COUPEN</div>
+                    <form>
+                        {{#each coupen}}
+                        <p>{{this.code}}</p>
+                        {{/each}}
+                        <input type="text" name="code" placeholder="COUPEN CODE">
+                        <button class="new">Apply</button>
+
+                    </form>
                     <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
                         <div class="col">TOTAL PRICE</div>
                         <div id="totlink" class="col text-right">Rs: {{total}}</div>

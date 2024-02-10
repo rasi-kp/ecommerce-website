@@ -22,20 +22,7 @@ handlebars.registerHelper('eq', function (a, b, options) {
       return options.inverse(this);
   }
 });
-// handlebars.registerHelper('isInWishlist', function(productId, wishlist) {
-//   console.log("Wishlist:", wishlist);
-//   console.log("productID:", productId);
-
-//   // Check if the productId exists in the wishlist array
-//   return wishlist.some(item => item._id == productId);
-// });
 handlebars.registerHelper('isInWishlist', function(productId, wishlist) {
-  console.log("productID:", productId);
-  console.log("Wishlist:", wishlist);
-  if (wishlist && Array.isArray(wishlist)) {
-      return wishlist.some(item => item.product && item.product._id === productId);
-  } else {
-      console.error("Wishlist or productId is undefined or not an array");
-      return false;
-  }
+  return wishlist.some(item => item._id == productId);
 });
+
