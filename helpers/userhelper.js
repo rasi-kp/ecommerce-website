@@ -136,6 +136,23 @@ module.exports = {
             return 0
         }
     },
+    addcoupen:async(userid,data)=>{
+        let cartprice = await cart.findOne({ user: userid });
+        if (!cart) {
+            throw new Error('Cart not found for the user');
+        }
+        const discountPrice = cartprice.totalPrice-(cartprice.totalPrice * (data.discount / 100));
+        const result = await cart.findOneAndUpdate(
+            { user: userid },
+            {
+                $set: { coupencode:data.code,
+                    discount: data.discount,
+                    discountprice: discountPrice },
+            },
+            { new: true }
+        );
+        return result
+    },
     quantity: async (userid, data) => {
         const result = await Product.findOne({ _id: data });
         const currentCartItem = await cart.findOne(

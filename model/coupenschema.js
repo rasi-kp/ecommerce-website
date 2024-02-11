@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const couponSchema = new Schema({
+    // cart: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'carts',
+    // },
     code: {
         type: String,
         unique: true,

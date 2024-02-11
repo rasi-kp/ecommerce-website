@@ -38,13 +38,26 @@ module.exports = {
     const userid = await user.findexistuser(currentuser.username);
     const data = await user.getitemscart(userid._id);
     const count = await user.count(userid._id)
-    const allcoupen=await coupen.showcoupen()
+    const allcoupen=await coupen.showcoupen(userid._id)
+    const coupen1 = {
+      coupen: allcoupen,
+      coupencode: data.coupencode,
+  };
     if (data) {
       total = data.totalPrice + 40
-      res.render('users/cart', { data, total, count ,coupen:allcoupen})
+      res.render('users/cart', { data, total, count ,coupen:coupen1})
     } else {
       res.render('users/cart')
     }
+  },
+  coupen:async (req,res)=>{
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    const result=await user.addcoupen(userid._id,req.body)
+    const response = {
+      totalPrice: result.discountprice
+    };
+    res.json(response)
   },
   cartid: async (req, res) => {
     var cartqty = 0
@@ -103,7 +116,6 @@ module.exports = {
     else{
       res.render('users/wishlist');
     }
-    
   },
   user_registration: async (req, res) => {
     res.render('users/signup')

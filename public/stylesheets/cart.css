@@ -124,10 +124,10 @@ input:focus::-webkit-input-placeholder
 .new{
     background-color: #00ff0d;
     border-color: #000;
-    padding: 1vh;
     border-radius: 0;
     cursor: pointer;
     color: #000;
+    padding: 2px;
 }
 .btn:focus{
     box-shadow: none;

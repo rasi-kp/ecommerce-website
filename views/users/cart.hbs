@@ -89,7 +89,8 @@
                                 <a class="add border" href="/users/cart/quantityadd/{{this.product._id}}"> + </a>
                             </div>
                             <div class="col">Rs : {{this.product.price}} <span class="close">
-                                <a class="delete" href="/users/cart/delete/{{this.product._id}}">&#10005;</a></span></div>
+                                    <a class="delete" href="/users/cart/delete/{{this.product._id}}">&#10005;</a></span>
+                            </div>
                         </div>
                     </div>
                     {{/each}}
@@ -119,105 +120,141 @@
                     </form>
                     <div class="row">
                         <div class="col" id="count" style="padding-left:0;">AVAILABLE COUPEN</div>
-                    <form>
-                        {{#each coupen}}
-                        <p>{{this.code}}</p>
-                        {{/each}}
-                        <input type="text" name="code" placeholder="COUPEN CODE">
-                        <button class="new">Apply</button>
+                        <form>
+                            {{#each coupen.coupen}}
+                            <div class="mb-2">
+                                <span class="mr-2">{{this.code}} - {{this.discount}}% OFF</span>
+                                {{!-- {{#if coupen.coupencode}}
+                                <span class="badge badge-success">Applied</span>
+                                <button class="clear" data-code="{{this.code}}">Clear</button>
+                                {{else}}
+                                <button class="new" data-code="{{this.code}}-{{this.discount}}">Apply</button>
+                                {{/if}} --}}
+                                <button class="new" data-code="{{this.code}}-{{this.discount}}">Apply</button>
+                            </div>
+                            {{/each}}
+                            {{!-- <input type="text" name="code" placeholder="COUPON CODE">
+                            <button class="apply">Apply</button>
+                            <button class="clear-all">Clear All</button> --}}
+                        </form>
 
-                    </form>
-                    <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
-                        <div class="col">TOTAL PRICE</div>
-                        <div id="totlink" class="col text-right">Rs: {{total}}</div>
+                        <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
+                            <div class="col">TOTAL PRICE</div>
+                            <div id="totlink" class="col text-right">Rs: {{total}}</div>
+                        </div>
+
+                        <a href="/users/checkout" class="btn">CHECKOUT</a>
                     </div>
 
-                    <a href="/users/checkout" class="btn">CHECKOUT</a>
                 </div>
 
             </div>
-
+        </div>
+        <div class="row m-0">
+            {{> userfooter}}
         </div>
     </div>
-    <div class="row m-0">
-        {{> userfooter}}
-    </div>
-</div>
 
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        $('.delete').click(function (e) {
-            e.preventDefault();
-            var productId = $(this).attr('href').split('/').pop();
-             var currentElement = $(this).closest('.row');
-            $.ajax({
-                type: 'GET',
-                url: '/users/cart/delete/' + productId,
-                success: function (response) {
-                    $('#totpriceLink').text('Rs: ' + response.totalPrice);
-                    $('#totlink').text('Rs: ' + (response.totalPrice + 40));
-                    $('#count').text ((response.count)+ ' items');
-                   currentElement.remove();
-                },
-                error: function (error) {
-                    console.error(error);
-                }
-            });
-        });
-    });
-</script>
 
-<script>
-    $(document).ready(function () {
-        $('.minus').click(function (e) {
-            e.preventDefault();
-            var productId = $(this).attr('href').split('/').pop();
-            var uniqueId = 'quantityLink_' + productId;
-            $.ajax({
-                type: 'GET',
-                url: '/users/cart/quantityminus/' + productId,
-                success: function (response) {
-                    $('#' + uniqueId).text(response.quantity);
-                    $('#totpriceLink').text('Rs: ' + response.totalPrice);
-                    $('#totlink').text('Rs: ' + (response.totalPrice + 40));
-                },
-                error: function (error) {
-                    console.error(error);
-                }
-            });
-        });
-    });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    $(document).ready(function () {
-        $('.add').click(function (e) {
-            e.preventDefault();
-            var productId = $(this).attr('href').split('/').pop();
-            var uniqueId = 'quantityLink_' + productId;
-            $.ajax({
-                type: 'GET',
-                url: '/users/cart/quantityadd/' + productId,
-                success: function (response) {
-                    if (response === false) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Out of Stock!',
-                            text: 'Item will added back.',
-                            width: '300px',
-                        });
-                    }
-                    else {
-                        $('#' + uniqueId).text(response.quantity + 2);
+    <script>
+        $(document).ready(function () {
+            $('.new').click(function (e) {
+                e.preventDefault();
+                var codeWithDiscount = $(this).data('code');
+                var codeAndDiscount = codeWithDiscount.split('-');
+                var code = codeAndDiscount[0];
+                var discount = codeAndDiscount[1];
+                $.ajax({
+                    type: 'POST',
+                    url: '/users/cart/coupon',
+                    data: { code: code, discount: discount },
+                    success: function (response) {
                         $('#totpriceLink').text('Rs: ' + response.totalPrice);
                         $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+                    },
+                    error: function (error) {
+                        console.error(error);
                     }
-                },
-
+                });
             });
         });
-    });
-</script>
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('.delete').click(function (e) {
+                e.preventDefault();
+                var productId = $(this).attr('href').split('/').pop();
+                var currentElement = $(this).closest('.row');
+                $.ajax({
+                    type: 'GET',
+                    url: '/users/cart/delete/' + productId,
+                    success: function (response) {
+                        $('#totpriceLink').text('Rs: ' + response.totalPrice);
+                        $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+                        $('#count').text((response.count) + ' items');
+                        currentElement.remove();
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.minus').click(function (e) {
+                e.preventDefault();
+                var productId = $(this).attr('href').split('/').pop();
+                var uniqueId = 'quantityLink_' + productId;
+                $.ajax({
+                    type: 'GET',
+                    url: '/users/cart/quantityminus/' + productId,
+                    success: function (response) {
+                        $('#' + uniqueId).text(response.quantity);
+                        $('#totpriceLink').text('Rs: ' + response.totalPrice);
+                        $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            $('.add').click(function (e) {
+                e.preventDefault();
+                var productId = $(this).attr('href').split('/').pop();
+                var uniqueId = 'quantityLink_' + productId;
+                $.ajax({
+                    type: 'GET',
+                    url: '/users/cart/quantityadd/' + productId,
+                    success: function (response) {
+                        if (response === false) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Out of Stock!',
+                                text: 'Item will added back.',
+                                width: '300px',
+                            });
+                        }
+                        else {
+                            $('#' + uniqueId).text(response.quantity + 2);
+                            $('#totpriceLink').text('Rs: ' + response.totalPrice);
+                            $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+                        }
+                    },
+
+                });
+            });
+        });
+    </script>
