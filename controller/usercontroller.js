@@ -38,13 +38,32 @@ module.exports = {
     const userid = await user.findexistuser(currentuser.username);
     const data = await user.getitemscart(userid._id);
     const count = await user.count(userid._id)
-    const allcoupen=await coupen.showcoupen()
     if (data) {
-      total = data.totalPrice + 40
+      const allcoupen=await coupen.showcoupen(userid._id)
+      if(data.discountprice){
+        total = data.discountprice + 40
+      }else{
+        total =data.totalPrice + 40
+      }
       res.render('users/cart', { data, total, count ,coupen:allcoupen})
     } else {
       res.render('users/cart')
     }
+  },
+  coupen:async (req,res)=>{
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    const result=await user.addcoupen(userid._id,req.body)
+    const response = {
+      totalPrice: result.discountprice
+    };
+    res.json(response)
+  },
+  removecoupen:async(req,res)=>{
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    const result=await user.removecoupen(userid._id)
+    res.redirect('/users/cart')
   },
   cartid: async (req, res) => {
     var cartqty = 0
@@ -103,7 +122,6 @@ module.exports = {
     else{
       res.render('users/wishlist');
     }
-    
   },
   user_registration: async (req, res) => {
     res.render('users/signup')
@@ -256,22 +274,28 @@ module.exports = {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const quantity = await user.quantity(userid._id, proid)
-    const productexist = await user.productexist(proid, userid._id)
-    if (productexist) {
-      var foundItem = productexist.items.find(item => item.product.toString() === proid);
-      var cartqty = foundItem.quantity
-    }
-    const productqty = await product.finddata(proid)
-    if (productqty.qty > cartqty) {
-      const cart = await user.quantityadd(userid._id, proid)
-      const response = {
-        quantity: quantity,
-        totalPrice: cart.totalPrice
-      };
-      res.json(response)
-    } else {
-      const response = false;
-      res.json(response)
+    const cart=await user.cartexist(userid._id)
+    if(cart.discountprice){
+      const response = "coupen";
+        res.json(response)
+    }else{ 
+      const productexist = await user.productexist(proid, userid._id)
+      if (productexist) {
+        var foundItem = productexist.items.find(item => item.product.toString() === proid);
+        var cartqty = foundItem.quantity
+      }
+      const productqty = await product.finddata(proid)
+      if (productqty.qty > cartqty) {
+        const cart = await user.quantityadd(userid._id, proid)
+        const response = {
+          quantity: quantity,
+          totalPrice: cart.totalPrice
+        };
+        res.json(response)
+      } else {
+        const response = false;
+        res.json(response)
+      }
     }
   },
   quantityminus: async (req, res) => {
@@ -298,7 +322,11 @@ module.exports = {
       if (address1 != '') {
         var address = address1[0].addresses
       }
-      total = data.totalPrice + 40
+      if(data.discountprice){
+        total = data.discountprice + 40
+      }else{
+        total =data.totalPrice + 40
+      }
       res.render('users/checkout', { data, total, count, address })
     } else {
       res.redirect('/users/home')
