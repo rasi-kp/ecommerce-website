@@ -153,6 +153,16 @@ module.exports = {
         );
         return result
     },
+    removecoupen:async(userid)=>{
+        const result = await cart.findOneAndUpdate(
+            { user: userid },
+            {
+                 $unset: { coupencode: "", discount: "", discountprice: "" } ,
+            },
+            { new: true }
+        );
+        return result
+    },
     quantity: async (userid, data) => {
         const result = await Product.findOne({ _id: data });
         const currentCartItem = await cart.findOne(

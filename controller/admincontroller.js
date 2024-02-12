@@ -247,7 +247,7 @@ module.exports = {
   },
   //************************ COUPEN ************************ */
   coupen:async(req,res)=>{
-    const allcoupen=await coupen.showcoupen()
+    const allcoupen=await coupen.showcoupenadmin()
     res.render('admin/coupen',{allcoupen})
   },
   addcoupen:async(req,res)=>{

@@ -38,14 +38,10 @@ module.exports = {
     const userid = await user.findexistuser(currentuser.username);
     const data = await user.getitemscart(userid._id);
     const count = await user.count(userid._id)
-    const allcoupen=await coupen.showcoupen(userid._id)
-    const coupen1 = {
-      coupen: allcoupen,
-      coupencode: data.coupencode,
-  };
     if (data) {
-      total = data.totalPrice + 40
-      res.render('users/cart', { data, total, count ,coupen:coupen1})
+      const allcoupen=await coupen.showcoupen(userid._id)
+      total = data.discountprice + 40 || data.totalPrice + 40
+      res.render('users/cart', { data, total, count ,coupen:allcoupen})
     } else {
       res.render('users/cart')
     }
@@ -58,6 +54,13 @@ module.exports = {
       totalPrice: result.discountprice
     };
     res.json(response)
+  },
+  removecoupen:async(req,res)=>{
+    const currentuser = req.session.user;
+    const userid = await user.findexistuser(currentuser.username);
+    console.log("hai");
+    const result=await user.removecoupen(userid._id)
+    res.redirect('/users/cart')
   },
   cartid: async (req, res) => {
     var cartqty = 0

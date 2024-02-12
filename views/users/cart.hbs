@@ -108,7 +108,7 @@
                     <hr>
                     <div class="row">
                         <div class="col" id="count" style="padding-left:0;">ITEMS {{count}}</div>
-                        <div id="totpriceLink" class="col text-right">Rs: {{data.totalPrice}}</div>
+                        <div id="totpriceLink" class="col text-right">Rs:{{#if data.discountprice}}{{data.discountprice}} {{else}}{{data.totalPrice}}{{/if}}</div>
                     </div>
                     <form>
                         <p>SHIPPING</p>
@@ -119,25 +119,24 @@
 
                     </form>
                     <div class="row">
+                        {{#if data.coupencode}}
+                        <div class="col mb-2" id="count" style="padding-left:0;">APPLIED COUPEN</div>
+                        <div class="mr-2 mb-2">
+                            <span class="mr-2">{{data.coupencode}} - {{this.discount}}% OFF</span>
+                            <span class="badge badge-success">Applied</span>
+                            <a href="/users/coupen/remove"> &#10005;</a>
+                        </div>
+                        {{else}}
                         <div class="col" id="count" style="padding-left:0;">AVAILABLE COUPEN</div>
                         <form>
-                            {{#each coupen.coupen}}
+                            {{#each coupen}}
                             <div class="mb-2">
                                 <span class="mr-2">{{this.code}} - {{this.discount}}% OFF</span>
-                                {{!-- {{#if coupen.coupencode}}
-                                <span class="badge badge-success">Applied</span>
-                                <button class="clear" data-code="{{this.code}}">Clear</button>
-                                {{else}}
-                                <button class="new" data-code="{{this.code}}-{{this.discount}}">Apply</button>
-                                {{/if}} --}}
-                                <button class="new" data-code="{{this.code}}-{{this.discount}}">Apply</button>
+                                <a id="applyButton" class="new" data-code="{{this.code}}-{{this.discount}}">Apply</a>
                             </div>
                             {{/each}}
-                            {{!-- <input type="text" name="code" placeholder="COUPON CODE">
-                            <button class="apply">Apply</button>
-                            <button class="clear-all">Clear All</button> --}}
                         </form>
-
+                        {{/if}}
                         <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
                             <div class="col">TOTAL PRICE</div>
                             <div id="totlink" class="col text-right">Rs: {{total}}</div>
@@ -161,8 +160,9 @@
 
     <script>
         $(document).ready(function () {
-            $('.new').click(function (e) {
+            $('#applyButton').click(function (e) {
                 e.preventDefault();
+                var link = $(this);
                 var codeWithDiscount = $(this).data('code');
                 var codeAndDiscount = codeWithDiscount.split('-');
                 var code = codeAndDiscount[0];
@@ -174,6 +174,10 @@
                     success: function (response) {
                         $('#totpriceLink').text('Rs: ' + response.totalPrice);
                         $('#totlink').text('Rs: ' + (response.totalPrice + 40));
+                        var appliedButtonHtml = '<span class="badge badge-success">Applied</span>';
+                        appliedButtonHtml += '<a href="/users/coupen/remove"> &#10005;</a>';
+                        link.parent().html(appliedButtonHtml);
+
                     },
                     error: function (error) {
                         console.error(error);

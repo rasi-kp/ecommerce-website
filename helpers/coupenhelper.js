@@ -7,11 +7,15 @@ module.exports={
     },
     showcoupen:async(userId)=>{
         const cart=await user.getitemscart(userId);
-        const result = await coupen.findOne({
+        const result = await coupen.find({
+            isActive:true,
             minPriceRange: { $lte: cart.totalPrice },
             maxPriceRange: { $gte: cart.totalPrice },
-        });
-        console.log(result);
+        }).lean();
+        return result
+    },
+    showcoupenadmin:async()=>{
+        const result = await coupen.find({}).lean();
         return result
     },
 }
