@@ -40,7 +40,11 @@ module.exports = {
     const count = await user.count(userid._id)
     if (data) {
       const allcoupen=await coupen.showcoupen(userid._id)
-      total = data.discountprice + 40 || data.totalPrice + 40
+      if(data.discountprice){
+        total = data.discountprice + 40
+      }else{
+        total =data.totalPrice + 40
+      }
       res.render('users/cart', { data, total, count ,coupen:allcoupen})
     } else {
       res.render('users/cart')
@@ -58,7 +62,6 @@ module.exports = {
   removecoupen:async(req,res)=>{
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
-    console.log("hai");
     const result=await user.removecoupen(userid._id)
     res.redirect('/users/cart')
   },
@@ -271,22 +274,28 @@ module.exports = {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const quantity = await user.quantity(userid._id, proid)
-    const productexist = await user.productexist(proid, userid._id)
-    if (productexist) {
-      var foundItem = productexist.items.find(item => item.product.toString() === proid);
-      var cartqty = foundItem.quantity
-    }
-    const productqty = await product.finddata(proid)
-    if (productqty.qty > cartqty) {
-      const cart = await user.quantityadd(userid._id, proid)
-      const response = {
-        quantity: quantity,
-        totalPrice: cart.totalPrice
-      };
-      res.json(response)
-    } else {
-      const response = false;
-      res.json(response)
+    const cart=await user.cartexist(userid._id)
+    if(cart.discountprice){
+      const response = "coupen";
+        res.json(response)
+    }else{ 
+      const productexist = await user.productexist(proid, userid._id)
+      if (productexist) {
+        var foundItem = productexist.items.find(item => item.product.toString() === proid);
+        var cartqty = foundItem.quantity
+      }
+      const productqty = await product.finddata(proid)
+      if (productqty.qty > cartqty) {
+        const cart = await user.quantityadd(userid._id, proid)
+        const response = {
+          quantity: quantity,
+          totalPrice: cart.totalPrice
+        };
+        res.json(response)
+      } else {
+        const response = false;
+        res.json(response)
+      }
     }
   },
   quantityminus: async (req, res) => {
@@ -313,7 +322,11 @@ module.exports = {
       if (address1 != '') {
         var address = address1[0].addresses
       }
-      total = data.totalPrice + 40
+      if(data.discountprice){
+        total = data.discountprice + 40
+      }else{
+        total =data.totalPrice + 40
+      }
       res.render('users/checkout', { data, total, count, address })
     } else {
       res.redirect('/users/home')

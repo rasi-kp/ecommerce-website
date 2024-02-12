@@ -84,7 +84,7 @@
                                 <div class="row text-muted">{{this.size}}</div>
                             </div>
                             <div class="col">
-                                <a class="minus border" href="/users/cart/quantityminus/{{this.product._id}}"> - </a>
+                                <a  class="minus border" href="/users/cart/quantityminus/{{this.product._id}}"> - </a>
                                 <a id="quantityLink_{{this.product._id}}" class="">{{this.quantity}}</a>
                                 <a class="add border" href="/users/cart/quantityadd/{{this.product._id}}"> + </a>
                             </div>
@@ -139,7 +139,14 @@
                         {{/if}}
                         <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
                             <div class="col">TOTAL PRICE</div>
+                            {{#if data.discountprice}}
+                            <div id="totlink" class="row text-right">Total Rs: {{data.totalPrice}}</div><br>
+                            <div id="totlink" class="row text-right">Discount %: {{data.discount}}</div>
+                            <div id="totlink" class="col text-right">Discount Rs: {{total}}</div>
+                            {{else}}
                             <div id="totlink" class="col text-right">Rs: {{total}}</div>
+                            {{/if}}
+                            
                         </div>
 
                         <a href="/users/checkout" class="btn">CHECKOUT</a>
@@ -215,8 +222,13 @@
         $(document).ready(function () {
             $('.minus').click(function (e) {
                 e.preventDefault();
+                var dis=$(this).data('code');
                 var productId = $(this).attr('href').split('/').pop();
                 var uniqueId = 'quantityLink_' + productId;
+                if(dis){
+                    console.log("errror")
+                }else{
+
                 $.ajax({
                     type: 'GET',
                     url: '/users/cart/quantityminus/' + productId,
@@ -229,6 +241,7 @@
                         console.error(error);
                     }
                 });
+                }
             });
         });
     </script>
@@ -243,7 +256,15 @@
                     type: 'GET',
                     url: '/users/cart/quantityadd/' + productId,
                     success: function (response) {
-                        if (response === false) {
+                        if(response=="coupen"){
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'First Remove Coupon!',
+                                text: 'then Add Quantity',
+                                width: '300px',
+                            });
+                        }
+                        else if (response === false) {
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Out of Stock!',
