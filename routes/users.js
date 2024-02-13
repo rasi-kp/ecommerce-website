@@ -1,13 +1,14 @@
 var express = require('express');
 var router = express.Router();
 const isAuth=require('../middleware/isAuth')
+const fisAuth=require('../middleware/fisAuth')
 const back=require('../middleware/back')
 const {
   signUpUser,signInUser,edituser,edituserpost,orders,paymentverify,homepage,login,forgotpassword,
   deletecart,quantityadd,quantityminus,search,placeorder,password,subscribe,invoice,sendotp,stripe,
   user_registration,cart,cartid,checkout,sucess,moredetails,logout,changepassword,resetpassword,
   timeexeed,validateotp,shop,shop2,shop3,cat_fasion,cat_jwellery,cat_electronics,cat_others,stripepage,
-  wishlist,wishlists,coupen,removecoupen,
+  wishlist,wishlists,coupen,removecoupen,fsignInUser,fhomepage,fsignUpUser,
 } = require('../controller/usercontroller')
 
 // *************************** USERS MANAGE *************************
@@ -27,6 +28,11 @@ router.post('/send-otp',sendotp)
 router.post('/reset-password',resetpassword)
 router.get('/wishlist/:id',wishlist)
 router.get('/wishlist',wishlists)
+
+//*****************************FLUTTER APIS************************ */
+router.post('/fuser_registration',fsignUpUser)
+router.post('/fuser_signin',fsignInUser)
+router.get('/fhome',fisAuth,fhomepage)
 
 // *************************** CART ********************************
 router.get('/cart',isAuth,cart)
