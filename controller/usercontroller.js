@@ -21,8 +21,29 @@ module.exports = {
     const count = await user.countmain(loggedInUser._id)
     const categorizedProducts = await home.mainpage()
     const allwishlist = await user.wishlist(loggedInUser._id)
-    const wishlist=await allwishlist.items
-    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count ,wishlist})
+    const wishlist = await allwishlist.items
+    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count, wishlist })
+  },
+  // ************ FLUTTER API *************
+  fhomepage: async (req, res) => {
+    try {
+      const currentuser = req.session.user;
+      const loggedInUser = await user.findexistuser(currentuser.username);
+      const count = await user.countmain(loggedInUser._id);
+      const categorizedProducts = await home.mainpage();
+      const allwishlist = await user.wishlist(loggedInUser._id);
+      const wishlist = await allwishlist.items;
+
+      res.status(200).json({
+        categorizedProducts: categorizedProducts,
+        username: loggedInUser.name,
+        count: count,
+        wishlist: wishlist
+      });
+    } catch (error) {
+      console.error("Error in fhomepage:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   },
   login: async (req, res) => {
     if (req.session.loggedIn && req.session.admin) {
@@ -39,30 +60,30 @@ module.exports = {
     const data = await user.getitemscart(userid._id);
     const count = await user.count(userid._id)
     if (data) {
-      const allcoupen=await coupen.showcoupen(userid._id)
-      if(data.discountprice){
+      const allcoupen = await coupen.showcoupen(userid._id)
+      if (data.discountprice) {
         total = data.discountprice + 40
-      }else{
-        total =data.totalPrice + 40
+      } else {
+        total = data.totalPrice + 40
       }
-      res.render('users/cart', { data, total, count ,coupen:allcoupen})
+      res.render('users/cart', { data, total, count, coupen: allcoupen })
     } else {
       res.render('users/cart')
     }
   },
-  coupen:async (req,res)=>{
+  coupen: async (req, res) => {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
-    const result=await user.addcoupen(userid._id,req.body)
+    const result = await user.addcoupen(userid._id, req.body)
     const response = {
       totalPrice: result.discountprice
     };
     res.json(response)
   },
-  removecoupen:async(req,res)=>{
+  removecoupen: async (req, res) => {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
-    const result=await user.removecoupen(userid._id)
+    const result = await user.removecoupen(userid._id)
     res.redirect('/users/cart')
   },
   cartid: async (req, res) => {
@@ -106,20 +127,20 @@ module.exports = {
     }
   },
   wishlist: async (req, res) => {
-    var proid=req.params.id
+    var proid = req.params.id
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const productwish = await user.addwishlist(proid, userid._id)
     res.json(productwish)
   },
-  wishlists: async(req,res)=>{
+  wishlists: async (req, res) => {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const allwishlist = await user.wishlist(userid._id)
-    if(allwishlist){
-      res.render('users/wishlist',{wishlist:allwishlist.items})
+    if (allwishlist) {
+      res.render('users/wishlist', { wishlist: allwishlist.items })
     }
-    else{
+    else {
       res.render('users/wishlist');
     }
   },
@@ -177,6 +198,36 @@ module.exports = {
       await otp.sendOTPEmail(datas.email, generatedotp);
       const result = await user.insert(datas)
       res.render('users/otp', { userid: result[0]._id })
+    }
+  },
+  //*************** FLUTTER API ******************* */
+  fsignUpUser: async (req, res) => {
+    const generatedotp = await otp.generateOTP()
+    const datas = {
+      role: "user",
+      username: req.body.username,
+      email: req.body.email,
+      name: req.body.name,
+      phoneno: req.body.number,
+      gender: req.body.gender,
+      address: req.body.address,
+      password: req.body.password,
+      verification: generatedotp,
+    }
+    const existuser = await user.findexistuser(datas.username)
+    if (/\s/.test(datas.username)) {
+      return res.status(400).json({ error: "Space not allowed" });
+    }
+    else if (existuser) {
+      return res.status(400).json({ error: "Username Already Exist" });
+    }
+    else {
+      const saltRounds = 10;
+      const hashpassword = await bcrypt.hash(req.body.password, saltRounds)
+      datas.password = hashpassword
+      await otp.sendOTPEmail(datas.email, generatedotp);
+      const result = await user.insert(datas)
+      return res.status(200).json({ userid: result[0]._id });
     }
   },
   validateotp: async (req, res) => {
@@ -251,6 +302,38 @@ module.exports = {
       }
     }
   },
+  //************************ FLUTTER API ******************* */
+  fsignInUser: async (req, res) => {
+    try {
+      const usercheck = await user.findexistuser(req.body.username)
+      if (!usercheck) {
+        return res.status(400).json({ error: "Invalid username" });
+      }
+      else if (usercheck.verification !== "true") {
+        return res.status(400).json({ error: "Email ID not verified" });
+      }
+      else {
+        const passwordmatch = await bcrypt.compare(req.body.password, usercheck.password)
+        if (passwordmatch) {
+          req.session.loggedIn = true;
+          req.session.user = req.body;
+          if (usercheck.role == 'admin') {
+            req.session.admin = true;
+            return res.json({ success: "admin" });
+          } else if (usercheck.status == "block") {
+            return res.status(400).json({ error: "Admin blocked" });
+          }
+          else
+            return res.json({ success: "success" });
+        }
+        else {
+          return res.status(400).json({ error: "Invalid password" });
+        }
+      }
+    } catch {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
   moredetails: async (req, res) => {
     const proid = req.params.id;
     var data = await product.finddata(proid);
@@ -274,11 +357,11 @@ module.exports = {
     const currentuser = req.session.user;
     const userid = await user.findexistuser(currentuser.username);
     const quantity = await user.quantity(userid._id, proid)
-    const cart=await user.cartexist(userid._id)
-    if(cart.discountprice){
+    const cart = await user.cartexist(userid._id)
+    if (cart.discountprice) {
       const response = "coupen";
-        res.json(response)
-    }else{ 
+      res.json(response)
+    } else {
       const productexist = await user.productexist(proid, userid._id)
       if (productexist) {
         var foundItem = productexist.items.find(item => item.product.toString() === proid);
@@ -322,10 +405,10 @@ module.exports = {
       if (address1 != '') {
         var address = address1[0].addresses
       }
-      if(data.discountprice){
+      if (data.discountprice) {
         total = data.discountprice + 40
-      }else{
-        total =data.totalPrice + 40
+      } else {
+        total = data.totalPrice + 40
       }
       res.render('users/checkout', { data, total, count, address })
     } else {
