@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session=require('express-session')
 const {engine}=require('express-handlebars')
+const cors=require('cors')
 
 require('./helpers/handlebars');
 require('dotenv').config(); //require env variables
@@ -30,6 +31,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/users', express.static(path.join(__dirname, 'public')));
 app.use('/users/shop', express.static(path.join(__dirname, 'public')));

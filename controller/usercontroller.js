@@ -21,7 +21,9 @@ module.exports = {
     const count = await user.countmain(loggedInUser._id)
     const categorizedProducts = await home.mainpage()
     const allwishlist = await user.wishlist(loggedInUser._id)
-    const wishlist = await allwishlist.items
+    if (allwishlist){
+      var wishlist = await allwishlist.items || null
+    }
     res.render('users/index', { categorizedProducts, username: loggedInUser.name, count, wishlist })
   },
   // ************ FLUTTER API *************
