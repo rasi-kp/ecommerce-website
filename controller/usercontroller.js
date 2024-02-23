@@ -21,29 +21,10 @@ module.exports = {
     const count = await user.countmain(loggedInUser._id)
     const categorizedProducts = await home.mainpage()
     const allwishlist = await user.wishlist(loggedInUser._id)
-    const wishlist = await allwishlist.items
-    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count, wishlist })
-  },
-  // ************ FLUTTER API *************
-  fhomepage: async (req, res) => {
-    try {
-      const currentuser = req.session.user;
-      const loggedInUser = await user.findexistuser(currentuser.username);
-      const count = await user.countmain(loggedInUser._id);
-      const categorizedProducts = await home.mainpage();
-      const allwishlist = await user.wishlist(loggedInUser._id);
-      const wishlist = await allwishlist.items;
-
-      res.status(200).json({
-        categorizedProducts: categorizedProducts,
-        username: loggedInUser.name,
-        count: count,
-        wishlist: wishlist
-      });
-    } catch (error) {
-      console.error("Error in fhomepage:", error);
-      res.status(500).json({ error: "Internal server error" });
+    if (allwishlist){
+      var wishlist = await allwishlist.items || null
     }
+    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count, wishlist })
   },
   login: async (req, res) => {
     if (req.session.loggedIn && req.session.admin) {
@@ -200,36 +181,6 @@ module.exports = {
       res.render('users/otp', { userid: result[0]._id })
     }
   },
-  //*************** FLUTTER API ******************* */
-  fsignUpUser: async (req, res) => {
-    const generatedotp = await otp.generateOTP()
-    const datas = {
-      role: "user",
-      username: req.body.username,
-      email: req.body.email,
-      name: req.body.name,
-      phoneno: req.body.number,
-      gender: req.body.gender,
-      address: req.body.address,
-      password: req.body.password,
-      verification: generatedotp,
-    }
-    const existuser = await user.findexistuser(datas.username)
-    if (/\s/.test(datas.username)) {
-      return res.status(400).json({ error: "Space not allowed" });
-    }
-    else if (existuser) {
-      return res.status(400).json({ error: "Username Already Exist" });
-    }
-    else {
-      const saltRounds = 10;
-      const hashpassword = await bcrypt.hash(req.body.password, saltRounds)
-      datas.password = hashpassword
-      await otp.sendOTPEmail(datas.email, generatedotp);
-      const result = await user.insert(datas)
-      return res.status(200).json({ userid: result[0]._id });
-    }
-  },
   validateotp: async (req, res) => {
     const result = await user.findedituserbyid(req.body.id)
     if ((req.body.enteredOTP) && (result)) {
@@ -300,38 +251,6 @@ module.exports = {
       else {
         res.render('users/login', { errorMessage: "Invalied Password" });
       }
-    }
-  },
-  //************************ FLUTTER API ******************* */
-  fsignInUser: async (req, res) => {
-    try {
-      const usercheck = await user.findexistuser(req.body.username)
-      if (!usercheck) {
-        return res.status(400).json({ error: "Invalid username" });
-      }
-      else if (usercheck.verification !== "true") {
-        return res.status(400).json({ error: "Email ID not verified" });
-      }
-      else {
-        const passwordmatch = await bcrypt.compare(req.body.password, usercheck.password)
-        if (passwordmatch) {
-          req.session.loggedIn = true;
-          req.session.user = req.body;
-          if (usercheck.role == 'admin') {
-            req.session.admin = true;
-            return res.json({ success: "admin" });
-          } else if (usercheck.status == "block") {
-            return res.status(400).json({ error: "Admin blocked" });
-          }
-          else
-            return res.json({ success: "success" });
-        }
-        else {
-          return res.status(400).json({ error: "Invalid password" });
-        }
-      }
-    } catch {
-      return res.status(500).json({ error: "Internal server error" });
     }
   },
   moredetails: async (req, res) => {
