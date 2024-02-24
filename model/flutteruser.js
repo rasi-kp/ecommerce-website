@@ -19,11 +19,23 @@ const signup = new mongoose.Schema({
         type: String,
         required: true
     },
-    verification:String,
+    verification: {
+        code: {
+            type: String,
+        },
+        expiry: {
+            type: Date,
+        }
+    },
+    isverified:{
+        type:Boolean,
+        default:false
+    },
     dateCreated:{
         type:Date,
         default: Date.now()
-    }
+    },
+    image:String
 })
 const signupdata = new mongoose.model("flutterusers", signup)
 

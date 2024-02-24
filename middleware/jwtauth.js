@@ -1,16 +1,17 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken =async (req, res, next) => {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.json({ error: 'Unauthorized: Token not provided' });
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(400).json({ error: 'Unauthorized: Token not provided' });
     }
     else{
-        jwt.verify(token, 'rasi_secret_key', (err, decoded) => {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, process.env.JWT_KEY_SECRET, (err, user) => {
             if (err) {
-                return res.json({ error: 'Unauthorized: Invalid token' });
+                return res.status(400).json({ error: 'Unauthorized: Invalid token' });
             }
-            req.user = decoded;
+            req.user = user;
             next();
         });
     }
