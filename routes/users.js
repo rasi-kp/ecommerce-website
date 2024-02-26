@@ -25,12 +25,12 @@ router.post('/password',isAuth,password)
 router.get('/forgotpassword',forgotpassword)
 router.post('/send-otp',sendotp)
 router.post('/reset-password',resetpassword)
-router.get('/wishlist/:id',wishlist)
-router.get('/wishlist',wishlists)
+router.get('/wishlist/:id',isAuth,wishlist)
+router.get('/wishlist',isAuth,wishlists)
 
 // *************************** CART ********************************
-router.get('/cart',isAuth,cart)
-router.get('/cart/:id',isAuth,cartid)
+router.get('/cart',cart)
+router.get('/cart/:id',cartid)
 router.get('/cart/delete/:id',isAuth,deletecart)
 router.get('/cart/quantityadd/:id',isAuth,quantityadd)
 router.get('/cart/quantityminus/:id',isAuth,quantityminus)
@@ -38,8 +38,8 @@ router.post('/cart/coupon',coupen)
 router.get('/coupen/remove',removecoupen)
 router.get('/checkout',isAuth,checkout)
 router.post('/placeorder',isAuth,placeorder);
-router.post('/stripe',stripe);
-router.get('/stripepage',stripepage);
+router.post('/stripe',isAuth,stripe);
+router.get('/stripepage',isAuth,stripepage);
 router.post('/verifypayment',isAuth,paymentverify)
 router.get('/logout',isAuth,logout)
 router.get('/orders',isAuth,orders)

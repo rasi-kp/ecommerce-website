@@ -256,6 +256,7 @@
                     type: 'GET',
                     url: '/users/cart/quantityadd/' + productId,
                     success: function (response) {
+                        console.log(response)
                         if(response=="coupen"){
                             Swal.fire({
                                 icon: 'warning',

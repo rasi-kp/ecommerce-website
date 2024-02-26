@@ -21,7 +21,7 @@ module.exports = {
     const count = await user.countmain(loggedInUser._id)
     const categorizedProducts = await home.mainpage()
     const allwishlist = await user.wishlist(loggedInUser._id)
-    if (allwishlist){
+    if (allwishlist) {
       var wishlist = await allwishlist.items || null
     }
     res.render('users/index', { categorizedProducts, username: loggedInUser.name, count, wishlist })
@@ -36,20 +36,45 @@ module.exports = {
     }
   },
   cart: async (req, res) => {
-    const currentuser = req.session.user;
-    const userid = await user.findexistuser(currentuser.username);
-    const data = await user.getitemscart(userid._id);
-    const count = await user.count(userid._id)
-    if (data) {
-      const allcoupen = await coupen.showcoupen(userid._id)
-      if (data.discountprice) {
-        total = data.discountprice + 40
+    if (req.session.user) {
+      const currentuser = req.session.user;
+      const userid = await user.findexistuser(currentuser.username);
+      const data = await user.getitemscart(userid._id);
+      const count = await user.count(userid._id)
+      if (data) {
+        const allcoupen = await coupen.showcoupen(userid._id)
+        if (data.discountprice) {
+          total = data.discountprice + 40
+        } else {
+          total = data.totalPrice + 40
+        }
+        res.render('users/cart', { data, total, count, coupen: allcoupen })
       } else {
-        total = data.totalPrice + 40
+        res.render('users/cart')
       }
-      res.render('users/cart', { data, total, count, coupen: allcoupen })
     } else {
-      res.render('users/cart')
+      if (req.session.guest) {
+        const cartItems = [];
+        for (const cartItem of req.session.guest) {
+          const productId = cartItem.product;
+          const productDetails = await product.finddata(productId);
+          if (productDetails) {
+            cartItems.push({
+              product: productDetails,
+              quantity: cartItem.quantity,
+            });
+          }
+        }
+        let totalPrice = 0;
+        for (const item of cartItems) {
+          totalPrice += item.product.price * item.quantity;
+        }
+        var format = { items: cartItems, totalPrice: totalPrice }
+        const count = format.items.length
+        res.render('users/cart', { data: format, count, total: totalPrice })
+      } else {
+        res.render('users/cart')
+      }
     }
   },
   coupen: async (req, res) => {
@@ -70,40 +95,53 @@ module.exports = {
   cartid: async (req, res) => {
     var cartqty = 0
     const proid = req.params.id;
-    const currentuser = req.session.user;
-    const userid = await user.findexistuser(currentuser.username);
-    const cart = await user.cartexist(userid._id)
-    const productexist = await user.productexist(proid, userid._id)
-    if (productexist) {
-      var foundItem = productexist.items.find(item => item.product.toString() === proid);
-      var cartqty = foundItem.quantity
-    }
-    const productqty = await product.finddata(proid)
-    if (productqty.qty > cartqty) {
-      const quantity = req.query.quantity || 1;
-      const size = req.query.size || 'medium';
-      const cartItem = {
-        product: proid,
-        quantity: quantity,
-        size: size,
-      };
-      count = await user.countitems(userid._id)
-      if (cart) {
-        if (productexist) {
-          await user.updatecart(userid._id, cartItem)
-          res.json(count + 1);
+    if (req.session.user) {
+      const currentuser = req.session.user;
+      const userid = await user.findexistuser(currentuser.username);
+      const cart = await user.cartexist(userid._id)
+      const productexist = await user.productexist(proid, userid._id)
+      if (productexist) {
+        var foundItem = productexist.items.find(item => item.product.toString() === proid);
+        var cartqty = foundItem.quantity
+      }
+      const productqty = await product.finddata(proid)
+      if (productqty.qty > cartqty) {
+        const quantity = req.query.quantity || 1;
+        const size = req.query.size || 'medium';
+        const cartItem = {
+          product: proid,
+          quantity: quantity,
+          size: size,
+        };
+        count = await user.countitems(userid._id)
+        if (cart) {
+          if (productexist) {
+            await user.updatecart(userid._id, cartItem)
+            res.json(count + 1);
+          }
+          else {
+            await user.pushitems(userid._id, cartItem)
+            res.json(count + 1);
+          }
         }
         else {
-          await user.pushitems(userid._id, cartItem)
+          await user.insertcart(userid._id, proid, cartItem)
           res.json(count + 1);
         }
-      }
-      else {
-        await user.insertcart(userid._id, proid, cartItem)
-        res.json(count + 1);
+      } else {
+        var count = false
+        res.json(count);
       }
     } else {
-      var count = false
+      req.session.guest = req.session.guest || [];
+      const proid = req.params.id;
+      const existingProduct = req.session.guest.find(item => item.product === proid);
+      if (existingProduct) {
+        existingProduct.quantity++;
+      } else {
+        req.session.guest.push({ product:proid, quantity: 1 });
+      }
+      const count = req.session.guest.reduce((total, item) => total + item.quantity, 0);
       res.json(count);
     }
   },
@@ -245,8 +283,15 @@ module.exports = {
         } else if (usercheck.status == "block") {
           res.render('users/login', { errorMessage: 'Admin Blocked !!' });
         }
-        else
+        else {
+          const currentuser = req.session.user;
+          const userid = await user.findexistuser(currentuser.username);
+          if (req.session.guest) {
+            await user.pushitemsguest(userid._id, req.session.guest);
+          }
+          req.session.guest=null
           res.redirect('/users/home');
+        }
       }
       else {
         res.render('users/login', { errorMessage: "Invalied Password" });
