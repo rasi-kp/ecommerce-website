@@ -223,6 +223,27 @@ module.exports = {
             { new: true }
         );
     },
+    pushitemsguest: async (userid, data) => {
+        try {
+            for (const item of data) {
+                console.log(item.product);
+                const price = await product.finddata(item.product);
+                console.log(item);
+                const totprice = item.quantity * price.price;
+                await cart.findOneAndUpdate(
+                    { user: userid },
+                    {
+                        $push: { items: item }, // Add the new item to the items array
+                        $inc: { totalPrice: totprice } // Increment the total price
+                    },
+                    { new: true, upsert: true } // Create a new cart if one doesn't exist for the user
+                );
+            }
+        } catch (error) {
+            console.error("Error while adding items to cart:", error);
+            throw error; // Rethrow the error to be caught by the caller
+        }
+    },
     updatecart: async (userid, data) => {
         const productPrice = await product.finddata(data.product);
 

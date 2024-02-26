@@ -40,7 +40,6 @@ module.exports = {
       const currentuser = req.session.user;
       const userid = await user.findexistuser(currentuser.username);
       const data = await user.getitemscart(userid._id);
-      console.log(data);
       const count = await user.count(userid._id)
       if (data) {
         const allcoupen = await coupen.showcoupen(userid._id)
@@ -54,24 +53,28 @@ module.exports = {
         res.render('users/cart')
       }
     } else {
-      const cartItems = [];
-      for (const cartItem of req.session.guest) {
-        const productId = cartItem.proid;
-        const productDetails = await product.finddata(productId);
-        if (productDetails) {
-          cartItems.push({
-            product: productDetails,
-            quantity: cartItem.quantity,
-          });
+      if (req.session.guest) {
+        const cartItems = [];
+        for (const cartItem of req.session.guest) {
+          const productId = cartItem.product;
+          const productDetails = await product.finddata(productId);
+          if (productDetails) {
+            cartItems.push({
+              product: productDetails,
+              quantity: cartItem.quantity,
+            });
+          }
         }
-      }
         let totalPrice = 0;
         for (const item of cartItems) {
           totalPrice += item.product.price * item.quantity;
         }
-        var format={items:cartItems,totalPrice:totalPrice}
-        console.log(format);
-        res.render('users/cart', { data: format ,total:totalPrice})
+        var format = { items: cartItems, totalPrice: totalPrice }
+        const count = format.items.length
+        res.render('users/cart', { data: format, count, total: totalPrice })
+      } else {
+        res.render('users/cart')
+      }
     }
   },
   coupen: async (req, res) => {
@@ -132,13 +135,12 @@ module.exports = {
     } else {
       req.session.guest = req.session.guest || [];
       const proid = req.params.id;
-      const existingProduct = req.session.guest.find(item => item.proid === proid);
+      const existingProduct = req.session.guest.find(item => item.product === proid);
       if (existingProduct) {
         existingProduct.quantity++;
       } else {
-        req.session.guest.push({ proid, quantity: 1 });
+        req.session.guest.push({ product:proid, quantity: 1 });
       }
-      console.log(req.session.guest);
       const count = req.session.guest.reduce((total, item) => total + item.quantity, 0);
       res.json(count);
     }
@@ -281,8 +283,15 @@ module.exports = {
         } else if (usercheck.status == "block") {
           res.render('users/login', { errorMessage: 'Admin Blocked !!' });
         }
-        else
+        else {
+          const currentuser = req.session.user;
+          const userid = await user.findexistuser(currentuser.username);
+          if (req.session.guest) {
+            await user.pushitemsguest(userid._id, req.session.guest);
+          }
+          req.session.guest=null
           res.redirect('/users/home');
+        }
       }
       else {
         res.render('users/login', { errorMessage: "Invalied Password" });

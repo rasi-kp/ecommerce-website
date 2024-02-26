@@ -38,8 +38,8 @@ router.post('/cart/coupon',coupen)
 router.get('/coupen/remove',removecoupen)
 router.get('/checkout',isAuth,checkout)
 router.post('/placeorder',isAuth,placeorder);
-router.post('/stripe',stripe);
-router.get('/stripepage',stripepage);
+router.post('/stripe',isAuth,stripe);
+router.get('/stripepage',isAuth,stripepage);
 router.post('/verifypayment',isAuth,paymentverify)
 router.get('/logout',isAuth,logout)
 router.get('/orders',isAuth,orders)
