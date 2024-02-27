@@ -6,8 +6,9 @@ module.exports = {
     if (req.session.loggedIn) {
       return res.redirect('/users/home')
     } else {
+      const products = await product.showbanner()
       const categorizedProducts = await module.exports.mainpage(req, res)
-      res.render('users/index', { categorizedProducts });
+      res.render('users/index', { categorizedProducts,banner:products});
     }
   },
   mainpage: async (req, res) => {

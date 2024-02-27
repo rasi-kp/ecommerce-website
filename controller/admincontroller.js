@@ -8,7 +8,7 @@ const today = moment().format('DD-MM-YYYY');
 const user = require('../helpers/userhelper')
 const product = require('../helpers/producthelper')
 const order = require('../helpers/ordershelper');
-const coupen=require('../helpers/coupenhelper')
+const coupen = require('../helpers/coupenhelper')
 var df;
 var dt;
 var status;
@@ -110,16 +110,16 @@ module.exports = {
     res.render('admin/addproduct');
   },
   addproduct: async (req, res) => {
-      const datas = {
-        name: req.body.name,
-        image: req.file.filename,
-        description: req.body.description,
-        price: req.body.price,
-        category: req.body.category,
-        qty: req.body.qty,
-      }
-      await product.insertdata(datas)
-      res.redirect('/admin/products');
+    const datas = {
+      name: req.body.name,
+      image: req.file.filename,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      qty: req.body.qty,
+    }
+    await product.insertdata(datas)
+    res.redirect('/admin/products');
   },
   allproducts: async (req, res) => {
     const data = await product.allproducts()
@@ -151,8 +151,8 @@ module.exports = {
   edit_product: async (req, res) => {
     const proid = req.params.id
     const data = await product.finddata(proid);
-    if(req.file){
-      var image = data.image 
+    if (req.file) {
+      var image = data.image
       const imagePath = './public/products-images/' + image;
       fs.unlink(imagePath, (err) => {
         if (err && err.code !== 'ENOENT') {
@@ -161,7 +161,7 @@ module.exports = {
       });
       var img = req.file.filename
     }
-    else{
+    else {
       var img = data.image
     }
     const datas = {
@@ -246,19 +246,37 @@ module.exports = {
     await user.gmail(email);
   },
   //************************ COUPEN ************************ */
-  coupen:async(req,res)=>{
-    const allcoupen=await coupen.showcoupenadmin()
-    res.render('admin/coupen',{allcoupen})
+  coupen: async (req, res) => {
+    const allcoupen = await coupen.showcoupenadmin()
+    res.render('admin/coupen', { allcoupen })
   },
-  addcoupen:async(req,res)=>{
+  addcoupen: async (req, res) => {
     res.render('admin/addcoupen')
   },
-  postaddcoupen:async(req,res)=>{
-    console.log(req.body);
-    const result=await coupen.addcoupen(req.body);
+  banner: async (req, res) => {
+    const allbanner=await user.showbanner()
+    console.log(allbanner);
+    res.render('admin/banner',{allbanner})
+  },
+  addbanner: async (req, res) => {
+    
+    res.render('admin/addbanner')
+  },
+  addbannerp: async (req, res) => {
+    const datas = {
+      image: req.file.filename,
+      first: req.body.first,
+      second: req.body.second,
+      description: req.body.description,
+    }
+    await user.addbanner(datas);
+    res.redirect('/admin/banners')
+  },
+  postaddcoupen: async (req, res) => {
+    const result = await coupen.addcoupen(req.body);
     res.redirect('/admin/coupen')
   },
-  editcoupen:async(req,res)=>{
+  editcoupen: async (req, res) => {
     res.render('admin/coupen')
   },
 }

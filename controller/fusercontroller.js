@@ -56,7 +56,7 @@ module.exports = {
                 datas.password = hashpassword
                 await otp.sendOTPEmail(datas.email, generatedotp);
                 const result = await user.create(datas)
-                return res.status(200).json({ userid: result._id });
+                return res.status(200).json({success:true, userid: result._id });
             }
         }
         else {

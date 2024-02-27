@@ -7,6 +7,7 @@ const {
   alluser, adduser, deleteuser, edituser, edituserpost, blockuser, unblockuser, addproduct, edit_product,searchuser,
   allproducts, deleteproduct, orders, confirm, shipped, delivered, productdetails, editproduct,totalordercount,
   cancelled,salereport,pdf,gmail,adminlogout,adduserpage,addproductpage,coupen,addcoupen,editcoupen,postaddcoupen,
+  banner,addbanner,addbannerp,
 } = require('../controller/admincontroller')
 
 router.get('/',isAdmin,isAuth, totalordercount)
@@ -48,6 +49,13 @@ router.get('/coupen',coupen)
 router.get('/addcoupen',addcoupen)
 router.post('/addcoupen',postaddcoupen)
 router.get('/editcoupen',editcoupen)
+
+//********************** Banner code *********************/
+router.get('/banners',banner)
+router.get('/addbanner',addbanner)
+router.post('/addbannerp',multer.single('image'),addbannerp)
+// router.post('/addcoupen',postaddcoupen)
+// router.get('/editcoupen',editcoupen)
 
 // Testing route
 router.get('/test',async(req,res)=>{

@@ -1,0 +1,86 @@
+{{> adminheader}}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light"></span>Banners</h4>
+        <div class="card">
+            <h5 class="card-header">Coupen Details</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table" id="search-results">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>first</th>
+                            <th>second</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0" >
+                        {{#each allbanner}}
+                        <tr>
+                           <td>
+                                <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                    <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top"
+                                        class="avatar avatar-xs pull-up" title="{{data.name}}">
+                                        <img src="../images/profile.png" alt="Avatar"
+                                            class="rounded-circle me-2" />{{this.username}}
+                                    </li>
+
+                                </ul>
+
+                            </td>
+                            <td><span class=" me-1">{{this.first}}</span></td>
+                            <td><span class=" me-1">{{this.second}}</span></td>
+                            
+                            <td>{{this.description}}</span></td>
+                            <td>{{this.isActive}}</span></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                        data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+
+                                        {{#if isActive}}
+                                        <a class="dropdown-item" href="/admin/banner-block/{{this._id}} " />
+                                        <i class="bx bx-check-square me-1"></i> Block</a>
+                                        {{else}}
+                                        <a class="dropdown-item" href="/admin/banner-active/{{this._id}} "
+                                            onclick="return confirm('Are you Sure Active {{this.code}} ?')">
+                                            <i class="bx bx-block me-1"></i> Active</a>
+                                        {{/if}}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/each}}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{> adminfooter}}
+
+        {{!-- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script> --}}
+<script>
+  $(document).ready(function () {
+    $('#search').on('input', function () {
+      const query = $(this).val().trim();
+
+      if (query.length > 0) {
+        $.get(`/admin/search?query=${query}`, function (data) {
+          if (data.length > 0) {
+            $('#search-results').html(data);
+          } else {
+            $('#search-results').html('<p>No results found</p>');
+          }
+        });
+      } else {
+        // Handle empty query, e.g., reload the page
+        location.reload(); // This will reload the current page
+      }
+    });
+  });
+</script>

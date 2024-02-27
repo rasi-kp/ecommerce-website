@@ -1,5 +1,6 @@
 const Product = require('../model/productschema')
 const cart = require('../model/cartschema')
+const banner=require('../model/bannerschema')
 module.exports = {
 
     finddata: async (data) => {
@@ -52,5 +53,9 @@ module.exports = {
     category:async(data)=>{
         const category=await Product.find({category:data}).lean()
         return category
-    }
+    },
+    showbanner:async(data)=>{
+        const result=await banner.find({}).lean()
+        return result
+    },
 }

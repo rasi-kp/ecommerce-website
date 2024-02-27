@@ -20,11 +20,12 @@ module.exports = {
     const loggedInUser = await user.findexistuser(currentuser.username);
     const count = await user.countmain(loggedInUser._id)
     const categorizedProducts = await home.mainpage()
+    const banner=await user.showbanner();
     const allwishlist = await user.wishlist(loggedInUser._id)
     if (allwishlist) {
       var wishlist = await allwishlist.items || null
     }
-    res.render('users/index', { categorizedProducts, username: loggedInUser.name, count, wishlist })
+    res.render('users/index', { categorizedProducts,banner, username: loggedInUser.name, count, wishlist })
   },
   login: async (req, res) => {
     if (req.session.loggedIn && req.session.admin) {
@@ -268,7 +269,6 @@ module.exports = {
     if (!usercheck) {
       res.render('users/login', { errorMessage: 'Invalied User ID' });
     }
-
     else if (usercheck.verification !== "true") {
       res.render('users/login', { errorMessage: 'Email id not verified' });
     }

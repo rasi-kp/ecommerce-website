@@ -7,6 +7,7 @@ const order = require('../model/orderschema')
 const address = require('../model/addresshema')
 const subscription = require('../model/subscribeschema')
 const wishlist = require('../model/wishlistschema')
+const banner =require('../model/bannerschema')
 var nodemailer = require('nodemailer');
 
 
@@ -342,5 +343,12 @@ module.exports = {
             categorizedProducts,
             totalPages
         };
-    }
+    },
+    addbanner:async(data)=>{
+        await banner.insertMany(data)
+    },
+    showbanner:async(data)=>{
+        const result=await banner.find({}).lean()
+        return result
+    },
 };
