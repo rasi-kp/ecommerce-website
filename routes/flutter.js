@@ -3,7 +3,7 @@ const multer=require('../config/multer')
 var router = express.Router();
 const verifyToken=require('../middleware/jwtauth')
 const {
-    fsignInUser,fhomepage,fsignUpUser,fvalidateotp,edituser,edituserpost,
+    fsignInUser,fhomepage,fsignUpUser,fvalidateotp,edituser,edituserpost,cart,cartid,
 } = require('../controller/fusercontroller')
 
 //   //*****************************FLUTTER APIS************************ */
@@ -14,5 +14,8 @@ router.get('/fhome',verifyToken,fhomepage)
 router.get('/profile',verifyToken,edituser)
 router.post('/edituser',verifyToken,multer.single('image'),edituserpost)
 
+// *************************** CART ********************************
+router.get('/cart',verifyToken,cart)
+router.get('/cart/:id',verifyToken,cartid)
 
 module.exports = router;
