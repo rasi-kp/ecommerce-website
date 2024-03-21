@@ -140,94 +140,103 @@ module.exports = {
         const proid = req.params.id;
         const currentuser = req.user.email;
         if (currentuser) {
-
-            const userid = await user.findOne({ email: currentuser });
-            console.log("hello ");
-            const cart1 = await cart.findOne({ user: userid._id })
-            //   const productexist = await user.productexist(proid, userid._id)
-            const productexist = await cart.findOne({ user: userid._id, 'items.product': proid })
-            if (productexist) {
-                var foundItem = productexist.items.find(item => item.product.toString() === proid);
-                var cartqty = foundItem.quantity
-            }
-            //   const productqty = await product.finddata(proid)
-            var productqty = await product.findOne({ _id: proid });
-            if (productqty.qty > cartqty) {
-                const quantity = req.query.quantity || 1;
-                const size = req.query.size || 'medium';
-                const cartItem = {
-                    product: proid,
-                    quantity: quantity,
-                    size: size,
-                };
-                // count = await user.countitems(userid._id)
-                var count = 0;
-                const result = await cart.findOne({ user: userid._id })
-                if (result) {
-                    const count = result.items.reduce((total, item) => total + item.quantity, 0);
+            try {
+                const userid = await user.findOne({ email: currentuser });
+                const cart1 = await cart.findOne({ user: userid._id })
+                const productexist = await cart.findOne({ user: userid._id, 'items.product': proid })
+                if (productexist) {
+                    var foundItem = productexist.items.find(item => item.product.toString() === proid);
+                    var cartqty = foundItem.quantity
                 }
-                if (cart1) {
-                    if (productexist) {
-                        // await user.updatecart(userid._id, cartItem)
-                        // const productPrice = await product.finddata(data.product);
-                        var productPrice = await product.findOne({ _id: cartItem.product }).lean();
-
-                        const newTotalPrice = 1 * productPrice.price;
-                        const updatedCart = await cart.findOneAndUpdate(
-                            { user: userid._id, 'items.product': cartItem.product },
-                            {
-                                $inc: { 'items.$.quantity': 1, totalPrice: newTotalPrice },
-                            },
-                            { new: true }
-                        );
-                        res.json(count + 1);
+                var productqty = await product.findOne({ _id: proid });
+                if (productqty.qty > cartqty) {
+                    const quantity = req.query.quantity || 1;
+                    const size = req.query.size || 'medium';
+                    const cartItem = {
+                        product: proid,
+                        quantity: quantity,
+                        size: size,
+                    };
+                    var count = 0;
+                    const result = await cart.findOne({ user: userid._id })
+                    if (result) {
+                        count = result.items.reduce((total, item) => total + item.quantity, 0);
+                    }
+                    if (cart1) {
+                        if (productexist) {
+                            var productPrice = await product.findOne({ _id: cartItem.product }).lean();
+                            const newTotalPrice = 1 * productPrice.price;
+                            await cart.findOneAndUpdate(
+                                { user: userid._id, 'items.product': cartItem.product },
+                                {
+                                    $inc: { 'items.$.quantity': 1, totalPrice: newTotalPrice },
+                                },
+                                { new: true }
+                            );
+                            res.json(count + 1);
+                        }
+                        else {
+                            var price = await product.findOne({ _id: cartItem.product }).lean();
+                            var totprice = cartItem.quantity * price.price
+                            await cart.findOneAndUpdate(
+                                { user: userid._id },
+                                {
+                                    $push: { items: cartItem },
+                                    $inc: { totalPrice: totprice }
+                                },
+                                { new: true }
+                            );
+                            res.json(count + 1);
+                        }
                     }
                     else {
-                        // await user.pushitems(userid._id, cartItem)
-                        // var price = await product.finddata(data.product)
-                        var price = await product.findOne({ _id: cartItem.product }).lean();
-                        var totprice = data.quantity * price.price
-                        await cart.findOneAndUpdate(
-                            { user: userid._id },
-                            {
-                                $push: { items: cartItem },
-                                $inc: { totalPrice: totprice }
-                            },
-                            { new: true }
-                        );
+                        var price = await product.findOne({ _id: proid }).lean();
+                        var totprice = cartItem.quantity * price.price
+                        datas = {
+                            user: userid._id,
+                            items: [cartItem],
+                            totalPrice: totprice,
+                        }
+                        await cart.insertMany(datas)
                         res.json(count + 1);
                     }
+                } else {
+                    var count = false
+                    res.json(count);
                 }
-                else {
-                    await user.insertcart(userid._id, proid, cartItem)
-                    var price = await product.findOne({ _id: proid }).lean();
-                    var totprice = cartItem.quantity * price.price
-                    datas = {
-                        user: userid._id,
-                        items: [cartItem],
-                        totalPrice: totprice,
-                    }
-                    await cart.insertMany(datas)
-                    res.json(count + 1);
-                }
-            } else {
-                var count = false
-                res.json(count);
+            } catch {
+                console.log("any error accoured");
             }
+
         } else {
-            req.session.guest = req.session.guest || [];
-            const proid = req.params.id;
-            const existingProduct = req.session.guest.find(item => item.product === proid);
-            if (existingProduct) {
-                existingProduct.quantity++;
-            } else {
-                req.session.guest.push({ product: proid, quantity: 1 });
-            }
-            const count = req.session.guest.reduce((total, item) => total + item.quantity, 0);
-            res.json(count);
+            // req.session.guest = req.session.guest || [];
+            // const proid = req.params.id;
+            // const existingProduct = req.session.guest.find(item => item.product === proid);
+            // if (existingProduct) {
+            //     existingProduct.quantity++;
+            // } else {
+            //     req.session.guest.push({ product: proid, quantity: 1 });
+            // }
+            // const count = req.session.guest.reduce((total, item) => total + item.quantity, 0);
+            // res.json(count);
         }
     },
-    cart :async(req,res)=>{
-
+    cart: async (req, res) => {
+        const currentuser = req.user.email;
+        const userid = await user.findOne({ email: currentuser });
+        const data = await cart.findOne({ user: userid._id })
+        const result = await cart.findOne({ user: userid._id })
+        if (result) {
+            var count = result.items.length
+        }
+        else {
+            count = 0
+        }
+        if (data) {
+            total = data.totalPrice + 40
+            return res.status(200).json({ success: "success", data, count, total });
+        } else {
+            return res.status(200).json({ success: "cart in Empty", });
+        }
     },
 }
