@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const uhelper = require('../helpers/userhelper')
 const user = require('../model/flutteruser')
 const cart = require('../model/fluttercaerscema')
+const banner=require("../model/bannerschema")
 const product = require('../model/productschema')
 const home = require('../homepage/home')
 const otp = require('../config/otp')
@@ -15,10 +16,12 @@ module.exports = {
             const loggedInUser = await user.findOne({ email: currentuser });
             // const count = await user.countmain(loggedInUser._id);
             const categorizedProducts = await home.mainpage();
+            const result=await banner.find({})
             // const allwishlist = await user.wishlist(loggedInUser._id);
             // const wishlist = await allwishlist.items;
             res.status(200).json({
                 success: "success",
+                banner:result,
                 categorizedProducts: categorizedProducts,
                 username: loggedInUser.name,
                 count: 0,
