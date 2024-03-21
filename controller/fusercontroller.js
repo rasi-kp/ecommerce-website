@@ -173,7 +173,7 @@ module.exports = {
                                 },
                                 { new: true }
                             );
-                            res.json(count + 1);
+                            return res.status(200).json({ success: "success", count: count+1 });
                         }
                         else {
                             var price = await product.findOne({ _id: cartItem.product }).lean();
@@ -186,7 +186,7 @@ module.exports = {
                                 },
                                 { new: true }
                             );
-                            res.json(count + 1);
+                            return res.status(200).json({ success: "success", count: count+1 });
                         }
                     }
                     else {
@@ -198,11 +198,11 @@ module.exports = {
                             totalPrice: totprice,
                         }
                         await cart.insertMany(datas)
-                        res.json(count + 1);
+                        return res.status(200).json({ success: "success", count: count+1 });
                     }
                 } else {
                     var count = false
-                    res.json(count);
+                    return res.status(200).json({ success: "success", count: "Out of Stock", value:count});
                 }
             } catch {
                 console.log("any error accoured");
