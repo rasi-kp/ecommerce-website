@@ -4,24 +4,27 @@ const jwt = require('jsonwebtoken');
 const uhelper = require('../helpers/userhelper')
 const user = require('../model/flutteruser')
 const cart = require('../model/fluttercaerscema')
-const banner=require("../model/bannerschema")
+const banner = require("../model/bannerschema")
 const product = require('../model/productschema')
+const wishlist=require("../model/wishlistschema")
 const home = require('../homepage/home')
 const otp = require('../config/otp')
 
 module.exports = {
+    //homepage only pass 
     fhomepage: async (req, res) => {
         try {
+
             const currentuser = req.user.email;
             const loggedInUser = await user.findOne({ email: currentuser });
             // const count = await user.countmain(loggedInUser._id);
             const categorizedProducts = await home.mainpage();
-            const result=await banner.find({})
+            const result = await banner.find({})
             // const allwishlist = await user.wishlist(loggedInUser._id);
             // const wishlist = await allwishlist.items;
             res.status(200).json({
                 success: "success",
-                banner:result,
+                banner: result,
                 categorizedProducts: categorizedProducts,
                 username: loggedInUser.name,
                 count: 0,
@@ -176,7 +179,7 @@ module.exports = {
                                 },
                                 { new: true }
                             );
-                            return res.status(200).json({ success: "success", count: count+1 });
+                            return res.status(200).json({ success: "success", count: count + 1 });
                         }
                         else {
                             var price = await product.findOne({ _id: cartItem.product }).lean();
@@ -189,7 +192,7 @@ module.exports = {
                                 },
                                 { new: true }
                             );
-                            return res.status(200).json({ success: "success", count: count+1 });
+                            return res.status(200).json({ success: "success", count: count + 1 });
                         }
                     }
                     else {
@@ -201,27 +204,18 @@ module.exports = {
                             totalPrice: totprice,
                         }
                         await cart.insertMany(datas)
-                        return res.status(200).json({ success: "success", count: count+1 });
+                        return res.status(200).json({ success: "success", count: count + 1 });
                     }
                 } else {
                     var count = false
-                    return res.status(200).json({ success: "success", count: "Out of Stock", value:count});
+                    return res.status(200).json({ success: "success", count: "Out of Stock", value: count });
                 }
             } catch {
                 console.log("any error accoured");
             }
 
         } else {
-            // req.session.guest = req.session.guest || [];
-            // const proid = req.params.id;
-            // const existingProduct = req.session.guest.find(item => item.product === proid);
-            // if (existingProduct) {
-            //     existingProduct.quantity++;
-            // } else {
-            //     req.session.guest.push({ product: proid, quantity: 1 });
-            // }
-            // const count = req.session.guest.reduce((total, item) => total + item.quantity, 0);
-            // res.json(count);
+
         }
     },
     cart: async (req, res) => {
@@ -242,4 +236,42 @@ module.exports = {
             return res.status(200).json({ success: "cart in Empty", });
         }
     },
+    wishlist: async (req, res) => {
+        var proid = req.params.id
+        const currentuser = req.user.email;
+        // const userid = await user.findexistuser(currentuser.username);
+        var userid = await user.findOne({ email: currentuser }).lean()
+        // const productwish = await user.addwishlist(proid, userid._id)
+        const existingWishlist = await wishlist.findOne({ user: userid._id });
+        if (existingWishlist) {
+            const productexist = await wishlist.findOne({ user: userid._id,'items.product': proid });
+            if (productexist) {
+                result = await wishlist.findOneAndUpdate(
+                    { user: userid._id },
+                    { $pull: { items: { product: proid } } },
+                    { new: true }
+                );
+                return "remove"
+            } else {
+                result = await wishlist.findOneAndUpdate(
+                    { user: userid._id },
+                    { $push: { items: { product: proid } } },
+                    { new: true }
+                );
+                return "add"
+            }
+        }
+        else{
+            result = await wishlist.insertMany({
+                user: userid._id,
+                items: [{ product: proid }]
+            });
+            return "create";
+        }
+        // res.json(productwish)
+    },
+    wishlists: async (req, res) => {
+
+    }
+
 }

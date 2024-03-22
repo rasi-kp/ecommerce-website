@@ -4,6 +4,7 @@ var router = express.Router();
 const verifyToken=require('../middleware/jwtauth')
 const {
     fsignInUser,fhomepage,fsignUpUser,fvalidateotp,edituser,edituserpost,cart,cartid,
+    wishlist,wishlists,
 } = require('../controller/fusercontroller')
 
 //   //*****************************FLUTTER APIS************************ */
@@ -17,5 +18,9 @@ router.post('/edituser',verifyToken,multer.single('image'),edituserpost)
 // *************************** CART ********************************
 router.get('/cart',verifyToken,cart)
 router.get('/cart/:id',verifyToken,cartid)
+
+//*****************************WISHLIST*************************** */
+router.get('/wishlist/:id',verifyToken,wishlist)
+router.get('/wishlist',verifyToken,wishlists)
 
 module.exports = router;
