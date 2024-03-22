@@ -251,14 +251,14 @@ module.exports = {
                     { $pull: { items: { product: proid } } },
                     { new: true }
                 );
-                return "remove"
+                return res.status(200).json({ message: "remove" });
             } else {
                 result = await wishlist.findOneAndUpdate(
                     { user: userid._id },
                     { $push: { items: { product: proid } } },
                     { new: true }
                 );
-                return "add"
+                return res.status(200).json({ message: "add" });
             }
         }
         else{
@@ -266,7 +266,7 @@ module.exports = {
                 user: userid._id,
                 items: [{ product: proid }]
             });
-            return "create";
+            return res.status(200).json({ message: "create" });
         }
         // res.json(productwish)
     },
