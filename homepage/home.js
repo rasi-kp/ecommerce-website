@@ -25,6 +25,20 @@ module.exports = {
     });
     return categorizedProducts
   },
+  fmainpage: async (req, res) => {
+    const data = await product.allproducts()
+    const categorizedProducts = {};
+    data.forEach(product => {
+      const category = product.category;
+      if (!categorizedProducts[category]) {
+        categorizedProducts[category] = [];
+      }
+      if (categorizedProducts[category].length < 5) {
+        categorizedProducts[category].push(product);
+      }
+    });
+    return categorizedProducts
+  },
   allproducts: async (req, res) => {
     const data = await product.allproducts()
     return data

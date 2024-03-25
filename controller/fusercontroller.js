@@ -18,13 +18,12 @@ module.exports = {
             const currentuser = req.user.email;
             const loggedInUser = await user.findOne({ email: currentuser });
             // const count = await user.countmain(loggedInUser._id);
-            const categorizedProducts = await home.mainpage();
-            const result = await banner.find({})
+            const categorizedProducts = await home.fmainpage();
+            
             // const allwishlist = await user.wishlist(loggedInUser._id);
             // const wishlist = await allwishlist.items;
             res.status(200).json({
                 success: "success",
-                banner: result,
                 categorizedProducts: categorizedProducts,
                 username: loggedInUser.name,
                 count: 0,
@@ -34,7 +33,10 @@ module.exports = {
             res.status(500).json({ error: "Internal server error" });
         }
     },
-
+    banner :async(req,res)=>{
+        const result = await banner.find({})
+        return res.send(200).json({banner:result});
+    },
     //*************** FLUTTER API ******************* */
     fsignUpUser: async (req, res) => {
         const otpExpiryTime = 5 * 60 * 1000; // 5 minutes in milliseconds
