@@ -35,7 +35,7 @@ module.exports = {
     },
     banner :async(req,res)=>{
         const result = await banner.find({})
-        return res.send(200).json({banner:result});
+        return res.status(200).json({banner:result});
     },
     //*************** FLUTTER API ******************* */
     fsignUpUser: async (req, res) => {
