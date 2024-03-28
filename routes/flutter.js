@@ -4,7 +4,7 @@ var router = express.Router();
 const verifyToken=require('../middleware/jwtauth')
 const {
     fsignInUser,fhomepage,fsignUpUser,fvalidateotp,edituser,edituserpost,cart,cartid,
-    wishlist,wishlists,banner
+    wishlist,wishlists,banner,deletecart,quantityadd,quantityminus,
 } = require('../controller/fusercontroller')
 
 //   //*****************************FLUTTER APIS************************ */
@@ -19,6 +19,9 @@ router.post('/edituser',verifyToken,multer.single('image'),edituserpost)
 // *************************** CART ********************************
 router.get('/cart',verifyToken,cart)
 router.get('/cart/:id',verifyToken,cartid)
+router.get('/cart/delete/:id',verifyToken,deletecart)
+router.get('/cart/quantityadd/:id',verifyToken,quantityadd)
+router.get('/cart/quantityminus/:id',verifyToken,quantityminus)
 
 //*****************************WISHLIST*************************** */
 router.get('/wishlist/:id',verifyToken,wishlist)
