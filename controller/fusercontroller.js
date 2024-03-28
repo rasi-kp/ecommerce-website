@@ -306,30 +306,28 @@ module.exports = {
         const proid = req.params.id;
         const currentuser = req.user.email;
         var userid = await user.findOne({ email: currentuser }).lean()
-        // const quantity = await user.quantity(userid._id, proid)
         const currentCartItem = await cart.findOne(
             { user: userid, 'items.product': proid },
             { items: { $elemMatch: { product: proid } } }
         );
         const quantity = currentCartItem.items[0].quantity - 1;
         if (quantity > 0) {
-            // const cart = await user.quantityminus(userid._id, proid)
-            // const productPrice = await product.finddata(data);
             var productPrice = await product.findOne({ _id: proid }).lean();
             const newTotalPrice = 1 * productPrice.price;
             const updatedCart = await cart.findOneAndUpdate(
-                { user: userid, 'items.product': data },
+                { user: userid._id, 'items.product': proid },
                 {
                     $inc: { 'items.$.quantity': -1, totalPrice: -newTotalPrice },
                 },
                 { new: true }
             );
-            return updatedCart
             const response = {
                 quantity: quantity,
-                totalPrice: cart.totalPrice
+                totalPrice: updatedCart.totalPrice
             };
-            res.json(response)
+            return res.status(200).json(response);
+        }else{
+            return res.status(200).json({ message: "quantity not less than 1" });
         }
     },
     wishlist: async (req, res) => {
