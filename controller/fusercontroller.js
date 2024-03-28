@@ -7,6 +7,7 @@ const cart = require('../model/fluttercaerscema')
 const banner = require("../model/bannerschema")
 const product = require('../model/productschema')
 const wishlist = require("../model/wishlistschema")
+const address = require("../model/addresshema")
 const home = require('../homepage/home')
 const otp = require('../config/otp')
 
@@ -326,7 +327,7 @@ module.exports = {
                 totalPrice: updatedCart.totalPrice
             };
             return res.status(200).json(response);
-        }else{
+        } else {
             return res.status(200).json({ message: "quantity not less than 1" });
         }
     },
@@ -371,6 +372,71 @@ module.exports = {
         else {
             return res.status(200).json({ wishlist: "Empty" });
         }
-    }
-
+    },
+    checkout: async (req, res) => {
+        const currentuser = req.user.email;
+        var userid = await user.findOne({ email: currentuser })
+        const count1 = await cart.findOne({ user: userid })
+        if (count1) {
+            var count = count1.items.length
+        }
+        if (count) {
+            const data = await cart.findOne({ user: userid._id }).populate('items.product').lean();
+            // const address1 = address.find({ userID: userid._id }).lean()
+            // console.log(address1);
+            // if (address1 != '') {
+            //     var addresss = address1[0].addresses
+            // }
+            total = data.totalPrice + 40
+            return res.status(200).json({ cart: data,totalamount:total, count: count });
+        } else {
+            return res.status(200).json({ error: "cart is empty", });
+        }
+    },
+    placeorder: async (req, res) => {
+        const currentuser = req.session.user
+        const userid = await user.findexistuser(currentuser.username);
+        const result = await user.getitemscart(userid._id)
+        const timestamp = Date.now();
+        const randomNum = Math.floor(Math.random() * 1000);
+        orderID = `ORD-${timestamp}-${randomNum}`;
+        if (result) {
+            const orders = {
+                orderID: orderID,
+                orderdate: new Date(),
+                username: userid.username,
+                name: req.body.name,
+                address: req.body.address,
+                city: req.body.city,
+                state: req.body.state,
+                pincode: req.body.pincode,
+                phoneno: req.body.phoneno,
+                items: result.items,
+                total: result.totalPrice,
+                totalamount: result.totalPrice + 40,
+                status: "Pending",
+                paymentId: "null",
+            }
+            if (req.body.paymentMethod === "razorpay") {
+                var order = await razorpay.payment(orderID, orders.totalamount);
+            }
+            await user.orders(orders);
+            const newAddress = {
+                userID: userid._id,
+                addresses: {
+                    name: req.body.name,
+                    address: req.body.address,
+                    city: req.body.city,
+                    state: req.body.state,
+                    pincode: req.body.pincode,
+                    phoneno: req.body.phoneno,
+                }
+            };
+            const existingAddress = await user.existaddress(newAddress)
+            if (!existingAddress) {
+                await user.address(newAddress)
+            }
+            res.json(order);
+        }
+    },
 }
