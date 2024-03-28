@@ -7,7 +7,7 @@ const cart = require('../model/fluttercaerscema')
 const banner = require("../model/bannerschema")
 const product = require('../model/productschema')
 const wishlist = require("../model/wishlistschema")
-const order=require("../model/orderschema")
+const order = require("../model/orderschema")
 const razorpay = require('../config/razorpay')
 const home = require('../homepage/home')
 const otp = require('../config/otp')
@@ -389,7 +389,7 @@ module.exports = {
             //     var addresss = address1[0].addresses
             // }
             total = data.totalPrice + 40
-            return res.status(200).json({ cart: data,totalamount:total, count: count });
+            return res.status(200).json({ cart: data, totalamount: total, count: count });
         } else {
             return res.status(200).json({ error: "cart is empty", });
         }
@@ -422,8 +422,91 @@ module.exports = {
             }
             await order.insertMany(orders)
             return res.status(200).json({ success: "order creation success", });
-        }else{
+        } else {
             return res.status(200).json({ error: "cart empty", });
         }
     },
+    paymentverify: async (req, res) => {
+        const currentuser = req.user.email;
+        var userid = await user.findOne({ email: currentuser })
+        if (req.body.paymentId && req.body.orderId && signature) {
+            var paymentId = req.body['payment[razorpay_payment_id]'];
+            var orderId = req.body['payment[razorpay_order_id]'];
+            var signature = req.body['payment[razorpay_signature]'];
+            var orderID = req.body.orderID
+            var hmac = crypto.createHmac('sha256', process.env.KEY_SECRET)
+            hmac.update(orderId + '|' + paymentId);
+            hmachex = hmac.digest('hex')
+        }else{
+            return res.status(200).json({ error: "Field is Empty", });
+        }
+        if (hmachex == signature) {
+            // await order.placed(orderID, paymentId)
+            await order.findOneAndUpdate(
+                { orderID: orderID },
+                {
+                    $set: { status: "placed", paymentID: paymentID }
+                },
+                { new: true }
+            );
+            // await order.updatequantity(orderID)
+            const details = await order.findOne({ orderID: orderID }).populate('items.product').lean();
+            const orderItems = details.items; // Assuming 'items' is an array of { product: productId, quantity }
+            for (const orderItem of orderItems) {
+                const productId = orderItem.product._id;
+                const orderedQuantity = orderItem.quantity;
+                await Product.findOneAndUpdate(
+                    { _id: productId },
+                    {
+                        $inc: { qty: -orderedQuantity }
+                    },
+                    { new: true }
+                );
+            }
+            await cart.findOneAndDelete({ user: userid });
+            //Create Invoice
+            // const result = await order.invoice(orderID)
+            const result = await order.findOne({ orderID: orderid }).populate('items.product').lean();
+            const pdfData = {
+                invoiceItems: result,
+            }
+            const htmlPDF = new PuppeteerHTMLPDF();
+            htmlPDF.setOptions({ format: 'A4' });
+
+            const html = await htmlPDF.readFile('views/admin/invoice.hbs', 'utf8');
+            const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
+            const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
+            const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
+
+            const template = hbs.compile(htmlWithStyles);
+            const content = template({ ...pdfData, imageContent });
+            const pdfBuffer = await htmlPDF.create(content);
+            //Generate email
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_ID,
+                    pass: process.env.EMAIL_PASS,
+                }
+            });
+            var mailOptions = {
+                from: 'rasir239@gmail.com',
+                to: userid.email,
+                subject: 'THANK YOU FOR SHOPPING "Ras Shopping"' + orderID,
+                text: 'Thank you for Choosing Ras Shopping  !!! Attached is the invoice for your recent purchase.',
+                attachments: [
+                    {
+                        filename: `${orderID}.pdf`,
+                        content: pdfBuffer,
+                    },
+                ],
+            };
+            transporter.sendMail(mailOptions, function (error, info) {
+            });
+            return res.status(200).json({ success: "Payment Success", });
+        }
+        else {
+            return res.status(400).json({ error: "Payment Failed", });
+        }
+    }
 }
