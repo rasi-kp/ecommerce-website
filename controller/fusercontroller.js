@@ -223,15 +223,9 @@ module.exports = {
     cart: async (req, res) => {
         const currentuser = req.user.email;
         const userid = await user.findOne({ email: currentuser });
-        const data = await cart.findOne({ user: userid._id })
-        const result = await cart.findOne({ user: userid._id })
-        if (result) {
-            var count = result.items.length
-        }
-        else {
-            count = 0
-        }
+        const data = await cart.findOne({ user: userid._id }).populate('items.product').lean()
         if (data) {
+            var count = data.items.length
             total = data.totalPrice + 40
             return res.status(200).json({ success: "success", data, count, total });
         } else {
