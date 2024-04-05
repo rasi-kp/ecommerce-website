@@ -1,5 +1,10 @@
 var bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
+const PuppeteerHTMLPDF = require('puppeteer-html-pdf');
+var nodemailer = require('nodemailer');
+const fs = require('fs');
+const hbs = require('hbs')
+const crypto = require('crypto')
 
 const uhelper = require('../helpers/userhelper')
 const user = require('../model/flutteruser')
@@ -429,10 +434,10 @@ module.exports = {
     paymentverify: async (req, res) => {
         const currentuser = req.user.email;
         var userid = await user.findOne({ email: currentuser })
-        if (req.body.paymentId && req.body.orderId && signature) {
-            var paymentId = req.body['payment[razorpay_payment_id]'];
-            var orderId = req.body['payment[razorpay_order_id]'];
-            var signature = req.body['payment[razorpay_signature]'];
+        if (req.body.paymentId && req.body.orderId && req.body.signature) {
+            var paymentId = req.body.paymentId;
+            var orderId = req.body.orderId;
+            var signature = req.body.signature;
             var orderID = req.body.orderID
             var hmac = crypto.createHmac('sha256', process.env.KEY_SECRET)
             hmac.update(orderId + '|' + paymentId);
@@ -451,7 +456,7 @@ module.exports = {
             );
             // await order.updatequantity(orderID)
             const details = await order.findOne({ orderID: orderID }).populate('items.product').lean();
-            const orderItems = details.items; // Assuming 'items' is an array of { product: productId, quantity }
+            const orderItems = details.items; 
             for (const orderItem of orderItems) {
                 const productId = orderItem.product._id;
                 const orderedQuantity = orderItem.quantity;
