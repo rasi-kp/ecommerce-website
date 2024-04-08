@@ -3,9 +3,10 @@ const multer=require('../config/multer')
 var router = express.Router();
 const verifyToken=require('../middleware/jwtauth')
 const {
-    fsignInUser,fhomepage,fsignUpUser,fvalidateotp,edituser,edituserpost,cart,cartid,
+    fsignInUser,fhomepage,fsignUpUser,fvalidateotp,edituser,edituserpost,cart,cartid,search,shop,
     wishlist,wishlists,banner,deletecart,quantityadd,quantityminus,checkout,placeorder,paymentverify,
-} = require('../controller/fusercontroller')
+} = require('../controller/fusercontroller');
+const { allproducts } = require('../helpers/producthelper');
 
 //   //*****************************FLUTTER APIS************************ */
 router.post('/fuser_registration',fsignUpUser)
@@ -31,5 +32,12 @@ router.get('/wishlist',verifyToken,wishlists)
 router.get('/checkout',verifyToken,checkout)
 router.post('/placeorder',verifyToken,placeorder);
 router.post('/verifypayment',verifyToken,paymentverify)
+
+//*****************************Search******************************* */
+router.get('/products/search',search)
+
+router.get('/allproducts/:page',shop) //pagination
+
+
 
 module.exports = router;

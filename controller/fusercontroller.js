@@ -442,7 +442,7 @@ module.exports = {
             var hmac = crypto.createHmac('sha256', process.env.KEY_SECRET)
             hmac.update(orderId + '|' + paymentId);
             hmachex = hmac.digest('hex')
-        }else{
+        } else {
             return res.status(200).json({ error: "Field is Empty", });
         }
         if (hmachex == signature) {
@@ -456,7 +456,7 @@ module.exports = {
             );
             // await order.updatequantity(orderID)
             const details = await order.findOne({ orderID: orderID }).populate('items.product').lean();
-            const orderItems = details.items; 
+            const orderItems = details.items;
             for (const orderItem of orderItems) {
                 const productId = orderItem.product._id;
                 const orderedQuantity = orderItem.quantity;
@@ -513,5 +513,30 @@ module.exports = {
         else {
             return res.status(400).json({ error: "Payment Failed", });
         }
-    }
+    },
+    search: async (req, res) => {
+        const { query } = req.query;
+        var searchitems = await home.search(query);
+        return res.status(200).json({ searchitems: searchitems });
+    },
+    shop: async (req, res) => {
+        const page = parseInt(req.params.page) || 1;
+        const pageSize = 6;
+        const skip = (page - 1) * pageSize;
+        // const { categorizedProducts, totalPages } = await user.pagination(skip, pageSize);
+        const pagination = await product.find().skip(skip).limit(pageSize).lean();
+        const totalProducts = await product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / pageSize);
+        // const currentuser = req.user.email;
+        // if (currentuser) {
+        //     const userid = await user.findOne({ email: currentuser });
+        //     const result = await cart.findOne({ user: userid._id })
+        //     if (result) {
+        //         var count = result.items.reduce((total, item) => total + item.quantity, 0);
+        //     }
+        //     else count=0
+        //     return res.status(200).json({ product: pagination,totalPages:totalPages,currentPage: page ,pages: Array.from({ length: totalPages }, (_, i) => i + 1), });
+        // }
+        return res.status(200).json({ product: pagination,totalPages:totalPages,currentPage: page ,pages: Array.from({ length: totalPages }, (_, i) => i + 1), });
+    },
 }
