@@ -3,8 +3,8 @@ const multer=require('../config/multer')
 var router = express.Router();
 const verifyToken=require('../middleware/jwtauth')
 const {
-    fsignInUser,fhomepage,fsignUpUser,fvalidateotp,edituser,edituserpost,cart,cartid,search,shop,
-    wishlist,wishlists,banner,deletecart,quantityadd,quantityminus,checkout,placeorder,paymentverify,
+    fsignInUser,fhomepage,fsignUpUser,fvalidateotp,edituser,edituserpost,cart,cartid,search,shop,orders,
+    wishlist,wishlists,banner,deletecart,quantityadd,quantityminus,checkout,placeorder,paymentverify,invoice,
 } = require('../controller/fusercontroller');
 const { allproducts } = require('../helpers/producthelper');
 
@@ -34,9 +34,12 @@ router.post('/placeorder',verifyToken,placeorder);
 router.post('/verifypayment',verifyToken,paymentverify)
 
 //*****************************Search******************************* */
-router.get('/products/search',search)
+router.get('/products/search',verifyToken,search)
 
-router.get('/allproducts/:page',shop) //pagination
+router.get('/allproducts/:page',verifyToken,shop) //pagination
+
+router.get('/orders',verifyToken,orders)
+router.get('/pdfController/:id',verifyToken,invoice)
 
 
 

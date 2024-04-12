@@ -410,6 +410,7 @@ module.exports = {
             const orders = {
                 orderID: orderID,
                 orderdate: new Date(),
+                email: currentuser,
                 name: req.body.name,
                 address: req.body.address,
                 city: req.body.city,
@@ -537,6 +538,34 @@ module.exports = {
         //     else count=0
         //     return res.status(200).json({ product: pagination,totalPages:totalPages,currentPage: page ,pages: Array.from({ length: totalPages }, (_, i) => i + 1), });
         // }
-        return res.status(200).json({ product: pagination,totalPages:totalPages,currentPage: page ,pages: Array.from({ length: totalPages }, (_, i) => i + 1), });
+        return res.status(200).json({ product: pagination, totalPages: totalPages, currentPage: page, pages: Array.from({ length: totalPages }, (_, i) => i + 1), });
+    },
+    orders: async (req, res) => {
+        const currentuser = req.user.email;
+        const result = await order.find({ email: currentuser }).sort({ orderdate: -1 }).populate('items.product').lean();
+        return res.status(200).json({ order: result });
+    },
+    invoice: async (req, res) => {
+        const orderID = req.params.id
+        const result = await order.findOne({ orderID: orderID }).populate('items.product').lean();
+        const pdfData = {
+            invoiceItems: result,
+        }
+        const htmlPDF = new PuppeteerHTMLPDF();
+        htmlPDF.setOptions({ format: 'A4' });
+
+        const html = await htmlPDF.readFile('views/admin/invoice.hbs', 'utf8');
+        const cssContent = await htmlPDF.readFile('public/stylesheets/invoice.css', 'utf8');
+        const imageContent = fs.readFileSync('public/images/lr.png', 'base64');
+        const htmlWithStyles = `<style>${cssContent}${imageContent}</style>${html}`;
+
+        const template = hbs.compile(htmlWithStyles);
+        const content = template({ ...pdfData, imageContent });
+        const pdfBuffer = await htmlPDF.create(content);
+        // res.attachment(orderID + '.pdf')
+        // res.end(pdfBuffer);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=${orderID}.pdf`);
+        res.send(pdfBuffer);
     },
 }
