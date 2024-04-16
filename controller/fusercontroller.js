@@ -427,7 +427,7 @@ module.exports = {
                 var order1 = await razorpay.payment(orderID, orders.totalamount);
             }
             await order.insertMany(orders)
-            return res.status(200).json({ success: "order creation success", });
+            return res.status(200).json({ success: "order creation success",order:order1 });
         } else {
             return res.status(200).json({ error: "cart empty", });
         }
