@@ -451,7 +451,7 @@ module.exports = {
             await order.findOneAndUpdate(
                 { orderID: orderID },
                 {
-                    $set: { status: "placed", paymentID: paymentID }
+                    $set: { status: "placed", paymentID: paymentId }
                 },
                 { new: true }
             );
@@ -461,7 +461,7 @@ module.exports = {
             for (const orderItem of orderItems) {
                 const productId = orderItem.product._id;
                 const orderedQuantity = orderItem.quantity;
-                await Product.findOneAndUpdate(
+                await product.findOneAndUpdate(
                     { _id: productId },
                     {
                         $inc: { qty: -orderedQuantity }
@@ -472,7 +472,7 @@ module.exports = {
             await cart.findOneAndDelete({ user: userid });
             //Create Invoice
             // const result = await order.invoice(orderID)
-            const result = await order.findOne({ orderID: orderid }).populate('items.product').lean();
+            const result = await order.findOne({ orderID: orderID }).populate('items.product').lean();
             const pdfData = {
                 invoiceItems: result,
             }
