@@ -16,11 +16,10 @@ module.exports = {
                 pass: process.env.EMAIL_PASS,
             },
         });
-
         const mailOptions = {
-            from: 'rasir239@gmail.com',
+            from: 'rhmsonline@gmail.com',
             to: email,
-            subject: 'OTP for Sign-up',
+            subject: 'OTP for Sign-up Ras-Shopping',
             text: `Your OTP for sign-up is: ${otp}`,
         };
         await transporter.sendMail(mailOptions);

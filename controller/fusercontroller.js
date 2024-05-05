@@ -496,7 +496,7 @@ module.exports = {
                 }
             });
             var mailOptions = {
-                from: 'rasir239@gmail.com',
+                from: 'rhmsonline@gmail.com',
                 to: userid.email,
                 subject: 'THANK YOU FOR SHOPPING "Ras Shopping"' + orderID,
                 text: 'Thank you for Choosing Ras Shopping  !!! Attached is the invoice for your recent purchase.',

@@ -310,7 +310,7 @@ module.exports = {
             }
         });
         var mailOptions = {
-            from: 'rasir239@gmail.com',
+            from: 'rhmsonline@gmail.com',
             to: email,
             subject: 'Welcome ' + name,
             text: 'Thank You for choosing "Ras shopping"!!!!! '
