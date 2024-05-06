@@ -267,12 +267,12 @@ module.exports = {
         // const count1 = await user.count(userid._id)
         var count2 = await cart.findOne({ user: userid._id })
         if (count2) {
-            count1 = count2.items.length
+            var count1 = count2.items.length || 0
         }
         const response = {
             count: count1 || 0,
             totalPrice: cart1.totalPrice
-        };
+        }
         return res.status(200).json(response);
     },
     quantityadd: async (req, res) => {
